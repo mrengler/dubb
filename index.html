@@ -1,9 +1,12 @@
 <html>
   <head>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="868937796982-8ofc0if7bp384rcfmrdu22idrdodkpvr.apps.googleusercontent.com">
     <title>Dubb</title>
   </head>
   <body>
     <h1>Dubb</h1>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
     <form>
       <label for="url">url of file (can be youtube, spotify):</label><br>
       <input type="text" id="url" name="url"><br>
