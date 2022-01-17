@@ -8,9 +8,12 @@
   <body>
     <h1>Dubb</h1>
     <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <form>
-      <label for="url">url of file (can be youtube, spotify):</label><br>
-      <input type="text" id="url" name="url"><br>
-    </form>
+    <fieldset id="input-form" disabled="disabled">
+      <form>
+        <label for="url">url of file (can be youtube, spotify):</label><br>
+        <input type="text" id="url" name="url" value="Sign in to use Dubb"><br>
+        <input type="submit" value="Go">
+      </form>
+    </fieldset>
   </body>
 </html>
