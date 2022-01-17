@@ -1,3 +1,19 @@
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBAYSpW1JYsG3dI3JbxEp6_KZSoGlys3Rg",
+  authDomain: "dubb-3ed06.firebaseapp.com",
+  projectId: "dubb-3ed06",
+  storageBucket: "dubb-3ed06.appspot.com",
+  messagingSenderId: "254099317950",
+  appId: "1:254099317950:web:69d42c0e4ea52888a06aef",
+  measurementId: "G-55CFDNV8T4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 var db = firebase.firestore();
 var email;
 
