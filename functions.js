@@ -10,4 +10,9 @@ function signOut() {
   auth2.signOut().then(function () {
     console.log('User signed out.');
   });
+
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = true;
+  var urlform = document.getElementById("url");
+  urlform.value = "Sign in to use Dubb"
 } 
