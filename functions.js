@@ -17,6 +17,7 @@ var email;
 
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
+  email = profile.getEmail();
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
   var urlform = document.getElementById("url");
