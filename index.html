@@ -6,21 +6,26 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="functions.js"></script>
     <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://unpkg.com/style.css">
     <title>Dubb</title>
   </head>
-  <body>
+  <body style="padding: 3% 10% 3% 10%">
     <h1>Dubb</h1>
+    <p>Dubb converts your podcasts into engaging articles, using AI!</p>
     <div class="g-signin2" data-onsuccess="onSignIn"></div>
     <a href="#" onclick="signOut();">Sign out</a>
     <br>
     <h2>How to use</h2>
-      <p>Dubb converts your podcasts into beautifully written articles, using AI!</p>
-      <p>Sign in with Google, then paste a Youtube or Spotify link of your content below.</p>
-      <p>We'll email you back within 24 hours with your article. You can post it your blog or Substack for more engagement!</p>
+    <ul>
+      <li>Sign in with Google</li>
+      <li>Paste a Youtube or Spotify link to your content below.</li>
+      <li>We'll email you back within 24 hours with your article.</li>
+      <li>Post it your blog or Substack!</li>
+    </ul>
     <br>
     <fieldset id="input-form" disabled="disabled">
       <form>
-        <input type="text" id="url" name="url" value="Sign in to use Dubb"><br>
+        <input type="text" id="url" name="url" value="Sign in to submit an url"><br>
         <input type="submit" value="Go" onclick="onSubmit();">
       </form>
     </fieldset>
