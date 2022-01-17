@@ -39,9 +39,11 @@ function signOut() {
 function onSubmit() {
   var urlform = document.getElementById("url");
   var urlinput = urlform.value;
+  var d = new Date(Date.now()).toString();
   db.collection("requests").add({
       email: email,
-      url: urlinput
+      url: urlinput,
+      time: d
   })
   .then((docRef) => {
       console.log("Document written with ID: ", docRef.id);
