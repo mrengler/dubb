@@ -37,11 +37,8 @@ function signOut() {
 }
 
 function onSubmit() {
-  console.log('onSubmit');
   var urlform = document.getElementById("url");
-  console.log(urlform);
   var urlinput = urlform.value;
-  console.log(urlinput);
   var d = new Date(Date.now()).toString();
   db.collection("requests").add({
       email: email,
