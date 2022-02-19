@@ -30,25 +30,34 @@ function signOut() {
     console.log('User signed out.');
   });
 
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = true;
-  var urlform = document.getElementById("url");
-  urlform.value = "Sign in to use Dubb"
+  // var inputform = document.getElementById("input-form");
+  // inputform.disabled = true;
+  // var urlform = document.getElementById("url");
+  // urlform.value = "Sign in to use Dubb"
 }
 
 function onSubmit() {
   var urlform = document.getElementById("url");
   var urlinput = urlform.value;
   var d = new Date(Date.now()).toString();
-  db.collection("requests").add({
-      email: email,
-      url: urlinput,
-      time: d
-  })
-  .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-  })
-  .catch((error) => {
-      console.error("Error adding document: ", error);
+  $.ajax({
+    type: "POST",
+    url: "/transcribe",
+    // contentType: "application/json",
+    data: { url: urlinput},
+    // dataType: 'json'
+  }).done(function( o ) {
+     // do something
   });
+  // db.collection("requests").add({
+  //     email: email,
+  //     url: urlinput,
+  //     time: d
+  // })
+  // .then((docRef) => {
+  //     console.log("Document written with ID: ", docRef.id);
+  // })
+  // .catch((error) => {
+  //     console.error("Error adding document: ", error);
+  // });
 }
