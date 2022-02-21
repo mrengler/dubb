@@ -1,4 +1,4 @@
-from helper_functions import get_transcript
+# from helper_functions import get_transcript
 import json
 from flask import request, Flask, render_template
 
