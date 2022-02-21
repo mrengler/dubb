@@ -23,9 +23,9 @@ function onSignIn(googleUser) {
   var urlform = document.getElementById("url");
   urlform.value = "url of file";
   var signout = document.getElementById("sign-out");
-  signout.display.style = "block";
+  signout.style.display = "block";
   var signin = document.getElementById("sign-in");
-  signin.display.style = "none";
+  signin.style.display = "none";
 }
 
 function signOut() {
@@ -39,9 +39,9 @@ function signOut() {
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb"
   var signout = document.getElementById("sign-out");
-  signout.display.style = "none";
+  signout.style.display = "none";
   var signin = document.getElementById("sign-in");
-  signin.display.style = "block";
+  signin.style.display = "block";
 }
 
 function onSubmit() {
