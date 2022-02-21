@@ -19,3 +19,6 @@ def transcribe():
     print(result) # Printing the new dictionary
     print(type(result))#this shows the json converted as a python dictionary
     return result
+
+if __name__ == "__main__":
+    app.run(debug=True)
