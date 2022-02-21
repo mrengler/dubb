@@ -7,28 +7,50 @@
     <script src="functions.js"></script>
     <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://unpkg.com/style.css">
+    <link rel="stylesheet" href="dubb.css">
+<!--     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script> -->
     <title>Dubb</title>
   </head>
   <body style="padding: 3% 10% 3% 10%">
-    <h1>Dubb</h1>
-    <p>Convert your podcasts into engaging articles, using AI!</p>
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <a href="#" onclick="signOut();">Sign out</a>
-    <br>
-    <h2>How to use</h2>
-    <ul>
-      <li>Sign in with Google</li>
-      <li>Paste a Youtube or Spotify link to your content below</li>
-      <li>We'll email you back within 24 hours with your article</li>
-      <li>Post it your blog or Substack!</li>
-    </ul>
-    <br>
-    <!-- <fieldset id="input-form" disabled="disabled"> -->
-    <fieldset id="input-form">  
+    <div class="topnav">
+      <a href="#">Dubb</a>
+      <div class="topnav-right">
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
+        <a href="#" id="sign-out" onclick="signOut();" style="display: none;">Sign out</a>
+      </div>
+    </div>
+    <h4>Market your podcast, with AI</h4>
+    <h5>Enter the Youtube or Spotify URL of your podcast</h5>
+    <fieldset id="input-form" disabled=true>  
       <form>
-        <input type="text" id="url" name="url" value="Sign in to submit an url" size="50"><br>
+        <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
         <input type="submit" value="Go" onclick="onSubmit();return false;">
       </form>
     </fieldset>
+    <!-- add an image here -->
+    <h5>Our AI model will listen to your podcast and email you:</h5>
+      <button class="collapsible">An engaging article to post to your blog or newsletter</button>
+      <div class="content">
+        <b><p>Example</p></b>
+        <p>The idea of effective altruism is to take the evidence seriously. If you went to Harvard Business School, the idea of investing for impact in the business world is the biggest duh ever, but when it comes to trying to do good for the world more generally, it's only recently that people have been doing serious analysis that investors have been doing for decades and even centuries. The story of life is a story of cooperation at increasingly complex levels. But our social emotions are designed to produce cooperative interactions in the service of out competing others. Our values are not necessarily the same thing as the values that are implicit in the biological process.</p>
+
+        <p> Jane asked John to help increase the donations to her list of high impact charities. He wanted people to give with their heads rather than with their hearts. But purely rational appeals were not very effective. 'I was convinced to support highly effective charities by philosopher Peter Singer.' His philosophy was based on a famous argument. 'He said, look, if you were walking by a pond and there was a child drowning and you could save the child, but if you do that, you're going to ruin the nice suit you're wearing or whatever it is, would you still save the child?' So you should use what resources you have to help those people.</p>
+      </div>
+      <br>
+      <button class="collapsible">The most insightful quotes to share</button>
+      <div class="content">
+        <b><p>Example</p></b>   
+        <p>John: "People really misperceive this, that if you just say here's a $100, go out and make yourself happy, and then you check in later with them, the people who spent it on other people are happier."</p>
+        <p>Jane: "So there's a very real sense in which saving 1000 people's lives is a thousand times better than saving one person's life. But research suggests that if anything, saving a single person is more emotionally salient than saving 1000 that it becomes the numbers become very abstract."</p>
+      </div>
+      <br>
+      <button class="collapsible">A detailed transcript of the conversation</button>
+      <div class="content">
+        <b><p>Example</p></b>  
+        <p>[02:46] John: "So why don't we do one better?"</p>
+        <p>[02:52] Jane: "Why don't we apply the cooperative social emotional capacities that we evolved for competition and apply them not just cooperatively within our local groups, but more broadly?"</p>
+        <p>[03:10] Jane: "And so my mission is to expand that circle all the way out as best as I can."</p>
+      </div>
   </body>
 </html>

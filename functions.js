@@ -22,6 +22,8 @@ function onSignIn(googleUser) {
   inputform.disabled = false;
   var urlform = document.getElementById("url");
   urlform.value = "url of file";
+  var signout = document.getElementById("sign-out");
+  // inputform.style.display = "block";
 }
 
 function signOut() {
@@ -30,10 +32,12 @@ function signOut() {
     console.log('User signed out.');
   });
 
-  // var inputform = document.getElementById("input-form");
-  // inputform.disabled = true;
-  // var urlform = document.getElementById("url");
-  // urlform.value = "Sign in to use Dubb"
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = true;
+  var urlform = document.getElementById("url");
+  urlform.value = "Sign in to use Dubb"
+  var signout = document.getElementById("sign-out");
+  // inputform.style.display = "none";
 }
 
 function onSubmit() {
@@ -60,4 +64,21 @@ function onSubmit() {
   // .catch((error) => {
   //     console.error("Error adding document: ", error);
   // });
+}
+
+window.onload=function(){
+  var coll = document.getElementsByClassName("collapsible");
+  var i;
+
+  for (i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function() {
+      this.classList.toggle("active");
+      var content = this.nextElementSibling;
+      if (content.style.maxHeight){
+        content.style.maxHeight = null;
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      } 
+    });
+}
 }
