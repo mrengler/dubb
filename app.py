@@ -1,6 +1,6 @@
-# from helper_functions import get_transcript
 import json
 from flask import request, Flask, render_template
+from helper_functions import *
 
 app = Flask(__name__)
 
@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('templates/index.html')
+    return render_template('index.html')
 
 @app.route('/transcribe', methods=['POST'])
 def transcribe():
@@ -20,5 +20,5 @@ def transcribe():
     print(type(result))#this shows the json converted as a python dictionary
     return result
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+  app.run(debug=True)
