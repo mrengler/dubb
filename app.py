@@ -10,7 +10,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/transcribe', methods=['POST'])
+@app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
     output = request.get_json()
     print(output) # This is the output that was stored in the JSON within the browser
