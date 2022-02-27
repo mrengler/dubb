@@ -10,7 +10,7 @@ app = Flask(__name__)
 def index():
     return render_template('templates/index.html')
 
-@app.route('../transcribe', methods=['GET', 'POST'])
+@app.route('/transcribe', methods=['GET', 'POST'])
 def transcribe():
     if request.method == 'POST':
 
