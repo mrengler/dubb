@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # get_transcript()
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == 'POST':
         return render_template('index.html')
