@@ -50,7 +50,7 @@ function onSubmit() {
   var d = new Date(Date.now()).toString();
   $.ajax({
     type: "POST",
-    url: "/transcribe",
+    url: "/",
     // contentType: "application/json",
     data: { url: urlinput},
     // dataType: 'json'
