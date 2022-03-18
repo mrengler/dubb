@@ -5,6 +5,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <script src="/static/js/functions.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <!-- <script src="{{url_for('static', filename='js/functions.js')}}"></script> -->
     <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,11 +25,31 @@
     <h5>Enter the Youtube or Spotify URL of your podcast</h5>
     <!-- <fieldset id="input-form" disabled=true>   -->
     <fieldset id="input-form">
-      <form method="POST" action="/">
+      <form method="POST" id="url-form">
         <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
         <input type="submit" value="Go">
       </form>
     </fieldset>
+    <script type="text/javascript">
+      $(document).on('submit','#url-form',function(e)
+                     {
+        e.preventDefault();
+        $.ajax({
+          type:'POST',
+          url:'/',
+          data:{
+            url:$("#url").val()
+          },
+          success: function(response) {
+            $("#result").html(response);
+          },
+          error: function(xhr) {
+            //Do Something to handle error
+          }
+        })
+      });
+    </script>
+    <div id='result'></div>
     <!-- add an image here -->
     <h5>Our AI model will listen to your podcast and email you:</h5>
       <button class="collapsible">An engaging article to post to your blog or newsletter</button>

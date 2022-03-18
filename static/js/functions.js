@@ -48,6 +48,7 @@ function onSubmit() {
   var urlform = document.getElementById("url");
   var urlinput = urlform.value;
   var d = new Date(Date.now()).toString();
+  console.log(urlinput);
   $.ajax({
     type: "POST",
     url: "/",

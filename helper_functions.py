@@ -47,6 +47,8 @@ def download_yt(url, filename):
         'verbose': True,
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        # print(url)
+        # ydl.download([url])
         ydl.download([url])
 
 def upload_to_gs(bucket_name, source_file_name, destination_file_name):
@@ -309,7 +311,6 @@ def convert(
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
     for prompt_chunk in prompt_chunks:
-        print(prompt_chunk)
         response = openai.Completion.create(
             model=model,
             prompt=prompt_chunk,
@@ -319,7 +320,6 @@ def convert(
             stop=complete_end_string,
             user=user,
         )
-        print(response.choices[0].text)
 
         classification = content_filter(response.choices[0].text, user)
         
@@ -339,12 +339,12 @@ def run_combined(
     user, 
     speakers_input, 
     filename,
-    model="davinci:ft-summarize-2022-01-02-20-59-54",
+    model="davinci:ft-summarize-2022-02-16-06-31-03",
     bucket_name='writersvoice', 
     temperature=1.0, 
     presence_penalty=0.0, 
     prompt_end_string="\n\n===\n\n",
-    complete_end_string=[" +++"],
+    complete_end_string=["+++"],
     skip_upload=False,
     skip_transcribe=False,
     transcript_id='',
