@@ -45,7 +45,7 @@ def index():
         # print(type(result))#this shows the json converted as a python dictionary
         return converting
     else:
-        return render_template('index.html')
+        return render_template('templates/index.html')
 
 # @app.route('/transcribe', methods=['GET', 'POST'])
 # def transcribe():
