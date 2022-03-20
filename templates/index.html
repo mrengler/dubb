@@ -22,9 +22,9 @@
       </div>
     </div>
     <h4>Market your podcast, with AI</h4>
-    <h5>Enter the Youtube or Spotify URL of your podcast</h5>
+    <h5 id="enter">Enter the Youtube or Spotify URL of your podcast</h5>
     <!-- <fieldset id="input-form" disabled=true>   -->
-    <fieldset id="input-form">
+    <fieldset id="input-form" style="display: block;">
       <form method="POST" id="url-form">
         <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
         <input type="submit" value="Go">
@@ -33,6 +33,9 @@
     <script type="text/javascript">
       $(document).on('submit','#url-form',function(e)
                      {
+        $("#enter").html("Your results here");
+        $("#input-form").hide('slide');
+        $("#result-waiting").show('slide');
         e.preventDefault();
         $.ajax({
           type:'POST',
@@ -41,7 +44,11 @@
             url:$("#url").val()
           },
           success: function(response) {
-            $("#result").html(response);
+            $("#result-waiting").hide('slide');
+            $("#result-article-text").html(response.article);
+            $("#result-transcript-text").html(response.transcript);
+            $("#result-article").show('slide');
+            $("#result-transcript").show('slide');
           },
           error: function(xhr) {
             //Do Something to handle error
@@ -49,7 +56,17 @@
         })
       });
     </script>
-    <div id='result'></div>
+    <div id='result-waiting' style="display: none;">We're working on your summary! It may take a few minutes. Please don't refresh the page or navigate away.</div>
+    <div id='result-article' style="display: none;">
+      <b><p>Article</p></b>
+      <div id='result-article-text'></div>
+      <br>
+    </div>
+    <div id='result-transcript' style="display: none;">
+      <b><p>Transcript</p></b>
+      <div id='result-transcript-text'></div>
+      <br>
+    </div>
     <!-- add an image here -->
     <h5>Our AI model will listen to your podcast and email you:</h5>
       <button class="collapsible">An engaging article to post to your blog or newsletter</button>

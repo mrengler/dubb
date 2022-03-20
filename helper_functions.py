@@ -28,6 +28,17 @@ ASSEMBLY_API_KEY = os.getenv('ASSEMBLY_API_KEY')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json" 
 
 
+def millsecond_to_timestamp(ms):
+    millis = int(ms)
+    seconds=(millis/1000)%60
+    seconds = int(seconds)
+    minutes=(millis/(1000*60))%60
+    minutes = int(minutes)
+    hours=(millis/(1000*60*60))%24
+    hours=int(hours)
+
+    return "%d:%02d:%02d" % (hours, minutes, seconds)
+
 def download_yt(url, filename):
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -127,39 +138,30 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     response = requests.get(endpoint, headers=headers)
     
     try:
-        print(1)
         sentences = response.json()['sentences']
-        print(2)
-        sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text']) for sentence in sentences]
-        print(3)
-        speakers_duplicate = [speaker for speaker, sentence in sentences_diarized]
-        print(4)
+        sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start'])) for sentence in sentences]
+        speakers_duplicate = [speaker for speaker, sentence, start_time in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
-        print(5)
         speaker_hash = {}
-        print(6)
         for i,speaker in enumerate(speakers_input):
             speaker_hash[unique_speakers[i]] = speaker
-        print(7)
         unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
-        print(8)
         for speaker in unknown_speakers:
             speaker_hash[speaker] = 'Unknown'
-        print(9)
         speaker_hash['UNK'] = 'Unknown'
-        print(10)
 
         if paragraphs==True:
             cleaned_paragraphs = []
             current_speaker = ''
             current_speaker_sentences = []
-            for speaker, sentence in sentences_diarized:
+            start_times = []
+            for speaker, sentence, start_time in sentences_diarized:
                 speaker = speaker_hash[speaker]
                 if speaker != current_speaker:
                     if current_speaker != '':
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
-
+                        start_times.append(start_time)
                     current_speaker = speaker
                     current_speaker_sentences = [sentence]
 
@@ -167,14 +169,17 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
                     current_speaker_sentences.append(sentence)
 
             cleaned_paragraphs.append(current_speaker_sentences_joined)
+            start_times.append(start_time)
 
-            return cleaned_paragraphs
+            # print(cleaned_paragraphs)
+            return cleaned_paragraphs, start_times
 
         elif paragraphs==False:
 
-            cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence in sentences_diarized]
-
-            return cleaned_sentences
+            cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence, start_time in sentences_diarized]
+            start_times = [start_time for speaker, sentence, start_time in sentences_diarized]
+            # print(cleaned_sentences)
+            return cleaned_sentences, start_times
     
     except:
         print(response.json())
@@ -219,15 +224,18 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
             used_chars += sentence_chars
             
         else:
-            if for_transcript:
+            if for_transcript==True:
                 prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
-            else:
+            elif for_transcript==False:
                 prompt_chunks.append(' ' + "\n".join(chunk) + prompt_end_string)
             used_chars = sentence_chars
             chunk = [sentence]
             chunk_i += 1
-            
-    prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
+    
+    if for_transcript==True:        
+        prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
+    elif for_transcript==False:
+        prompt_chunks.append(' ' + "\n".join(chunk) + prompt_end_string)
     
     return prompt_chunks
 
@@ -311,15 +319,23 @@ def convert(
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
     for prompt_chunk in prompt_chunks:
-        response = openai.Completion.create(
-            model=model,
-            prompt=prompt_chunk,
-            max_tokens=max_tokens_output,
-            temperature=temp,
-            presence_penalty=pres_penalty,
-            stop=complete_end_string,
-            user=user,
-        )
+        attempts = 0
+        while attempts < 3:
+            try:
+                response = openai.Completion.create(
+                    model=model,
+                    prompt=prompt_chunk,
+                    max_tokens=max_tokens_output,
+                    temperature=temp,
+                    presence_penalty=pres_penalty,
+                    stop=complete_end_string,
+                    user=user,
+                )
+                break
+            except:
+                attempts += 1
+                print('number of attempts: ' + str(attempts))
+                time.sleep(30)
 
         classification = content_filter(response.choices[0].text, user)
         
@@ -330,7 +346,7 @@ def convert(
             print('UNSAFE RESPONSE:')
             print(response)
 
-    converting = '\n\n'.join(summary_chunks)
+    converting = '<br><br>'.join(summary_chunks)
     
     return converting
 
@@ -365,12 +381,9 @@ def run_combined(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences = assembly_finish_transcribe(transcript_id, speakers_input,paragraphs)
-        time.sleep(60)
+        cleaned_sentences, start_times = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        # time.sleep(60)
         
-    ## needs to wait
-    # max_lines = get_max_lines(cleaned_sentences, 100)
-    # print('max lines:' + str(max_lines))
     converting = convert(
         user,
         cleaned_sentences, 
@@ -381,7 +394,11 @@ def run_combined(
         complete_end_string=complete_end_string
     )
 
-    return converting, cleaned_sentences
+    cleaned_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
+
+    cleaned_sentences_present = '<br><br>'.join(cleaned_sentences_timestamps)
+
+    return converting, cleaned_sentences_present
     
 def present_article(article):
     print('\n\n'.join([x for x in article.split('\n') if x not in ['', ' ']])) 
