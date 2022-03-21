@@ -18,15 +18,10 @@ var email;
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
-  import { data } from 'allow';
-  if (data.includes(email)) {
-    var inputform = document.getElementById("input-form");
-    inputform.disabled = false;
-    var urlform = document.getElementById("url");
-    urlform.value = "url of file";
-  } else {
-    console.log("We're sorry, we haven't opened up Dubb to you yet!")
-  }
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = false;
+  var urlform = document.getElementById("url");
+  urlform.value = "url of file";
   var signout = document.getElementById("sign-out");
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");

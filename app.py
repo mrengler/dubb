@@ -38,24 +38,29 @@ def index():
         if user in allow_list:
             # return render_template('index.html')
             url = request.form['url']
+            print(email);
 
-            # time.sleep(3) ##remove later
-            # converting="Blank Blank Blank"
-            # cleaned_sentences=['blah blah blah']
-            converting, cleaned_sentences = run_combined(
-                url,
-                user,
-                speakers_input,
-                filename,
-                model=openai_model,
-                complete_end_string=complete_end_string,
-                skip_upload=True,
-                skip_transcribe=True,
-                transcript_id=transcript_id,
-                paragraphs=True,
-            )
+            if email in allow_list:
 
-            return {'article': converting, 'transcript': cleaned_sentences}
+                # time.sleep(3) ##remove later
+                # converting="Blank Blank Blank"
+                # cleaned_sentences=['blah blah blah']
+                converting, cleaned_sentences = run_combined(
+                    url,
+                    user,
+                    speakers_input,
+                    filename,
+                    model=openai_model,
+                    complete_end_string=complete_end_string,
+                    skip_upload=True,
+                    skip_transcribe=True,
+                    transcript_id=transcript_id,
+                    paragraphs=True,
+                )
+
+                return {'article': converting, 'transcript': cleaned_sentences}
+            else:
+                return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': ''}
     else:
         return render_template('index.html')
 

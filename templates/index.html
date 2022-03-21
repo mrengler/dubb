@@ -41,7 +41,8 @@
           type:'POST',
           url:'/',
           data:{
-            url:$("#url").val()
+            url:$("#url").val(),
+            email:email,
           },
           success: function(response) {
             $("#result-waiting").hide('slide');
