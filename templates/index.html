@@ -47,9 +47,11 @@
           success: function(response) {
             $("#result-waiting").hide('slide');
             $("#result-article-text").html(response.article);
-            $("#result-transcript-text").html(response.transcript);
             $("#result-article").show('slide');
-            $("#result-transcript").show('slide');
+            if (!(response.transcript === null)) {
+              $("#result-transcript-text").html(response.transcript);
+              $("#result-transcript").show('slide');
+            }
           },
           error: function(xhr) {
             //Do Something to handle error
