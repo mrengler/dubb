@@ -34,39 +34,38 @@ transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == 'POST':
-        if user in allow_list:
-            # return render_template('index.html')
-            email = request.form['email'] 
+        # return render_template('index.html')
+        email = request.form['email'] 
 
-            if email in allow_list:
+        if email in allow_list:
 
-                url = request.form['url']
-                speakers = request.form['speakers']
-                speakers_input = [name.strip() for name in speakers.split(',')]
-                print(speakers_input)
+            url = request.form['url']
+            speakers = request.form['speakers']
+            speakers_input = [name.strip() for name in speakers.split(',')]
+            print(speakers_input)
 
-                # time.sleep(3) ##remove later
-                # converting="Blank Blank Blank"
-                # cleaned_sentences=['blah blah blah']
-                filename = ''.join([ch for ch in sample_str if ch != '/'])
-                print(filename)
+            # time.sleep(3) ##remove later
+            # converting="Blank Blank Blank"
+            # cleaned_sentences=['blah blah blah']
+            filename = ''.join([ch for ch in sample_str if ch != '/'])
+            print(filename)
 
-                converting, cleaned_sentences = run_combined(
-                    url,
-                    email,
-                    speakers_input,
-                    filename,
-                    model=openai_model,
-                    complete_end_string=complete_end_string,
-                    skip_upload=True,
-                    skip_transcribe=True,
-                    transcript_id=transcript_id,
-                    paragraphs=True,
-                )
+            converting, cleaned_sentences = run_combined(
+                url,
+                email,
+                speakers_input,
+                filename,
+                model=openai_model,
+                complete_end_string=complete_end_string,
+                skip_upload=True,
+                skip_transcribe=True,
+                transcript_id=transcript_id,
+                paragraphs=True,
+            )
 
-                return {'article': converting, 'transcript': cleaned_sentences}
-            else:
-                return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': None}
+            return {'article': converting, 'transcript': cleaned_sentences}
+        else:
+            return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': None}
     else:
         return render_template('index.html')
 
