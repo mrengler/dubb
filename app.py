@@ -2,6 +2,7 @@ import json
 from flask import request, Flask, render_template
 from helper_functions import *
 from allow_list import allow_list
+import logging
 
 
 app = Flask(__name__)
