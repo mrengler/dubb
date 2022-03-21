@@ -39,7 +39,9 @@ function signOut() {
   var inputform = document.getElementById("input-form");
   inputform.disabled = true;
   var urlform = document.getElementById("url");
-  urlform.value = "Sign in to use Dubb"
+  urlform.value = "Sign in to use Dubb";
+  var speakersform = document.getElementById("speakers");
+  speakersform.value = ""
   var signout = document.getElementById("sign-out");
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");

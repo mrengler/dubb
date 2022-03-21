@@ -28,7 +28,7 @@ complete_end_string = "+++"
 #     'John',    
 #     'Kalyan',
 # ]
-transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
+# transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -42,7 +42,6 @@ def index():
             url = request.form['url']
             speakers = request.form['speakers']
             speakers_input = [name.strip() for name in speakers.split(',')]
-            print(speakers_input)
 
             # time.sleep(3) ##remove later
             # converting="Blank Blank Blank"
@@ -57,9 +56,8 @@ def index():
                 filename,
                 model=openai_model,
                 complete_end_string=complete_end_string,
-                skip_upload=True,
-                skip_transcribe=True,
-                transcript_id=transcript_id,
+                skip_upload=False,
+                skip_transcribe=False,
                 paragraphs=True,
             )
 
