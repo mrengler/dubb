@@ -27,8 +27,8 @@ load_dotenv()
 # ASSEMBLY_API_KEY = os.getenv('ASSEMBLY_API_KEY')
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json" 
 
-openai.api_key = os.environ('OPENAI_API_KEY')
-ASSEMBLY_API_KEY = os.environ('ASSEMBLY_API_KEY')
+openai.api_key = os.environ.get('OPENAI_API_KEY')
+ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=os.environ('GOOGLE_APPLICATION_CREDENTIALS')
 
 
