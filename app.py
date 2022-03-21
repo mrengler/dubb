@@ -47,7 +47,7 @@ def index():
             # time.sleep(3) ##remove later
             # converting="Blank Blank Blank"
             # cleaned_sentences=['blah blah blah']
-            filename = ''.join([ch for ch in sample_str if ch != '/'])
+            filename = ''.join([ch for ch in url if ch != '/'])
             print(filename)
 
             converting, cleaned_sentences = run_combined(
