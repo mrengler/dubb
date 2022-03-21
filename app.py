@@ -38,7 +38,8 @@ def index():
         if user in allow_list:
             # return render_template('index.html')
             url = request.form['url']
-            print(email);
+            email = request.form['email']
+            print('email')
 
             if email in allow_list:
 
