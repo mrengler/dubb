@@ -12,7 +12,7 @@ import datetime
 import time
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
-sys.path.append('/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json')
+# sys.path.append('/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json')
 
 import openai
 import datetime
@@ -23,9 +23,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
-ASSEMBLY_API_KEY = os.getenv('ASSEMBLY_API_KEY')
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json" 
+# openai.api_key = os.getenv('OPENAI_API_KEY')
+# ASSEMBLY_API_KEY = os.getenv('ASSEMBLY_API_KEY')
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json" 
+
+openai.api_key = os.environ('OPENAI_API_KEY')
+ASSEMBLY_API_KEY = os.environ('ASSEMBLY_API_KEY')
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=os.environ('GOOGLE_APPLICATION_CREDENTIALS')
 
 
 def millsecond_to_timestamp(ms):
