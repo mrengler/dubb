@@ -12,7 +12,6 @@ app.logger.setLevel(logging.ERROR)
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
 complete_end_string = "+++"
 
-user='smgplank@gmail.com'
 # filename='temp3.wav'
 # speakers_input = [
 #     'Ryan Knutson', 
@@ -24,11 +23,11 @@ user='smgplank@gmail.com'
 #     'Ad',
 #     ]
 # transcript_id='os62z6y348-b33a-4d3c-94e5-e85b21377f12'
-filename='temp4.wav'
-speakers_input=[
-    'John',    
-    'Kalyan',
-]
+# filename='temp4.wav'
+# speakers_input=[
+#     'John',    
+#     'Kalyan',
+# ]
 transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
 
@@ -37,17 +36,24 @@ def index():
     if request.method == 'POST':
         if user in allow_list:
             # return render_template('index.html')
-            url = request.form['url']
-            email = request.form['email']
+            email = request.form['email'] 
 
             if email in allow_list:
+
+                url = request.form['url']
+                speakers = request.form['speakers']
+                speakers_input = [name.strip() for name in speakers.split(',')]
+                print(speakers_input)
 
                 # time.sleep(3) ##remove later
                 # converting="Blank Blank Blank"
                 # cleaned_sentences=['blah blah blah']
+                filename = ''.join([ch for ch in sample_str if ch != '/'])
+                print(filename)
+
                 converting, cleaned_sentences = run_combined(
                     url,
-                    user,
+                    email,
                     speakers_input,
                     filename,
                     model=openai_model,

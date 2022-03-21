@@ -27,6 +27,7 @@
     <!-- <fieldset id="input-form" style="display: block;"> -->
       <form method="POST" id="url-form">
         <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
+        <input type="text" id="speakers" name="speakers" value="" size="50"><br>
         <input type="submit" value="Go">
       </form>
     </fieldset>
@@ -42,6 +43,7 @@
           url:'/',
           data:{
             url:$("#url").val(),
+            speakers:$("#speakers").val(),
             email:email,
           },
           success: function(response) {
