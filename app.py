@@ -6,6 +6,9 @@ from allow_list import allow_list
 
 app = Flask(__name__)
 
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.ERROR)
+
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
 complete_end_string = "+++"
 
