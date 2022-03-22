@@ -67,16 +67,13 @@ def index():
             # )
 
             converting, cleaned_sentences = q.enqueue(
-                run_combined, 
-                url,
-                email,
-                speakers_input,
-                filename,
-                model=openai_model,
-                complete_end_string=complete_end_string,
-                skip_upload=False,
-                skip_transcribe=False,
-                paragraphs=True,
+                run_combined,
+                args=(
+                    url,
+                    email,
+                    speakers_input,
+                    filename,
+                ),
                 timeout=600
             )
 
