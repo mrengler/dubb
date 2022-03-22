@@ -47,7 +47,7 @@ def index():
             # time.sleep(3) ##remove later
             # converting="Blank Blank Blank"
             # cleaned_sentences=['blah blah blah']
-            filename = re.sub(r'\W+', '', url)
+            filename = re.sub(r'\W+', '', url) + '.wav'
             print('This is filename: ' + filename)
 
             converting, cleaned_sentences = run_combined(
