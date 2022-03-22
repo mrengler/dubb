@@ -4,6 +4,8 @@ from helper_functions import *
 from allow_list import allow_list
 import logging
 import re
+from rq import Queue
+from worker import conn
 
 
 app = Flask(__name__)
@@ -31,6 +33,8 @@ complete_end_string = "+++"
 # ]
 # transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
+q = Queue(connection=conn)
+
 
 @app.route('/', methods=["GET", "POST"])
 def index():
@@ -50,7 +54,20 @@ def index():
             filename = re.sub(r'\W+', '', url) + '.wav'
             print('This is filename: ' + filename)
 
-            converting, cleaned_sentences = run_combined(
+            # converting, cleaned_sentences = run_combined(
+            #     url,
+            #     email,
+            #     speakers_input,
+            #     filename,
+            #     model=openai_model,
+            #     complete_end_string=complete_end_string,
+            #     skip_upload=False,
+            #     skip_transcribe=False,
+            #     paragraphs=True,
+            # )
+
+            converting, cleaned_sentences = q.enqueue(
+                run_combined, 
                 url,
                 email,
                 speakers_input,
