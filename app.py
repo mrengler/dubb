@@ -77,6 +77,7 @@ def index():
                 skip_upload=False,
                 skip_transcribe=False,
                 paragraphs=True,
+                timeout=600
             )
 
             return {'article': converting, 'transcript': cleaned_sentences}
