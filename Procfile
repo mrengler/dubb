@@ -1,2 +1,2 @@
 web: gunicorn --bind 0.0.0.0:$PORT app:app
-worker: python worker.py
+worker: python dubb/worker.py
