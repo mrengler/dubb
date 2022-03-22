@@ -186,7 +186,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     
     except:
         print(response.json())
-        return 'waiting'
+        return 'waiting', None
 
 def get_max_lines(exchanges, n):
     
@@ -385,7 +385,7 @@ def run_combined(
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
         cleaned_sentences, start_times = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
-        # time.sleep(60)
+        time.sleep(60)
         
     converting = convert(
         user,
