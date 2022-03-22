@@ -3,6 +3,7 @@ from flask import request, Flask, render_template
 from helper_functions import *
 from allow_list import allow_list
 import logging
+import re
 
 
 app = Flask(__name__)
@@ -46,8 +47,8 @@ def index():
             # time.sleep(3) ##remove later
             # converting="Blank Blank Blank"
             # cleaned_sentences=['blah blah blah']
-            filename = ''.join([ch for ch in url if ch != '/'])
-            print(filename)
+            filename = re.sub(r'\W+', '', url)
+            print('This is filename: ' + filename)
 
             converting, cleaned_sentences = run_combined(
                 url,
