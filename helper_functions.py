@@ -386,6 +386,8 @@ def run_combined(
         print('wait cleaned sentences')
         cleaned_sentences, start_times = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
+
+    print(cleaned_sentences)
         
     converting = convert(
         user,
@@ -397,9 +399,15 @@ def run_combined(
         complete_end_string=complete_end_string
     )
 
+    print(converting)
+
     cleaned_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
 
+    print(cleaned_sentences_timestamps)
+
     cleaned_sentences_present = '<br><br>'.join(cleaned_sentences_timestamps)
+
+    print(cleaned_sentences_present)
 
     return converting, cleaned_sentences_present
     
