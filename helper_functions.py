@@ -12,7 +12,6 @@ import datetime
 import time
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
-# sys.path.append('/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json')
 
 import openai
 import datetime
