@@ -66,7 +66,7 @@ def index():
             #     paragraphs=True,
             # )
 
-            converting, cleaned_sentences = q.enqueue(
+            results = q.enqueue(
                 run_combined,
                 args=(
                     url,
@@ -76,6 +76,7 @@ def index():
                 ),
                 timeout=600
             )
+            print(results)
 
             return {'article': converting, 'transcript': cleaned_sentences}
         else:
