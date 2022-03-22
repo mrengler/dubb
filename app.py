@@ -33,7 +33,7 @@ complete_end_string = "+++"
 # ]
 # transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
-q = Queue(connection=conn)
+q = Queue(connection=conn, default_timeout=600)
 
 
 @app.route('/', methods=["GET", "POST"])
