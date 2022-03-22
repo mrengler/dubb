@@ -76,7 +76,7 @@ def index():
                 ),
                 timeout=600
             )
-            print(results)
+            print('This is results: ' + results)
 
             return {'article': converting, 'transcript': cleaned_sentences}
         else:
