@@ -52,7 +52,7 @@ def get_template(data, refresh=False):
 
 @app.route('/result/<string:id>')
 def result(id):
-    job = Job.fetch(id, connection=r)
+    job = Job.fetch(id, connection=conn)
     status = job.get_status()
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(status, refresh=True)
