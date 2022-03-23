@@ -57,7 +57,7 @@ def get_template(data, refresh=False):
               <meta http-equiv="refresh" content="5">
               {% endif %}
             </head>
-            <body>Waiting on the results here</body>
+            <body>Your results will load here! Please check back in a few minutes. </body>
             </html>'''
 
     return render_template_string(template_str, refresh=refresh)
