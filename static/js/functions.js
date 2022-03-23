@@ -28,7 +28,7 @@ function onSignIn(googleUser) {
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
-  var emailform = document.getElementByID("email");
+  var emailform = document.getElementById("email");
   emailform.value = email;
   emailform.disabled = true;
 }
