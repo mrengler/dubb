@@ -28,6 +28,9 @@ function onSignIn(googleUser) {
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
+  var emailform = document.getElementByID("email");
+  emailform.value = email;
+  emailform.disabled = true;
 }
 
 function signOut() {
@@ -46,6 +49,8 @@ function signOut() {
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");
   signin.style.display = "block";
+  var emailform = document.getElementByID("email");
+  emailform.value = ""
 }
 
 function onSubmit() {
