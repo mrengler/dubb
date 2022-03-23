@@ -409,7 +409,8 @@ def run_combined(
 
     print(cleaned_sentences_present)
 
-    return converting, cleaned_sentences_present
+    # return converting, cleaned_sentences_present
+    return converting
     
 def present_article(article):
     print('\n\n'.join([x for x in article.split('\n') if x not in ['', ' ']])) 

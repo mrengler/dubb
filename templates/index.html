@@ -40,21 +40,21 @@
         e.preventDefault();
         $.ajax({
           type:'POST',
-          url:'/',
+          url:'/process',
           data:{
             url:$("#url").val(),
             speakers:$("#speakers").val(),
             email:email,
           },
-          success: function(response) {
-            $("#result-waiting").hide('slide');
-            $("#result-article-text").html(response.article);
-            $("#result-article").show('slide');
-            if (!(response.transcript === null)) {
-              $("#result-transcript-text").html(response.transcript);
-              $("#result-transcript").show('slide');
-            }
-          },
+          // success: function(response) {
+          //   $("#result-waiting").hide('slide');
+          //   $("#result-article-text").html(response.article);
+          //   $("#result-article").show('slide');
+          //   if (!(response.transcript === null)) {
+          //     $("#result-transcript-text").html(response.transcript);
+          //     $("#result-transcript").show('slide');
+          //   }
+          // },
           error: function(xhr) {
             //Do Something to handle error
           }

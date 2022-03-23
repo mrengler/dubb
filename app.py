@@ -62,8 +62,8 @@ def result(id):
         return get_template(result)
 
 
-@app.route('/', methods=["GET", "POST"])
-def index():
+@app.route('/process', methods=["GET", "POST"])
+def process():
     if request.method == 'POST':
         # return render_template('index.html')
         email = request.form['email'] 
@@ -74,23 +74,8 @@ def index():
             speakers = request.form['speakers']
             speakers_input = [name.strip() for name in speakers.split(',')]
 
-            # time.sleep(3) ##remove later
-            # converting="Blank Blank Blank"
-            # cleaned_sentences=['blah blah blah']
             filename = re.sub(r'\W+', '', url) + '.wav'
             print('This is filename: ' + filename)
-
-            # converting, cleaned_sentences = run_combined(
-            #     url,
-            #     email,
-            #     speakers_input,
-            #     filename,
-            #     model=openai_model,
-            #     complete_end_string=complete_end_string,
-            #     skip_upload=False,
-            #     skip_transcribe=False,
-            #     paragraphs=True,
-            # )
 
             job = q.enqueue(
                 run_combined,
@@ -111,19 +96,9 @@ def index():
     else:
         return render_template('index.html')
 
-# @app.route('/transcribe', methods=['GET', 'POST'])
-# def transcribe():
-#     if request.method == 'POST':
-
-#         output = request.get_json()
-#         print(output) # This is the output that was stored in the JSON within the browser
-#         print(type(output))
-#         result = json.loads(output) #this converts the json output to a python dictionary
-#         print(result) # Printing the new dictionary
-#         print(type(result))#this shows the json converted as a python dictionary
-#         return result
-#     else:
-#         return 'else'
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
   app.run(debug=True)
