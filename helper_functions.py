@@ -402,7 +402,7 @@ def run_combined(
 
     cleaned_sentences_present = '<br><br>'.join(cleaned_sentences_timestamps)
 
-    combined = '<b>Article<b><br><br>' + converting + '<br><br><b>Transcript<b><br><br>' + cleaned_sentences_present
+    combined = '<b>Article</b><br><br>' + converting + '<br><br><b>Transcript</b><br><br>' + cleaned_sentences_present
     return combined
     
 def present_article(article):
