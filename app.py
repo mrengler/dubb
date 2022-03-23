@@ -92,7 +92,7 @@ def index():
             #     paragraphs=True,
             # )
 
-            results = q.enqueue(
+            job = q.enqueue(
                 run_combined,
                 args=(
                     url,
