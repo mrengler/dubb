@@ -20,7 +20,7 @@ template_str='''<html>
       <meta http-equiv="refresh" content="5">
       {% endif %}
     </head>
-    <body>{{result}}</body>
+    <body>''' + result + '''</body>
     </html>'''
 
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
