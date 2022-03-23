@@ -1,16 +1,27 @@
 import json
-from flask import request, Flask, render_template
+from flask import request, Flask, render_template, render_template_string, redirect
 from helper_functions import *
 from allow_list import allow_list
 import logging
 import re
 from rq import Queue
+from rq.job import Job
 from worker import conn
+from time import sleep
 
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
+
+template_str='''<html>
+    <head>
+      {% if refresh %}
+      <meta http-equiv="refresh" content="5">
+      {% endif %}
+    </head>
+    <body>{{result}}</body>
+    </html>'''
 
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
 complete_end_string = "+++"
@@ -34,6 +45,21 @@ complete_end_string = "+++"
 # transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
 q = Queue(connection=conn, default_timeout=600)
+
+
+def get_template(data, refresh=False):
+    return render_template_string(template_str, result=data, refresh=refresh)
+
+@app.route('/result/<string:id>')
+def result(id):
+    job = Job.fetch(id, connection=r)
+    status = job.get_status()
+    if status in ['queued', 'started', 'deferred', 'failed']:
+        return get_template(status, refresh=True)
+    elif status == 'finished':
+        result = job.result 
+        # If this is a string, we can simply return it:
+        return get_template(result)
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -76,9 +102,10 @@ def index():
                 ),
                 timeout=600
             )
-            print('This is results: ' + results)
+            return redirect(url_for('result', id=job.id))
+            # print('This is results: ' + results)
 
-            return {'article': converting, 'transcript': cleaned_sentences}
+            # return {'article': converting, 'transcript': cleaned_sentences}
         else:
             return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': None}
     else:
