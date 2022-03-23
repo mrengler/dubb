@@ -14,14 +14,6 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-template_str='''<html>
-    <head>
-      {% if refresh %}
-      <meta http-equiv="refresh" content="5">
-      {% endif %}
-    </head>
-    <body>{result}</body>
-    </html>'''
 
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
 complete_end_string = "+++"
@@ -48,7 +40,27 @@ q = Queue(connection=conn, default_timeout=600)
 
 
 def get_template(data, refresh=False):
-    return render_template_string(template_str, result=data, refresh=refresh)
+    
+    if refresh==False:
+        template_str='''<html>
+            <head>
+              {% if refresh %}
+              <meta http-equiv="refresh" content="5">
+              {% endif %}
+            </head>
+            <body>''' + data + '''</body>
+            </html>'''
+    elif refresh==True:
+        template_str='''<html>
+            <head>
+              {% if refresh %}
+              <meta http-equiv="refresh" content="5">
+              {% endif %}
+            </head>
+            <body>Waiting on the results here</body>
+            </html>'''
+
+    return render_template_string(template_str, refresh=refresh)
 
 @app.route('/result/<string:id>')
 def result(id):
