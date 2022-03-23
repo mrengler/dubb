@@ -30,7 +30,6 @@ function onSignIn(googleUser) {
   signin.style.display = "none";
   var emailform = document.getElementById("email");
   emailform.value = email;
-  // emailform.disabled = true;
 }
 
 function signOut() {

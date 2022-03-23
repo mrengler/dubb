@@ -36,7 +36,7 @@ complete_end_string = "+++"
 # ]
 # transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
 
-q = Queue(connection=conn, default_timeout=600)
+q = Queue(connection=conn, default_timeout=1200)
 
 
 def get_template(data, refresh=False):
