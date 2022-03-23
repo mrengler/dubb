@@ -34,9 +34,9 @@
     <script type="text/javascript">
       $(document).on('submit','#url-form',function(e)
                      {
-        // $("#enter").html("Your results here");
-        // $("#input-form").hide('slide');
-        // $("#result-waiting").show('slide');
+        $("#enter").html("Your results here");
+        $("#input-form").hide('slide');
+        $("#result-waiting").show('slide');
         e.preventDefault();
         $.ajax({
           type:'POST',
@@ -46,15 +46,16 @@
             speakers:$("#speakers").val(),
             email:email,
           },
-          // success: function(response) {
-          //   $("#result-waiting").hide('slide');
-          //   $("#result-article-text").html(response.article);
-          //   $("#result-article").show('slide');
-          //   if (!(response.transcript === null)) {
-          //     $("#result-transcript-text").html(response.transcript);
-          //     $("#result-transcript").show('slide');
-          //   }
-          // },
+          success: function(response) {
+            // $("#result-waiting").hide('slide');
+            // $("#result-article-text").html(response.article);
+            // $("#result-article").show('slide');
+            // if (!(response.transcript === null)) {
+            //   $("#result-transcript-text").html(response.transcript);
+            //   $("#result-transcript").show('slide');
+            // }
+            window.location = "/process"
+          },
           error: function(xhr) {
             //Do Something to handle error
           }
