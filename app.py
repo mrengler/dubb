@@ -63,7 +63,7 @@ def result(id):
 
 
 @app.route('/process', methods=["GET", "POST"])
-def process():
+def process(request):
     if request.method == 'POST':
         # return render_template('index.html')
         email = request.form['email'] 
