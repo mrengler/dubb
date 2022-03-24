@@ -48,7 +48,7 @@ def get_template(data, refresh=False):
               <meta http-equiv="refresh" content="5">
               {% endif %}
             </head>
-            <body>''' + data + '''</body>
+            <body><div style="font-size:20px;">''' + data + '''</div></body>
             </html>'''
     elif refresh==True:
         template_str='''<html>
