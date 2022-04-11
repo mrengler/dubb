@@ -334,31 +334,30 @@ def convert(
                     presence_penalty=pres_penalty,
                     user=user,
                 )
+
+                summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
+
+                if summary_classification != '2': ##unsafe
+                    summary_chunk = summary_chunk_response.choices[0].text
+                    summary_chunks.append(summary_chunk)
+                else:
+                    print('UNSAFE RESPONSE:')
+                    print(summary_chunk_response)
+
+                top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
+                
+                if top_quote_classification != '2': ##unsafe
+                    top_quote = top_quote_response.choices[0].text
+                    top_quotes.append(top_quote)
+                else:
+                    print('UNSAFE RESPONSE:')
+                    print(top_quote_response)
+            
                 break
             except:
                 attempts += 1
                 print('number of attempts: ' + str(attempts))
                 time.sleep(30)
-
-        summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
-        
-        if summary_classification != '2': ##unsafe
-            summary_chunk = summary_chunk_response.choices[0].text
-            summary_chunks.append(summary_chunk)
-        else:
-            print('UNSAFE RESPONSE:')
-            print(summary_chunk_response)
-
-        top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
-        
-        if top_quote_classification != '2': ##unsafe
-            top_quote = top_quote_response.choices[0].text
-            top_quotes.append(top_quote)
-        else:
-            print('UNSAFE RESPONSE:')
-            print(top_quote_response)
-
-    # converting = '<br><br>'.join(summary_chunks)
     
     return summary_chunks, top_quotes
 
