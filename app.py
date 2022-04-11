@@ -8,11 +8,13 @@ from rq import Queue
 from rq.job import Job
 from worker import conn
 from time import sleep
+from flask_mail import Mail
 
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
+mail = Mail(app)
 
 
 openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
@@ -71,6 +73,8 @@ def result(id):
     elif status == 'finished':
         result = job.result 
         # If this is a string, we can simply return it:
+
+
         return get_template(result)
 
 

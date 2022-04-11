@@ -306,18 +306,8 @@ def convert(
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
     
-    # prompt_chunks = []
     summary_chunks = []
-    
-    # for i in range(0, len(long_prompt_lines), n):
-    #     prompt_chunk_lines = long_prompt_lines[i:i + n]
-    #     prompt_chunk = "\n".join(prompt_chunk_lines)
-    #     prompt_chunk = ' ' + prompt_chunk
-    #     prompt_chunk += prompt_end_string
-    #     prompt_chunks.append(prompt_chunk)
-    
-    # prompt_chunk_lens = [len(chunk.split()) for chunk in prompt_chunks]
-    # print(len(prompt_chunk_lens))
+    top_quotes = []
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
@@ -325,7 +315,7 @@ def convert(
         attempts = 0
         while attempts < 3:
             try:
-                response = openai.Completion.create(
+                summary_chunk_response = openai.Completion.create(
                     model=model,
                     prompt=prompt_chunk,
                     max_tokens=max_tokens_output,
@@ -334,24 +324,43 @@ def convert(
                     stop=complete_end_string,
                     user=user,
                 )
+                top_quote_response = openai.Completion.create(
+                    model='text-curie-001',
+                    prompt=prompt_chunk + """
+
+        The most interesting quote from the transcript is:""",
+                    max_tokens=max_tokens_output,
+                    temperature=0.0,
+                    presence_penalty=pres_penalty,
+                    user=user,
+                )
                 break
             except:
                 attempts += 1
                 print('number of attempts: ' + str(attempts))
                 time.sleep(30)
 
-        classification = content_filter(response.choices[0].text, user)
+        summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
         
-        if classification != '2': ##unsafe
-            summary_chunk = response.choices[0].text
+        if summary_classification != '2': ##unsafe
+            summary_chunk = summary_chunk_response.choices[0].text
             summary_chunks.append(summary_chunk)
         else:
             print('UNSAFE RESPONSE:')
-            print(response)
+            print(summary_chunk_response)
 
-    converting = '<br><br>'.join(summary_chunks)
+        top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
+        
+        if top_quote_classification != '2': ##unsafe
+            top_quote = top_quote_response.choices[0].text
+            top_quotes.append(top_quote)
+        else:
+            print('UNSAFE RESPONSE:')
+            print(top_quote_response)
+
+    # converting = '<br><br>'.join(summary_chunks)
     
-    return converting
+    return summary_chunks, top_quotes
 
 def run_combined(
     url,
@@ -387,7 +396,7 @@ def run_combined(
         cleaned_sentences, start_times = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
         
-    converting = convert(
+    summary_chunks, top_quotes = convert(
         user,
         cleaned_sentences, 
         temperature, 
@@ -397,12 +406,15 @@ def run_combined(
         complete_end_string=complete_end_string
     )
 
+    present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
+    present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
 
-    cleaned_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
+    present_summary_chunks = '<br><br>'.join(summary_chunks)
+    present_top_quotes = '<br><br>'.join(top_quotes)
 
-    cleaned_sentences_present = '<br><br>'.join(cleaned_sentences_timestamps)
 
-    combined = '<b>Article</b><br><br>' + converting + '<br><br><b>Transcript</b><br><br>' + cleaned_sentences_present
+
+    combined = '<b>Article</b><br><br>' + present_summary_chunks + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     return combined
     
 def present_article(article):
@@ -418,7 +430,8 @@ def get_transcript(
     transcript_id='',
     write=False,
     write_title='',
-    paragraphs=False):   
+    paragraphs=False,
+    for_transcript=True):   
     
     if skip_upload==False:
         download_yt(url, filename)
@@ -438,7 +451,7 @@ def get_transcript(
         cleaned_sentences = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(10)
         
-    prompt_chunks = split_transcript(cleaned_sentences, for_transcript=True)
+    prompt_chunks = split_transcript(cleaned_sentences, for_transcript=for_transcript)
 
     for prompt in prompt_chunks:
         print(prompt)

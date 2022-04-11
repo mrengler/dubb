@@ -6,6 +6,7 @@ et-xmlfile==1.1.0
 ffmpeg==1.4
 ffprobe==0.5
 Flask==2.0.3
+Flask-Mail==0.9.1
 google==3.0.0
 google-cloud==0.34.0
 google-cloud-bigquery==2.34.2
