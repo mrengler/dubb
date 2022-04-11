@@ -17,7 +17,7 @@ app.logger.setLevel(logging.ERROR)
 mail = Mail(app)
 
 
-openai_model = "davinci:ft-summarize-2022-02-16-06-31-03"
+openai_model = "davinci:ft-summarize-2022-04-09-22-29-52"
 complete_end_string = "+++"
 
 # filename='temp3.wav'
