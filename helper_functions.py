@@ -40,26 +40,31 @@ def millsecond_to_timestamp(ms):
 
 
 def download_yt(url, filename):
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'wav',
-            'preferredquality': '192'
-        }],
-        'postprocessor_args': [
-            '-ar', '16000',
-            '-ac', '1'
-        ],
-        'prefer_ffmpeg': True,
-        'keepvideo': False, ## needs to be updated if this introduces a bug
-        'nocheckcertificate': True,
-        'outtmpl': filename,
-        'verbose': True,
-        'ignoreerrors': True,
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'wav',
+                'preferredquality': '192'
+            }],
+            'postprocessor_args': [
+                '-ar', '16000',
+                '-ac', '1'
+            ],
+            'prefer_ffmpeg': True,
+            'keepvideo': False, ## needs to be updated if this introduces a bug
+            'nocheckcertificate': True,
+            'outtmpl': filename,
+            'verbose': True,
+            'ignoreerrors': False,
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        return 'passed'
+    except:
+        return 'failed'
 
 
 def upload_to_gs(bucket_name, source_file_name, destination_file_name):
@@ -382,8 +387,11 @@ def run_combined(
     paragraphs=False):
     
     if skip_upload==False:
-        download_yt(url, filename)
-        upload_to_gs(bucket_name, filename, filename)
+        status = download_yt(url, filename)
+        if status == 'failed':
+            return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
+        elif status == 'passed':
+            upload_to_gs(bucket_name, filename, filename)
 
     audio_file = generate_download_signed_url_v4(bucket_name, filename)
     
@@ -436,16 +444,12 @@ def get_transcript(
     
     if skip_upload==False:
         download_yt(url, filename)
-        ## needs to wait on completion before next
         upload_to_gs(bucket_name, filename, filename)
     
     if skip_transcribe==False:
-        ## needs to wait
         audio_file = generate_download_signed_url_v4(bucket_name, filename)
-        ## needs to wait
         transcript_id = assembly_start_transcribe(audio_file)
     
-    ## needs to wait
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
