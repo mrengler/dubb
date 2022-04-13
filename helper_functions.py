@@ -22,10 +22,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# openai.api_key = os.getenv('OPENAI_API_KEY')
-# ASSEMBLY_API_KEY = os.getenv('ASSEMBLY_API_KEY')
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="/Users/samplank/Downloads/writers-voice-311119-9c625b9d7064.json" 
-
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=os.environ('GOOGLE_APPLICATION_CREDENTIALS')
@@ -42,13 +38,14 @@ def millsecond_to_timestamp(ms):
 
     return "%d:%02d:%02d" % (hours, minutes, seconds)
 
+
 def download_yt(url, filename):
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'wav',
-            'preferredquality': '256'
+            'preferredquality': '192'
         }],
         'postprocessor_args': [
             '-ar', '16000',
@@ -59,11 +56,11 @@ def download_yt(url, filename):
         'nocheckcertificate': True,
         'outtmpl': filename,
         'verbose': True,
+        'ignoreerrors': True,
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        # print(url)
-        # ydl.download([url])
         ydl.download([url])
+
 
 def upload_to_gs(bucket_name, source_file_name, destination_file_name):
     """Uploads a file to the bucket."""
@@ -85,6 +82,7 @@ def upload_to_gs(bucket_name, source_file_name, destination_file_name):
             source_file_name, destination_file_name
         )
     )
+
 
 def generate_download_signed_url_v4(bucket_name, blob_name):
     """Generates a v4 signed URL for downloading a blob.
@@ -108,6 +106,7 @@ def generate_download_signed_url_v4(bucket_name, blob_name):
 
     return url
 
+
 def assembly_start_transcribe(audio_file):
 
     endpoint = "https://api.assemblyai.com/v2/transcript"
@@ -129,6 +128,7 @@ def assembly_start_transcribe(audio_file):
     print(transcript_id)
     
     return transcript_id
+
 
 def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
 
@@ -174,19 +174,20 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             cleaned_paragraphs.append(current_speaker_sentences_joined)
             start_times.append(start_time)
 
-            # print(cleaned_paragraphs)
             return cleaned_paragraphs, start_times
 
         elif paragraphs==False:
 
             cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence, start_time in sentences_diarized]
             start_times = [start_time for speaker, sentence, start_time in sentences_diarized]
-            # print(cleaned_sentences)
+            
             return cleaned_sentences, start_times
     
     except:
         print(response.json())
+        
         return 'waiting', None
+
 
 def get_max_lines(exchanges, n):
     
@@ -206,6 +207,7 @@ def get_max_lines(exchanges, n):
             n += -1
     
     print("Could not get number of summary lines")
+
 
 def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
         
@@ -296,6 +298,7 @@ def content_filter(content_to_classify, user):
 
     return output_label
 
+
 def convert(
     user,
     cleaned_sentences, 
@@ -361,6 +364,7 @@ def convert(
     
     return summary_chunks, top_quotes
 
+
 def run_combined(
     url,
     user, 
@@ -379,16 +383,13 @@ def run_combined(
     
     if skip_upload==False:
         download_yt(url, filename)
-        ## needs to wait on completion before next
         upload_to_gs(bucket_name, filename, filename)
-    ## needs to wait
+
     audio_file = generate_download_signed_url_v4(bucket_name, filename)
     
     if skip_transcribe==False:
-        ## needs to wait
         transcript_id = assembly_start_transcribe(audio_file)
     
-    ## needs to wait
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
@@ -410,15 +411,16 @@ def run_combined(
 
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
-
-
-
+    
     combined = '<b>Article</b><br><br>' + present_summary_chunks + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
+    
     return combined
     
+
 def present_article(article):
     print('\n\n'.join([x for x in article.split('\n') if x not in ['', ' ']])) 
     
+
 def get_transcript(
     url,
     speakers_input, 
