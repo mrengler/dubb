@@ -49,6 +49,7 @@ def get_template(data, refresh=False):
               {% if refresh %}
               <meta http-equiv="refresh" content="5">
               {% endif %}
+              <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body><div style="font-size:30px;">''' + data + '''</div></body>
             </html>'''
@@ -58,6 +59,7 @@ def get_template(data, refresh=False):
               {% if refresh %}
               <meta http-equiv="refresh" content="5">
               {% endif %}
+              <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body>Your results will load here! Please check back in a few minutes. </body>
             </html>'''
