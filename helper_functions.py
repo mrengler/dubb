@@ -419,8 +419,38 @@ def run_combined(
 
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
+
+    title_response = openai.Completion.create(
+                    model='text-davinci-002',
+                    prompt='\n\n'.join(summary_chunks) + """
+
+        The title is:""",
+                    max_tokens=max_tokens_output,
+                    temperature=0.0,
+                    presence_penalty=pres_penalty,
+                    user=user,
+                )
+
+    title = title_response.choices[0].text
+
+    description_response = openai.Completion.create(
+                    model='text-davinci-002',
+                    prompt='\n\n'.join(summary_chunks) + """
+
+        The enticing description of the article is:""",
+                    max_tokens=max_tokens_output,
+                    temperature=0.0,
+                    presence_penalty=pres_penalty,
+                    user=user,
+                )
+
+    description = description_response.choices[0].text
     
-    combined = '<b>Article</b><br><br>' + present_summary_chunks + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
+    combined = '<b>Title</b><br><br>' + title + \
+    + '<b>Article</b><br><br>' + present_summary_chunks + \
+    + '<b>Description</b><br><br>' + description + \
+    + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes + \
+    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     
     return combined
     
