@@ -427,7 +427,6 @@ def run_combined(
         The title is:""",
                     max_tokens=max_tokens_output,
                     temperature=0.0,
-                    presence_penalty=pres_penalty,
                     user=user,
                 )
 
@@ -440,7 +439,6 @@ def run_combined(
         The enticing description of the article is:""",
                     max_tokens=max_tokens_output,
                     temperature=0.0,
-                    presence_penalty=pres_penalty,
                     user=user,
                 )
 
