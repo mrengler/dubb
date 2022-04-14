@@ -20,24 +20,6 @@ mail = Mail(app)
 openai_model = "davinci:ft-summarize-2022-04-09-22-29-52"
 complete_end_string = "+++"
 
-# filename='temp3.wav'
-# speakers_input = [
-#     'Ryan Knutson', 
-#     'Barista', 
-#     'Jesse Newman', 
-#     'Ad', 
-#     'Khadeeja Safdar',
-#     'Tony Peterson',
-#     'Ad',
-#     ]
-# transcript_id='os62z6y348-b33a-4d3c-94e5-e85b21377f12'
-# filename='temp4.wav'
-# speakers_input=[
-#     'John',    
-#     'Kalyan',
-# ]
-# transcript_id='os0h1626vt-d735-4829-8aab-250d32664e75'
-
 q = Queue(connection=conn, default_timeout=3600)
 
 
@@ -51,6 +33,7 @@ def get_template(data, refresh=False):
               {% endif %}
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
+            <body style="padding: 3% 10% 3% 10%">
             <body><div style="font-size:30px;">''' + data + '''</div></body>
             </html>'''
     elif refresh==True:
@@ -61,6 +44,7 @@ def get_template(data, refresh=False):
               {% endif %}
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
+            <body style="padding: 3% 10% 3% 10%">
             <body>Your results will load here! Please check back in a few minutes. </body>
             </html>'''
 
