@@ -50,6 +50,7 @@ def get_template(data, refresh=False):
 
     return render_template_string(template_str, refresh=refresh)
 
+
 @app.route('/result/<string:id>')
 def result(id):
     job = Job.fetch(id, connection=conn)
@@ -86,6 +87,8 @@ def process():
                     email,
                     speakers_input,
                     filename,
+                    openai_model,
+                    paragraphs=True
                 ),
                 timeout=600
             )
@@ -97,6 +100,7 @@ def process():
             return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': None}
     else:
         return render_template('index.html')
+
 
 @app.route('/')
 def index():

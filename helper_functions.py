@@ -420,19 +420,13 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    print('\n\n'.join(summary_chunks) + """
+    print('\n\n'.join(summary_chunks) + """\n\nThe title of the article is:""")
 
-        The title of the article is:""")
-
-    print('\n\n'.join(summary_chunks) + """
-
-        The enticing description of the podcast is:""")
+    print('\n\n'.join(summary_chunks) + """\n\nThe enticing description of the podcast is:""")
 
     title_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt='\n\n'.join(summary_chunks) + """
-
-        The title of the article is:""",
+                    prompt='\n\n'.join(summary_chunks) + """\n\nThe title of the article is:""",
                     max_tokens=50,
                     temperature=0.0,
                     user=user,
@@ -442,9 +436,7 @@ def run_combined(
 
     description_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt='\n\n'.join(summary_chunks) + """
-
-        The enticing description of the podcast is:""",
+                    prompt='\n\n'.join(summary_chunks) + """\n\nThe enticing description of the podcast is:""",
                     max_tokens=max_tokens_output,
                     temperature=0.0,
                     user=user,
