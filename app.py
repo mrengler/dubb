@@ -87,9 +87,11 @@ def process():
                     email,
                     speakers_input,
                     filename,
-                    openai_model,
-                    paragraphs=True
+                    openai_model
                 ),
+                kwargs={
+                    'paragraphs': True
+                },
                 timeout=600
             )
             return redirect(url_for('result', id=job.id))
