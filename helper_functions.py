@@ -420,16 +420,19 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    print('\n\n'.join(summary_chunks) + """\n\nThe title of the article is:""")
-
-    print('\n\n'.join(summary_chunks) + """\n\nThe enticing description of the podcast is:""")
+    l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
+    l2 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l1]
+    l3 = filter(lambda chunk: chunk != '', l2)
+    title_prompt = '\n\n'.join(l3) + '\n\nWrite the title of the article: "'
+    description_prompt = '\n\n'.join(l3) + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
 
     title_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt='\n\n'.join(summary_chunks) + """\n\nThe title of the article is:""",
+                    prompt=title_prompt,
                     max_tokens=50,
                     temperature=0.0,
                     user=user,
+                    stop='"',
                 )
 
     title = title_response.choices[0].text
@@ -440,6 +443,7 @@ def run_combined(
                     max_tokens=max_tokens_output,
                     temperature=0.0,
                     user=user,
+                    stop='\n',
                 )
 
     description = description_response.choices[0].text
