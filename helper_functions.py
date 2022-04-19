@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 max_token_input = 1548
-max_tokens_output = 250
+max_tokens_output = 350
 chars_per_token = 3.70
 
 
@@ -439,7 +439,7 @@ def run_combined(
 
     description_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt='\n\n'.join(summary_chunks) + """\n\nThe enticing description of the podcast is:""",
+                    prompt=description_prompt,
                     max_tokens=max_tokens_output,
                     temperature=0.0,
                     user=user,
