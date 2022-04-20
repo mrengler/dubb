@@ -455,7 +455,7 @@ def run_combined(
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     
-    return combined, summary_chunks
+    return combined
     
 
 def present_article(article):
