@@ -421,10 +421,12 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
-    l2 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l1]
-    l3 = filter(lambda chunk: chunk != '', l2)
-    title_prompt = '\n\n'.join(l3) + '\n\nWrite the title of the article: "'
-    description_prompt = '\n\n'.join(l3) + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+    l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
+    l3 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l2]
+    l4 = filter(lambda chunk: chunk != '', l3)
+    joined_l4 = '\n\n'.join(l4)
+    title_prompt = joined_l4 + '\n\nWrite the title of the article: "'
+    description_prompt = joined_l4 + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
 
     title_response = openai.Completion.create(
                     model='text-davinci-002',
@@ -453,7 +455,7 @@ def run_combined(
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     
-    return combined
+    return combined, summary_chunks
     
 
 def present_article(article):
