@@ -30,6 +30,18 @@ function onSignIn(googleUser) {
   signin.style.display = "none";
   var emailform = document.getElementById("email");
   emailform.value = email;
+  
+  var d = new Date(Date.now()).toString();
+  db.collection("users").add({
+      email: email,
+      time: d
+  })
+  .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+  })
+  .catch((error) => {
+      console.error("Error adding document: ", error);
+  });
 }
 
 function signOut() {

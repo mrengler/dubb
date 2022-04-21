@@ -334,12 +334,11 @@ def convert(
                 )
                 top_quote_response = openai.Completion.create(
                     model='text-curie-001',
-                    prompt=prompt_chunk + """
-
-        The most interesting quote from the transcript is:""",
+                    prompt=prompt_chunk + '\n\nThe most interesting quote from the transcript is: "',
                     max_tokens=max_tokens_output,
                     temperature=0.0,
                     presence_penalty=pres_penalty,
+                    stop='"',
                     user=user,
                 )
 
