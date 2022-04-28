@@ -11,6 +11,11 @@ from time import sleep
 from flask_mail import Mail
 import firebase_admin
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -23,17 +28,8 @@ complete_end_string = "+++"
 
 q = Queue(connection=conn, default_timeout=3600)
 
-firebaseConfig = {
-  apiKey: "AIzaSyBAYSpW1JYsG3dI3JbxEp6_KZSoGlys3Rg",
-  authDomain: "dubb-3ed06.firebaseapp.com",
-  projectId: "dubb-3ed06",
-  storageBucket: "dubb-3ed06.appspot.com",
-  messagingSenderId: "254099317950",
-  appId: "1:254099317950:web:69d42c0e4ea52888a06aef",
-  measurementId: "G-55CFDNV8T4"
-};
-
-firebase_admin.initialize_app(cred)
+FIREBASE_CREDENTIALS = os.environ.get('FIREBASE_CREDENTIALS')
+firebase_admin.initialize_app(FIREBASE_CREDENTIALS)
 db = firestore.client()
 WAITLIST = db.reference('waitlist')
 
