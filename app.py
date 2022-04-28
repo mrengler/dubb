@@ -32,8 +32,6 @@ q = Queue(connection=conn, default_timeout=3600)
 cred = credentials.Certificate('creds/fbconfig.json')
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-WAITLIST = db.reference('waitlist')
-
 
 
 def get_template(data, refresh=False):
@@ -83,7 +81,7 @@ def process():
         email = request.form['email']
 
         if email not in allow_list:
-            WAITLIST.push({'email': email})
+            db.collection("waitlist").push({'email': email})
 
    
 
