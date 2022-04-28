@@ -76,7 +76,7 @@ def result(id):
         return get_template(result)
 
 @app.route('/waitlist', methods=["GET", "POST"])
-def process():
+def enqueue():
     if request.method == 'POST':
         email = request.form['email']
 
