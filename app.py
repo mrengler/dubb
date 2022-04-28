@@ -29,6 +29,7 @@ complete_end_string = "+++"
 q = Queue(connection=conn, default_timeout=3600)
 
 FIREBASE_CREDENTIALS = os.environ.get('FIREBASE_CREDENTIALS')
+print(FIREBASE_CREDENTIALS)
 firebase_admin.initialize_app(FIREBASE_CREDENTIALS)
 db = firestore.client()
 WAITLIST = db.reference('waitlist')
