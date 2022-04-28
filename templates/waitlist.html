@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="/static/js/functions.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- <script src="{{url_for('static', filename='js/functions.js')}}"></script> -->
+    <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/style.css">
+    <link rel="stylesheet" href="/static/stylesheets/dubb.css">
+    <title>Dubb</title>
+  </head>
+  <body style="padding: 3% 10% 3% 10%">
+    <div class="topnav">
+      <a href="#">Dubb</a>
+      <div class="topnav-right">
+        <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
+        <a href="#" id="sign-out" onclick="signOut();" style="display: none;">Sign out</a>
+      </div>
+    </div>
+    <div>
+      <p>We're sorry, we haven't yet opened up Dubb to everyone.</p>
+      <p>Join the waitlist and we'll add you soon!</p>
+      <form action="/waitlist" method="POST" id="url-form">
+        <input type="hidden" id="email" name="email" value="">
+        <input type="submit" value="Email me when Dubb is open">
+      </form>
+    </div>
+  </body>
+</html>

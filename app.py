@@ -125,7 +125,7 @@ def process():
 
             # return {'article': converting, 'transcript': cleaned_sentences}
         else:
-            return {'article': "We're sorry, we haven't opened up Dubb to you yet!", 'transcript': None}
+            return render_template('waitlist.html')
     else:
         return render_template('index.html')
 
