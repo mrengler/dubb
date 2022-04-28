@@ -81,7 +81,10 @@ def enqueue():
         email = request.form['email']
 
         if email not in allow_list:
-            db.collection("waitlist").push({'email': email})
+            db.collection("waitlist").document().set({'email': email})
+
+
+    return render_template('index.html')
 
    
 
