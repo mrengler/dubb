@@ -10,6 +10,7 @@ from worker import conn
 from time import sleep
 from flask_mail import Mail
 import firebase_admin
+from firebase_admin import credentials, auth
 
 import os
 from dotenv import load_dotenv
@@ -29,8 +30,8 @@ complete_end_string = "+++"
 q = Queue(connection=conn, default_timeout=3600)
 
 FIREBASE_CREDENTIALS = os.environ.get('FIREBASE_CREDENTIALS')
-print(FIREBASE_CREDENTIALS)
-firebase_admin.initialize_app(FIREBASE_CREDENTIALS)
+cred = credentials.Certificate(FIREBASE_CREDENTIALS)
+firebase_admin.initialize_app(cred)
 db = firestore.client()
 WAITLIST = db.reference('waitlist')
 
