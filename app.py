@@ -83,7 +83,6 @@ def enqueue():
         if email not in allow_list:
             db.collection("waitlist").document().set({'email': email})
 
-
     return render_template('index.html')
 
    
