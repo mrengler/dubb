@@ -10,7 +10,7 @@ from worker import conn
 from time import sleep
 from flask_mail import Mail
 import firebase_admin
-from firebase_admin import credentials, auth
+from firebase_admin import credentials, auth, firestore
 
 import os
 from dotenv import load_dotenv
