@@ -9,6 +9,7 @@ from rq.job import Job
 from worker import conn
 from time import sleep
 from flask_mail import Mail
+import firebase_admin
 
 
 app = Flask(__name__)
@@ -21,6 +22,21 @@ openai_model = "davinci:ft-summarize-2022-04-09-22-29-52"
 complete_end_string = "+++"
 
 q = Queue(connection=conn, default_timeout=3600)
+
+firebaseConfig = {
+  apiKey: "AIzaSyBAYSpW1JYsG3dI3JbxEp6_KZSoGlys3Rg",
+  authDomain: "dubb-3ed06.firebaseapp.com",
+  projectId: "dubb-3ed06",
+  storageBucket: "dubb-3ed06.appspot.com",
+  messagingSenderId: "254099317950",
+  appId: "1:254099317950:web:69d42c0e4ea52888a06aef",
+  measurementId: "G-55CFDNV8T4"
+};
+
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+WAITLIST = db.reference('waitlist')
+
 
 
 def get_template(data, refresh=False):
@@ -63,6 +79,16 @@ def result(id):
 
 
         return get_template(result)
+
+@app.route('/waitlist', methods=["GET", "POST"])
+def process():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        if email not in allow_list:
+            WAITLIST.push({'email': email})
+
+   
 
 
 @app.route('/process', methods=["GET", "POST"])
