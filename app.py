@@ -11,6 +11,7 @@ from time import sleep
 from flask_mail import Mail
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
+from datetime import datetime
 
 import os
 from dotenv import load_dotenv
@@ -81,7 +82,10 @@ def enqueue():
         email = request.form['email']
 
         if email not in allow_list:
-            db.collection("waitlist").document().set({'email': email})
+            db.collection("waitlist").document().set({
+                'email': email,
+                'time': datetime.now(),
+            })
 
     return render_template('index.html')
 
