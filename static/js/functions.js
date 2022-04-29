@@ -20,12 +20,13 @@ function onSignIn(googleUser) {
   email = profile.getEmail();
   var emailform = document.getElementById("email");
   emailform.value = email;
-  console.log('email');
+  
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
   var urlform = document.getElementById("url");
   urlform.value = "url of file";
   var speakersform = document.getElementById("speakers");
+  speakersform.type = 'text';
   speakersform.value = "The names of the speakers in order of appearance, with commas separating each name, ex. 'Jane Doe, John Smith'";
   var signout = document.getElementById("sign-out");
   signout.style.display = "block";

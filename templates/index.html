@@ -15,7 +15,7 @@
   </head>
   <body style="padding: 3% 10% 3% 10%">
     <div class="topnav">
-      <a href="#">Dubb</a>
+      <a href="#" id='logo'>Dubb</a>
       <div class="topnav-right">
         <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
         <a href="#" id="sign-out" onclick="signOut();" style="display: none;">Sign out</a>
@@ -27,9 +27,9 @@
     <!-- <fieldset id="input-form" style="display: block;"> -->
       <form action="/process" method="POST" id="url-form">
         <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
-        <input type="text" id="speakers" name="speakers" value="" size="50"><br>
+        <input type="hidden" id="speakers" name="speakers" value="" size="50"><br>
         <input type="hidden" id="email" name="email" value="">
-        <input type="submit" value="Go">
+        <input type="submit" id="submit" value="Go">
       </form>
     </fieldset>
     <!-- add an image here -->
