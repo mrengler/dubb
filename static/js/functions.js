@@ -18,6 +18,9 @@ var email;
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
+  var emailform = document.getElementById("email");
+  emailform.value = email;
+  console.log('email');
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
   var urlform = document.getElementById("url");
@@ -28,9 +31,6 @@ function onSignIn(googleUser) {
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
-  var emailform = document.getElementById("email");
-  emailform.value = email;
-  console.log('email');
   
   var d = new Date(Date.now()).toString();
   db.collection("users").add({
