@@ -30,6 +30,7 @@ function onSignIn(googleUser) {
   signin.style.display = "none";
   var emailform = document.getElementById("email");
   emailform.value = email;
+  console.log('email');
   
   var d = new Date(Date.now()).toString();
   db.collection("users").add({
