@@ -121,6 +121,14 @@ def process():
                 },
                 timeout=600
             )
+            
+            db.collection("requests").document().set({
+                'email': email,
+                'url': url,
+                'speakers': speakers,
+                'time': datetime.now(),
+            })
+
             return redirect(url_for('result', id=job.id))
             # print('This is results: ' + results)
 
