@@ -22,4 +22,6 @@ allow_list = [
 	"mike@n3rddoom.com",
 	"Theregressionsession@gmail.com",
 	"joeboyycs@gmail.com",
+	"Theregressionsession@gmail.com",
+	"theregressionsession@gmail.com",
 ]
