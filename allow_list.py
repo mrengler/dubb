@@ -6,6 +6,7 @@ allow_list = [
 	"Wearemarvelpod@gmail.com",
 	"Voicesinmyhead101@gmail.com",
 	"Lovethegreenlifeorg@gmail.com",
+	"lovethegreenlifeorg@gmail.com",
 	"searching4mcguffin@gmail.com",
 	"spoonmob1@gmail.com",
 	"Vohldizar@gmail.com",
