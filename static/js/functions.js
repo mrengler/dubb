@@ -58,7 +58,9 @@ function signOut() {
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb";
   var speakersform = document.getElementById("speakers");
-  speakersform.value = ""
+  speakersform.type = 'hidden';
+  var gobutton = document.getElementById("submit");
+  gobutton.type = 'hidden';  
   var signout = document.getElementById("sign-out");
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");
