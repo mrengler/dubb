@@ -37,7 +37,7 @@ ENV_KEYS = {
     "private_key": os.environ["FIREBASE_PRIVATE_KEY"].replace("\\n", "\n"),
     "client_email": os.environ["FIREBASE_CLIENT_EMAIL"],
     "client_id": os.environ["FIREBASE_CLIENT_ID"],
-    "auth_uri": os.environ["FIREBASE_AUTH_URI"]
+    "auth_uri": os.environ["FIREBASE_AUTH_URI"],
     "token_uri": os.environ["FIREBASE_TOKEN_URI"],
     "auth_provider_x509_cert_url": os.environ["FIREBASE_AUTH_PROVIDER_x509_cert_url"],
     "client_x509_cert_url": os.environ["CLIENT_x509_CERT_URL"],
