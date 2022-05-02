@@ -27,7 +27,8 @@ function onSignIn(googleUser) {
   urlform.value = "url of file";
   var speakersform = document.getElementById("speakers");
   speakersform.type = 'text';
-  speakersform.value = "The names of the speakers in order of appearance, with commas separating each name, ex. 'Jane Doe, John Smith'";
+  var gobutton = document.getElementById("submit");
+  gobutton.type = 'submit';  
   var signout = document.getElementById("sign-out");
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");

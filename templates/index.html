@@ -17,19 +17,20 @@
     <div class="topnav">
       <a href="#" id='logo'>Dubb</a>
       <div class="topnav-right">
-        <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
+<!--         <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div> -->
         <a href="#" id="sign-out" onclick="signOut();" style="display: none;">Sign out</a>
       </div>
     </div>
     <h4>Market your podcast, with AI</h4>
     <h5 id="enter">Enter the Youtube or Spotify URL of your podcast</h5>
-    <fieldset id="input-form" disabled=true style="display: block;">  
+    <fieldset id="input-form" disabled=true style="display: block;">
     <!-- <fieldset id="input-form" style="display: block;"> -->
       <form action="/process" method="POST" id="url-form">
         <input type="text" id="url" name="url" value="Sign in with Google to submit an url" size="50"><br>
-        <input type="hidden" id="speakers" name="speakers" value="" size="50"><br>
+        <input type="hidden" id="speakers" name="speakers" value="The names of the speakers in order of appearance, with commas separating each name, ex. 'Jane Doe, John Smith" size="50"><br>
         <input type="hidden" id="email" name="email" value="">
-        <input type="submit" id="submit" value="Go">
+        <input type="hidden" id="submit" value="Go">
+        <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
       </form>
     </fieldset>
     <!-- add an image here -->
