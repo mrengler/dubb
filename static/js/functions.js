@@ -26,7 +26,7 @@ function onSignIn(googleUser) {
   var urlinstruct = document.getElementById("url-instruct")
   urlinstruct.hidden = false;
   var urlform = document.getElementById("url");
-  urlform.value = "https://open.spotify.com/episode/yourfunpodcast";
+  urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
   var namesinstruct = document.getElementById("names-instruct")
   namesinstruct.hidden = false;
   var speakersform = document.getElementById("speakers");
