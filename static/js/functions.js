@@ -23,8 +23,12 @@ function onSignIn(googleUser) {
   
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
+  var urlinstruct = document.getElementById("url-instruct")
+  urlinstruct.hidden = false;
   var urlform = document.getElementById("url");
-  urlform.value = "url of file";
+  urlform.value = "https://open.spotify.com/episode/yourfunpodcast";
+  var namesinstruct = document.getElementById("names-instruct")
+  namesinstruct.hidden = false;
   var speakersform = document.getElementById("speakers");
   speakersform.type = 'text';
   var gobutton = document.getElementById("submit");
@@ -55,8 +59,12 @@ function signOut() {
 
   var inputform = document.getElementById("input-form");
   inputform.disabled = true;
+  var urlinstruct = document.getElementById("url-instruct")
+  urlinstruct.hidden = true;
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb";
+  var namesinstruct = document.getElementById("names-instruct")
+  namesinstruct.hidden = true;
   var speakersform = document.getElementById("speakers");
   speakersform.type = 'hidden';
   var gobutton = document.getElementById("submit");

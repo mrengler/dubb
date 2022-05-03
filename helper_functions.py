@@ -485,7 +485,7 @@ def get_transcript(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        cleaned_sentences, start_times  = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(10)
         
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=for_transcript)
