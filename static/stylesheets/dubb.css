@@ -115,6 +115,10 @@ body {
   border-radius: 15px;
 }
 
-/*#url-form {
-  background-color: #ffc9f5;
-}*/
+#url-instruct {
+  color: #4a4cc7;
+}
+
+#names-instruct {
+  color: #4a4cc7;
+}
