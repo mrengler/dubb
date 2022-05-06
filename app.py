@@ -94,9 +94,9 @@ def result(id):
         result, email = job.result 
         # If this is a string, we can simply return it:
 
-        msg = Message('Hello', sender = app.config['MAIL_USERNAME'], recipients = [app.config['MAIL_USERNAME']])
-        msg.body = result
-        mail.send(msg)        
+        # msg = Message('Hello', sender = app.config['MAIL_USERNAME'], recipients = [app.config['MAIL_USERNAME']])
+        # msg.body = result
+        # mail.send(msg)        
 
         return get_template(result)
 
