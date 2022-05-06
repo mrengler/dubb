@@ -1,5 +1,6 @@
 import json
 from flask import request, Flask, url_for, render_template, render_template_string, redirect
+from flask_mail import Mail, Message
 from helper_functions import *
 from allow_list import allow_list
 import logging
@@ -22,11 +23,18 @@ load_dotenv()
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
+
+app.config['MAIL_SERVER'] = os.environ["MAIL_SERVER"]
+app.config['MAIL_PORT'] = os.environ["MAIL_PORT"]
+app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
+app.config['MAIL_PASSWORD'] = os.environ["MAIL_PASSWORD"]
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
 mail = Mail(app)
 
-
-openai_model = "davinci:ft-summarize-2022-04-09-22-29-52"
-complete_end_string = "+++"
+openai_model = os.environ["OPENAI_MODEL"]
+complete_end_string = os.environ["COMPLETE_END_STRING"]
 
 q = Queue(connection=conn, default_timeout=3600)
 
@@ -83,9 +91,12 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(status, refresh=True)
     elif status == 'finished':
-        result = job.result 
+        result, email = job.result 
         # If this is a string, we can simply return it:
 
+        msg = Message('Hello', sender = app.config['MAIL_USERNAME'], recipients = [app.config['MAIL_USERNAME']])
+        msg.body = result
+        mail.send(msg)        
 
         return get_template(result)
 
@@ -141,6 +152,8 @@ def process():
                 'speakers': speakers,
                 'time': datetime.now(),
             })
+
+
 
             return redirect(url_for('result', id=job.id))
             # print('This is results: ' + results)
