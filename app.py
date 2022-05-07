@@ -100,8 +100,8 @@ def result(id):
             post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
                 auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
-                     "from": 'dubb@'+ app.config['MAILGUN_DOMAIN'],
-                     "to": app.config['MAIL_USERNAME'], ## to be updated to email
+                     "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
+                     "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
                      "subject": "Dubb results",
                      "text": "test",
                      "html": "The<br>html"
