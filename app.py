@@ -55,6 +55,10 @@ db = firestore.client()
 
 ## to be deleted
 def send_simple_message():
+    print("https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages")
+    print(str(app.config['MAILGUN_API_KEY']))
+    print("Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">")
+    
     return requests.post(
         "https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages",
         auth=("api", str(app.config['MAILGUN_API_KEY'])),
