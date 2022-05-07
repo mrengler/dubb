@@ -134,11 +134,6 @@ def enqueue():
 def process():
     if request.method == 'POST':
 
-        ##to be deleted. For testing only
-        response = send_simple_message()
-        print(response.raise_for_status()) 
-
-
         # return render_template('index.html')
         email = request.form['email'] 
 
