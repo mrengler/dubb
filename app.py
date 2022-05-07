@@ -60,16 +60,13 @@ db = firestore.client()
 
 ## to be deleted
 def send_simple_message():
-    msg = MIMEText('Testing some Mailgun awesomness')
-    msg['Subject'] = "Hello"
-    msg['From']    = "foo@" + str(app.config['MAILGUN_DOMAIN'])
-    msg['To']      = "dubb.results@gmail.com"
-
-    s = smtplib.SMTP('smtp.mailgun.org', app.config['MAILGUN_SMTP_PORT'])
-
-    s.login(app.config['MAILGUN_SMTP_LOGIN'], app.config['MAILGUN_SMTP_PASSWORD'])
-    s.sendmail(msg['From'], msg['To'], msg.as_string())
-    s.quit()
+    return requests.post(
+        "https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages",
+        auth=("api", app.config['MAILGUN_API_KEY']),
+        data={"from": "Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">",
+              "to": ["dubb.results@gmail.com"],
+              "subject": "Hello",
+              "text": "Testing some Mailgun awesomness!"})
 
 def get_template(data, refresh=False):
     
