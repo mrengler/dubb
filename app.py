@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-app.config['MAILGUN_KEY'] = os.environ["MAILGUN_KEY"]
+app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
 app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
 
@@ -94,7 +94,7 @@ def result(id):
 
         r = requests.\
             post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
-                auth=("api", app.config['MAILGUN_KEY']),
+                auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
                      "from": app.config['MAIL_USERNAME'],
                      "to": app.config['MAIL_USERNAME'], ## to be updated to email
