@@ -1,4 +1,5 @@
 import json
+import requests
 from flask import request, Flask, url_for, render_template, render_template_string, redirect
 from flask_mail import Mail, Message
 from helper_functions import *
@@ -24,14 +25,11 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-app.config['MAIL_SERVER'] = os.environ["MAIL_SERVER"]
-app.config['MAIL_PORT'] = os.environ["MAIL_PORT"]
+app.config['MAILGUN_KEY'] = os.environ["MAILGUN_KEY"]
+app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
-app.config['MAIL_PASSWORD'] = os.environ["MAIL_PASSWORD"]
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
 
-mail = Mail(app)
+# mail = Mail(app)
 
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
@@ -94,9 +92,17 @@ def result(id):
         result, email = job.result 
         # If this is a string, we can simply return it:
 
-        # msg = Message('Hello', sender = app.config['MAIL_USERNAME'], recipients = [app.config['MAIL_USERNAME']])
-        # msg.body = result
-        # mail.send(msg)        
+        r = requests.\
+            post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
+                auth=("api", app.config['MAILGUN_KEY']),
+                 data={
+                     "from": app.config['MAIL_USERNAME'],
+                     "to": app.config['MAIL_USERNAME'], ## to be updated to email
+                     "subject": "Dubb results",
+                     "text": result
+                     # ,"html": html
+                 }
+             )      
 
         return get_template(result)
 
