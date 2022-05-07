@@ -94,10 +94,11 @@ def result(id):
 
         print('dubb@'+ app.config['MAILGUN_DOMAIN'])
         print(app.config['MAIL_USERNAME'])
+        print(app.config['MAILGUN_API_KEY'])
 
 
         response = requests.\
-            post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
+            post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
                 auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
                      "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
