@@ -93,13 +93,13 @@ def result(id):
         # If this is a string, we can simply return it:
 
         print(app.config['MAIL_USERNAME'])
-        
+
 
         r = requests.\
             post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
                 auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
-                     "from": app.config['MAIL_USERNAME'],
+                     "from": 'dubb@'+ app.config['MAILGUN_DOMAIN'],
                      "to": app.config['MAIL_USERNAME'], ## to be updated to email
                      "subject": "Dubb results",
                      "text": "test",
