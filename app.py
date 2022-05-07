@@ -53,6 +53,15 @@ cred = credentials.Certificate(ENV_KEYS)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+## to be deleted
+def send_simple_message():
+    return requests.post(
+        "https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages",
+        auth=("api", str(app.config['MAILGUN_API_KEY'])),
+        data={"from": "Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">",
+              "to": ["dubb.results@gmail.com"],
+              "subject": "Hello",
+              "text": "Testing some Mailgun awesomness!"})
 
 def get_template(data, refresh=False):
     
@@ -133,17 +142,7 @@ def process():
     if request.method == 'POST':
 
         ##to be deleted. For testing only
-        response = requests.\
-            post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
-                auth=("api", str(app.config['MAILGUN_API_KEY'])),
-                 data={
-                     "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
-                     "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
-                     "subject": "Dubb results",
-                     "text": "test",
-                     "html": "The<br>html"
-                 }
-             )
+        response = send_simple_message()
         print(response.raise_for_status()) 
 
 
