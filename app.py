@@ -92,7 +92,7 @@ def result(id):
         result, email = job.result 
         # If this is a string, we can simply return it:
 
-        'dubb@'+ app.config['MAILGUN_DOMAIN']
+        print('dubb@'+ app.config['MAILGUN_DOMAIN'])
         print(app.config['MAIL_USERNAME'])
 
 
