@@ -96,7 +96,7 @@ def result(id):
         print(app.config['MAIL_USERNAME'])
 
 
-        requests.\
+        response = requests.\
             post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
                 auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
@@ -106,7 +106,8 @@ def result(id):
                      "text": "test",
                      "html": "The<br>html"
                  }
-             )      
+             )
+        print(response.raise_for_status()) 
 
         return get_template(result)
 
