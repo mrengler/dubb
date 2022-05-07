@@ -1,5 +1,7 @@
 import json
 import requests
+import smtplib
+from email.mime.text import MIMEText
 from flask import request, Flask, url_for, render_template, render_template_string, redirect
 from flask_mail import Mail, Message
 from helper_functions import *
@@ -28,6 +30,9 @@ app.logger.setLevel(logging.ERROR)
 app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
 app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
+app.config['MAILGUN_SMTP_PORT'] = os.environ["MAILGUN_SMTP_PORT"]
+app.config['MAILGUN_SMTP_LOGIN'] = os.environ["MAILGUN_SMTP_PORT"]
+app.config['MAILGUN_SMTP_PASSWORD'] = os.environ["MAILGUN_SMTP_PASSWORD"]
 
 # mail = Mail(app)
 
@@ -55,17 +60,16 @@ db = firestore.client()
 
 ## to be deleted
 def send_simple_message():
-    print("https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages")
-    print(str(app.config['MAILGUN_API_KEY']))
-    print("Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">")
-    
-    return requests.post(
-        "https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages",
-        auth=("api", str(app.config['MAILGUN_API_KEY'])),
-        data={"from": "Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">",
-              "to": ["dubb.results@gmail.com"],
-              "subject": "Hello",
-              "text": "Testing some Mailgun awesomness!"})
+    msg = MIMEText('Testing some Mailgun awesomness')
+    msg['Subject'] = "Hello"
+    msg['From']    = "foo@" + str(app.config['MAILGUN_DOMAIN'])
+    msg['To']      = "dubb.results@gmail.com"
+
+    s = smtplib.SMTP('smtp.mailgun.org', app.config['MAILGUN_SMTP_PORT'])
+
+    s.login(app.config['MAILGUN_SMTP_LOGIN'], app.config['MAILGUN_SMTP_PASSWORD'])
+    s.sendmail(msg['From'], msg['To'], msg.as_string())
+    s.quit()
 
 def get_template(data, refresh=False):
     
