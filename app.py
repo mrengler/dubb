@@ -30,9 +30,6 @@ app.logger.setLevel(logging.ERROR)
 app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
 app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
-app.config['MAILGUN_SMTP_PORT'] = os.environ["MAILGUN_SMTP_PORT"]
-app.config['MAILGUN_SMTP_LOGIN'] = os.environ["MAILGUN_SMTP_LOGIN"]
-app.config['MAILGUN_SMTP_PASSWORD'] = os.environ["MAILGUN_SMTP_PASSWORD"]
 
 # mail = Mail(app)
 
@@ -58,15 +55,6 @@ cred = credentials.Certificate(ENV_KEYS)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-## to be deleted
-def send_simple_message():
-    return requests.post(
-        "https://api.mailgun.net/v3/" + str(app.config['MAILGUN_DOMAIN']) + "/messages",
-        auth=("api", app.config['MAILGUN_API_KEY']),
-        data={"from": "Excited User <mailgun@" + str(app.config['MAILGUN_DOMAIN']) + ">",
-              "to": ["dubb.results@gmail.com"],
-              "subject": "Hello",
-              "text": "Testing some Mailgun awesomness!"})
 
 def get_template(data, refresh=False):
     
@@ -118,8 +106,8 @@ def result(id):
                      "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
                      "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
                      "subject": "Dubb results",
-                     "text": "test",
-                     "html": "The<br>html"
+                     "text": result,
+                     "html": result
                  }
              )
         print(response.raise_for_status()) 
