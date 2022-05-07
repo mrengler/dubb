@@ -31,7 +31,7 @@ app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
 app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
 app.config['MAILGUN_SMTP_PORT'] = os.environ["MAILGUN_SMTP_PORT"]
-app.config['MAILGUN_SMTP_LOGIN'] = os.environ["MAILGUN_SMTP_PORT"]
+app.config['MAILGUN_SMTP_LOGIN'] = os.environ["MAILGUN_SMTP_LOGIN"]
 app.config['MAILGUN_SMTP_PASSWORD'] = os.environ["MAILGUN_SMTP_PASSWORD"]
 
 # mail = Mail(app)
