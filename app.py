@@ -96,7 +96,7 @@ def result(id):
         print(app.config['MAIL_USERNAME'])
 
 
-        r = requests.\
+        requests.\
             post("https://api.mailgun.net/v2/%s/messages" % app.config['MAILGUN_DOMAIN'],
                 auth=("api", app.config['MAILGUN_API_KEY']),
                  data={
