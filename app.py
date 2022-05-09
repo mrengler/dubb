@@ -92,12 +92,6 @@ def result(id):
         return get_template(status, refresh=True)
     elif status == 'finished':
         result, email = job.result 
-        # If this is a string, we can simply return it:
-
-        print('dubb@'+ app.config['MAILGUN_DOMAIN'])
-        print(app.config['MAIL_USERNAME'])
-        print(app.config['MAILGUN_API_KEY'])
-
 
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
