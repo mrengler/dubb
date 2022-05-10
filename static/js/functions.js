@@ -23,10 +23,12 @@ function onSignIn(googleUser) {
 
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
-  var urlinstruct = document.getElementById("url-instruct")
-  urlinstruct.hidden = false;
+  var uploadinstruct = document.getElementById("upload-instruct")
+  uploadinstruct.hidden = false;
   var uploadfile = document.getElementById("upload-file");
   uploadfile.type = 'file';  
+  var urlinstruct = document.getElementById("url-instruct")
+  urlinstruct.hidden = false;
   var urlform = document.getElementById("url");
   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
   var namesinstruct = document.getElementById("names-instruct")
@@ -61,10 +63,12 @@ function signOut() {
 
   var inputform = document.getElementById("input-form");
   inputform.disabled = true;
+  var uploadinstruct = document.getElementById("upload-instruct")
+  uploadinstruct.hidden = true;
+  var uploadfile = document.getElementById("upload-file");
+  uploadfile.type = 'hidden';
   var urlinstruct = document.getElementById("url-instruct")
   urlinstruct.hidden = true;
-  var uploadfile = document.getElementById("upload-file");
-  uploadfile.type = 'hidden';  
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb";
   var namesinstruct = document.getElementById("names-instruct")
@@ -108,6 +112,27 @@ function onSubmit() {
   // });
 }
 
+function testSetup() {
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = false;
+  var uploadinstruct = document.getElementById("upload-instruct")
+  uploadinstruct.hidden = false;
+  var uploadfile = document.getElementById("upload-file");
+  uploadfile.type = 'file';  
+  var urlform = document.getElementById("url");
+  urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
+  var namesinstruct = document.getElementById("names-instruct")
+  namesinstruct.hidden = false;
+  var speakersform = document.getElementById("speakers");
+  speakersform.type = 'text';
+  var gobutton = document.getElementById("submit");
+  gobutton.type = 'submit';  
+  var signout = document.getElementById("sign-out");
+  signout.style.display = "block";
+  var signin = document.getElementById("sign-in");
+  signin.style.display = "none";
+}
+
 window.onload=function(){
   var coll = document.getElementsByClassName("collapsible");
   var i;
@@ -123,6 +148,10 @@ window.onload=function(){
       } 
     });
   }
-  
+
   $('#file-upload').bind('change', function() { var fileName = ''; fileName = $(this).val(); $('#file-selected').html(fileName); })
+
+
+  // TO BE DELETED. FOR TESTING
+  testSetup();
 }

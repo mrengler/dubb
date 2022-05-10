@@ -129,11 +129,22 @@ def process():
     if request.method == 'POST':
 
         # return render_template('index.html')
-        email = request.form['email'] 
+
+        ### TO BE UNCOMMENTED
+        # email = request.form['email'] 
+
+        email = 'smgplank@gmail.com'
 
         if email in allow_list:
 
+            # file = request.form['file']
             url = request.form['url']
+
+            # if file is not None:
+            #     filename = file
+
+
+
             speakers = request.form['speakers']
             speakers_input = [name.strip() for name in speakers.split(',')]
 
