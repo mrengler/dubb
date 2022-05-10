@@ -103,6 +103,7 @@ input[type="file"] {
   padding: 0px 18px;
   margin-bottom: 20px;
   color: gray;
+  text-align: center;
 }
 
 #speakers {
@@ -128,6 +129,10 @@ input[type="file"] {
   width: 80%;
   background-color: #ffc9f5;
   border-radius: 15px;
+}
+
+#upload-instruct {
+  font-size: 20px;
 }
 
 #url-instruct {
