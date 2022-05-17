@@ -139,10 +139,10 @@ def process():
 
             file = request.files['file']
             if file:
-                file.save(file.filename)
-                content = file
+                filename = file.filename
+                file.save(filename)
+                content = filename
                 content_type = 'file'
-                filename = content
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
