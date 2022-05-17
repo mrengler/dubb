@@ -139,6 +139,7 @@ def process():
 
             file = request.files['file']
             if file:
+                file.save(file.filename)
                 content = file
                 content_type = 'file'
                 filename = content
