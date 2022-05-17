@@ -141,8 +141,7 @@ def process():
             if file:
                 content = file
                 content_type = 'file'
-                filename = 'file' + str(datetime.now())
-                filename = re.sub(r'\W+', '', filename)
+                filename = content
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
