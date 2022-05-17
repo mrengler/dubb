@@ -137,8 +137,18 @@ def process():
 
         if email in allow_list:
 
-            # file = request.form['file']
-            url = request.form['url']
+            file = request.files['file']
+            if file:
+                content = file
+                content_type = 'file'
+                filename = 'file' + str(datetime.now())
+                filename = re.sub(r'\W+', '', filename)
+            elif not file:
+                content = request.form['url']
+                content_type = 'url'
+                filename = re.sub(r'\W+', '', url) + '.wav'
+            # url = request.form['url']
+            # print(url)
 
             # if file is not None:
             #     filename = file
@@ -148,13 +158,14 @@ def process():
             speakers = request.form['speakers']
             speakers_input = [name.strip() for name in speakers.split(',')]
 
-            filename = re.sub(r'\W+', '', url) + '.wav'
+            # filename = re.sub(r'\W+', '', url) + '.wav'
             print('This is filename: ' + filename)
 
             job = q.enqueue(
                 run_combined,
                 args=(
-                    url,
+                    content,
+                    content_type,
                     email,
                     speakers_input,
                     filename,

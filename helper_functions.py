@@ -370,11 +370,12 @@ def convert(
 
 
 def run_combined(
-    url,
+    content,
+    content_type,
     user, 
     speakers_input, 
     filename,
-    model="davinci:ft-summarize-2022-02-16-06-31-03",
+    model,
     bucket_name='writersvoice', 
     temperature=1.0, 
     presence_penalty=0.0, 
@@ -384,13 +385,18 @@ def run_combined(
     skip_transcribe=False,
     transcript_id='',
     paragraphs=False):
-    
+
+
     if skip_upload==False:
-        status = download_yt(url, filename)
-        if status == 'failed':
-            return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
-        elif status == 'passed':
-            upload_to_gs(bucket_name, filename, filename)
+        if content_type=='file':
+            upload_to_gs(bucket_name, content, filename)
+
+        elif content_type=='url':
+            status = download_yt(url, filename)
+            if status == 'failed':
+                return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
+            elif status == 'passed':
+                upload_to_gs(bucket_name, filename, filename)
 
     audio_file = generate_download_signed_url_v4(bucket_name, filename)
     
