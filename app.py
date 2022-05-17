@@ -157,9 +157,6 @@ def process():
             speakers = request.form['speakers']
             speakers_input = [name.strip() for name in speakers.split(',')]
 
-            # filename = re.sub(r'\W+', '', url) + '.wav'
-            print('This is filename: ' + filename)
-
             job = q.enqueue(
                 run_combined,
                 args=(
