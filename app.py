@@ -176,7 +176,7 @@ def process():
 
             db.collection("requests").document().set({
                 'email': email,
-                'url': url,
+                'content': content,
                 'speakers': speakers,
                 'time': datetime.now(),
             })
