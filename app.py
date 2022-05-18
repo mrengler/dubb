@@ -144,7 +144,7 @@ def process():
             file = request.files['file']
             if file:
                 filename = file.filename
-                file.save(os.path.join(uploads_dir, secure_filename(filename)))
+                file.save(os.path.join(uploads_dir, filename))
                 content = filename
                 content_type = 'file'
                 print('This is content: ' + filename)
