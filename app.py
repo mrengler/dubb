@@ -144,11 +144,11 @@ def process():
             file = request.files['file']
             if file:
                 filename = file.filename
-                print('This is upload path: ' + os.path.join(uploads_dir, filename))
-                file.save(os.path.join(uploads_dir, filename))
-                content = filename
+                upload_path = os.path.join(uploads_dir, filename)
+                print('This is upload path: ' + upload_path)
+                file.save(upload_path)
+                content = upload_path
                 content_type = 'file'
-                print('This is content: ' + filename)
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
