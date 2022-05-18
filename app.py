@@ -149,6 +149,7 @@ def process():
                 file.save(upload_path)
                 content = upload_path
                 content_type = 'file'
+                upload_to_gs(bucket_name, upload_path, filename)
             elif not file:
                 content = request.form['url']
                 content_type = 'url'

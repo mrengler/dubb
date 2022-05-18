@@ -391,10 +391,11 @@ def run_combined(
 
 
     if skip_upload==False:
-        if content_type=='file':
-            upload_to_gs(bucket_name, content, filename)
+        # if content_type=='file':
+        #     upload_to_gs(bucket_name, content, filename)
 
-        elif content_type=='url':
+        # elif content_type=='url':
+        if content_type=='url':
             status = download_yt(url, filename)
             if status == 'failed':
                 return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
