@@ -149,7 +149,7 @@ def process():
                 file.save(upload_path)
                 content = upload_path
                 content_type = 'file'
-                upload_to_gs(bucket_name, upload_path, filename)
+                upload_to_gs('writersvoice', upload_path, filename) ##update this to heroku variable
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
