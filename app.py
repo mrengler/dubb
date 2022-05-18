@@ -143,6 +143,7 @@ def process():
                 file.save(filename)
                 content = filename
                 content_type = 'file'
+                print('This is content: ' + filename)
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
