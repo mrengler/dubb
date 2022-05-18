@@ -55,6 +55,10 @@ cred = credentials.Certificate(ENV_KEYS)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+# Create a directory in a known location to save files to.
+uploads_dir = os.path.join(app.instance_path, 'uploads')
+os.makedirs(uploads_dir, exists_ok=True)
+
 
 def get_template(data, refresh=False):
     
@@ -140,7 +144,7 @@ def process():
             file = request.files['file']
             if file:
                 filename = file.filename
-                file.save(filename)
+                file.save(profile.save(os.path.join(uploads_dir, secure_filename(filename))))
                 content = filename
                 content_type = 'file'
                 print('This is content: ' + filename)
