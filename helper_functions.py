@@ -386,6 +386,9 @@ def run_combined(
     transcript_id='',
     paragraphs=False):
 
+    print('This is list director')
+    print(os.listdir())
+
 
     if skip_upload==False:
         if content_type=='file':
