@@ -57,7 +57,7 @@ db = firestore.client()
 
 # Create a directory in a known location to save files to.
 uploads_dir = os.path.join(app.instance_path, 'uploads')
-os.makedirs(uploads_dir, exists_ok=True)
+os.makedirs(uploads_dir, exist_ok=True)
 
 
 def get_template(data, refresh=False):
