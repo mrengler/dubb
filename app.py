@@ -16,6 +16,7 @@ from flask_mail import Mail
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 import os
 from dotenv import load_dotenv
@@ -112,6 +113,7 @@ def result(id):
 
         return get_template(result)
 
+
 @app.route('/waitlist', methods=["GET", "POST"])
 def enqueue():
     if request.method == 'POST':
@@ -143,7 +145,7 @@ def process():
 
             file = request.files['file']
             if file:
-                filename = file.filename
+                filename = secure_filename(file.filename)
                 upload_path = os.path.join(uploads_dir, filename)
                 print('This is upload path: ' + upload_path)
                 file.save(upload_path)
