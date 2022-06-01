@@ -61,7 +61,7 @@ uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
 
-def get_template(data, refresh=False):
+def get_template(refresh=False):
     
     if refresh==False:
         template_str='''<html>
@@ -72,7 +72,7 @@ def get_template(data, refresh=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">''' + data + '''</div></body>
+            <body><div style="font-size:30px;">Your results are ready! They will be sent to your email within 24 hours.</div></body>
             </html>'''
     elif refresh==True:
         template_str='''<html>
@@ -83,7 +83,7 @@ def get_template(data, refresh=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body>Your results will load here! Please check back in a few minutes. </body>
+            <body><div style="font-size:30px;">We're working on your results!</div></body>
             </html>'''
 
     return render_template_string(template_str, refresh=refresh)
@@ -96,7 +96,7 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(status, refresh=True)
     elif status == 'finished':
-        result, email = job.result 
+        result, email = job.result
 
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
@@ -111,7 +111,7 @@ def result(id):
              )
         print(response.raise_for_status()) 
 
-        return get_template(result)
+        return get_template()
 
 
 @app.route('/waitlist', methods=["GET", "POST"])
