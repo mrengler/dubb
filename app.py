@@ -72,7 +72,9 @@ def get_template(refresh=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">Your results are ready! They will be sent to your email within 24 hours.</div></body>
+            <body><div style="font-size:30px;">Your results are ready!<br><br>They will be sent to your email within 24 hours.
+            Check your inbox and spam folder for an email from dubb.results@gmail.com
+            </div></body>
             </html>'''
     elif refresh==True:
         template_str='''<html>
@@ -83,7 +85,8 @@ def get_template(refresh=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">We're working on your results!</div></body>
+            <body><div style="font-size:30px;">We're working on your results!<br><br>They will be sent to your email within 24 hours.
+            Check your inbox and spam folder for an email from dubb.results@gmail.com</div></body>
             </html>'''
 
     return render_template_string(template_str, refresh=refresh)
