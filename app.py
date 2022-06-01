@@ -61,21 +61,34 @@ uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
 
-def get_template(refresh=False):
+def get_template(refresh=False, failed=False):
     
     if refresh==False:
-        template_str='''<html>
-            <head>
-              {% if refresh %}
-              <meta http-equiv="refresh" content="5">
-              {% endif %}
-              <link rel="stylesheet" href="https://unpkg.com/style.css">
-            </head>
-            <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">Your results are ready!<br><br>They will be sent to your email within 24 hours.
-            Check your inbox and spam folder for an email from dubb.results@gmail.com
-            </div></body>
-            </html>'''
+        if failed==False:
+            template_str='''<html>
+                <head>
+                  {% if refresh %}
+                  <meta http-equiv="refresh" content="5">
+                  {% endif %}
+                  <link rel="stylesheet" href="https://unpkg.com/style.css">
+                </head>
+                <body style="padding: 3% 10% 3% 10%">
+                <body><div style="font-size:30px;">Your results are ready!<br><br>They will be sent to your email within 24 hours.
+                Check your inbox and spam folder for an email from dubb.results@gmail.com
+                </div></body>
+                </html>'''
+        elif failed==True:
+            template_str='''<html>
+                <head>
+                  {% if refresh %}
+                  <meta http-equiv="refresh" content="5">
+                  {% endif %}
+                  <link rel="stylesheet" href="https://unpkg.com/style.css">
+                </head>
+                <body style="padding: 3% 10% 3% 10%">
+                <body><div style="font-size:30px;">There was an error processing your results! Sorry about that. We will look into it.
+                </div></body>
+                </html>'''            
     elif refresh==True:
         template_str='''<html>
             <head>
@@ -97,7 +110,7 @@ def result(id):
     job = Job.fetch(id, connection=conn)
     status = job.get_status()
     if status in ['queued', 'started', 'deferred', 'failed']:
-        return get_template(status, refresh=True)
+        return get_template(refresh=True)
     elif status == 'finished':
         result, email = job.result
 
