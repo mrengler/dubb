@@ -510,3 +510,5 @@ def get_transcript(
         file1 = open('transcript_2022_02_07/' + write_title + ".txt","w")
         file1.writelines(prompt_chunks)
         file1.close()
+
+    return prompt_chunks
