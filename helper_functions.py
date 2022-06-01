@@ -396,7 +396,7 @@ def run_combined(
 
         # elif content_type=='url':
         if content_type=='url':
-            status = download_yt(url, filename)
+            status = download_yt(content, filename)
             if status == 'failed':
                 return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
             elif status == 'passed':
