@@ -459,7 +459,7 @@ def run_combined(
 
     description = description_response.choices[0].text
     
-    combined = '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' +\
+    combined = '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>'\
     + '<br><br><b>Title</b><br><br>' + title \
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Description</b><br><br>' + description \
