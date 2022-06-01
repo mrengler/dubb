@@ -171,7 +171,7 @@ def process():
             elif not file:
                 content = request.form['url']
                 content_type = 'url'
-                filename = re.sub(r'\W+', '', url) + '.wav'
+                filename = re.sub(r'\W+', '', content) + '.wav'
             # url = request.form['url']
             # print(url)
 
