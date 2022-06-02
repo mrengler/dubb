@@ -1,7 +1,7 @@
 @media (min-width: 979px) {
   body {
     background: white;
-    padding: 3% 20% 3% 20%;
+    padding: 3% 15% 3% 15%;
   }
 }
 
@@ -13,7 +13,7 @@
 
     body {
       background: white;
-      padding:0;
+      padding:0% 3% 0% 3%;
     }
 
     .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
