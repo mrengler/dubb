@@ -60,6 +60,8 @@ db = firestore.client()
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
+ALLOWED_EXTENSIONS = {'wav', 'mp3'}
+
 
 def get_template(refresh=False, failed=False):
     

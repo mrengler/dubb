@@ -125,7 +125,7 @@ input[type="file"] {
 
 #input-form {
   display: inline-block;
-  width: 80%;
+  width: 100%;
   background-color: #ffc9f5;
   border-radius: 15px;
 }
