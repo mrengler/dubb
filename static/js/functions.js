@@ -25,7 +25,7 @@ function onSignIn(googleUser) {
   inputform.disabled = false;
   var uploadinstruct = document.getElementById("upload-instruct")
   uploadinstruct.hidden = false;
-  var uploadfile = document.getElementById("upload-file");
+  var uploadfile = document.getElementById("file-upload");
   uploadfile.type = 'file';  
   var urlform = document.getElementById("url");
   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
@@ -63,7 +63,7 @@ function signOut() {
   inputform.disabled = true;
   var uploadinstruct = document.getElementById("upload-instruct")
   uploadinstruct.hidden = true;
-  var uploadfile = document.getElementById("upload-file");
+  var uploadfile = document.getElementById("file-upload");
   uploadfile.type = 'hidden';
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb";
