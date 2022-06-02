@@ -1,5 +1,26 @@
-body {
-  background: white;
+@media (min-width: 979px) {
+  body {
+    background: white;
+    padding: 3% 20% 3% 20%;
+  }
+}
+
+@media (max-width: 978px) {
+    .container {
+      padding:0;
+      margin:0;
+    }
+
+    body {
+      background: white;
+      padding:0;
+    }
+
+    .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom:0;
+    }
 }
 
 input[type="file"] {
