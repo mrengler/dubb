@@ -25,8 +25,10 @@ function onSignIn(googleUser) {
   inputform.disabled = false;
   var uploadinstruct = document.getElementById("upload-instruct")
   uploadinstruct.hidden = false;
-  var uploadfile = document.getElementById("file-upload");
-  uploadfile.type = 'file';  
+  var fileupload = document.getElementById("file-upload");
+  fileupload.type = 'file';
+  var uploadfile = document.getElementById("upload-file");
+  uploadfile.hidden = false;    
   var urlform = document.getElementById("url");
   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
   var namesinstruct = document.getElementById("names-instruct")
@@ -63,8 +65,10 @@ function signOut() {
   inputform.disabled = true;
   var uploadinstruct = document.getElementById("upload-instruct")
   uploadinstruct.hidden = true;
-  var uploadfile = document.getElementById("file-upload");
-  uploadfile.type = 'hidden';
+  var fileupload = document.getElementById("file-upload");
+  fileupload.type = 'hidden';
+  var uploadfile = document.getElementById("upload-file");
+  uploadfile.hidden = true;    
   var urlform = document.getElementById("url");
   urlform.value = "Sign in to use Dubb";
   var namesinstruct = document.getElementById("names-instruct")
@@ -77,7 +81,7 @@ function signOut() {
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");
   signin.style.display = "block";
-  var emailform = document.getElementByID("email");
+  var emailform = document.getElementById("email");
   emailform.value = ""
 }
 
