@@ -28,7 +28,7 @@ function onSignIn(googleUser) {
   var fileupload = document.getElementById("file-upload");
   fileupload.type = 'file';
   var uploadfile = document.getElementById("upload-file");
-  uploadfile.style.display = 'block';     
+  uploadfile.style.display = 'inline-block';     
   var urlform = document.getElementById("url");
   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
   var namesinstruct = document.getElementById("names-instruct")
