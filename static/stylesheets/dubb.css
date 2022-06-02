@@ -3,24 +3,40 @@
     background: white;
     padding: 3% 15% 3% 15%;
   }
+
+  #upload-instruct {
+    font-size: 20px;
+  }
+
+  #names-instruct {
+    font-size: 20px;
+  }
 }
 
 @media (max-width: 978px) {
-    .container {
-      padding:0;
-      margin:0;
-    }
+  .container {
+    padding:0;
+    margin:0;
+  }
 
-    body {
-      background: white;
-      padding:0% 3% 0% 3%;
-    }
+  body {
+    background: white;
+    padding:0% 3% 0% 3%;
+  }
 
-    .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
-      margin-left: 0;
-      margin-right: 0;
-      margin-bottom:0;
-    }
+  .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom:0;
+  }
+
+  #upload-instruct {
+    font-size: 12px;
+  }
+
+  #names-instruct {
+    font-size: 12px;
+  }
 }
 
 input[type="file"] {
@@ -152,10 +168,6 @@ input[type="file"] {
 }
 
 #upload-instruct {
-  font-size: 20px;
-}
-
-#url-instruct {
   font-size: 20px;
 }
 
