@@ -21,6 +21,8 @@ function onSignIn(googleUser) {
   var emailform = document.getElementById("email");
   emailform.value = email;
 
+  var floatingsignon = document.getElementById("floating-sign-on");
+  floatingsignon.hidden = 'true';
   var inputdiv = document.getElementById("input-div");
   inputdiv.className = 'unblur';
   var inputform = document.getElementById("input-form");
@@ -63,6 +65,8 @@ function signOut() {
     console.log('User signed out.');
   });
 
+  var floatingsignon = document.getElementById("floating-sign-on");
+  floatingsignon.hidden = 'false';  
   var inputdiv = document.getElementById("input-div");
   inputdiv.className = 'blur';
   var inputform = document.getElementById("input-form");
