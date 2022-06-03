@@ -144,7 +144,12 @@ function testSetup() {
 }
 
 window.onload=function(){
-  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+  var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
+  if (loggedin === true) {
+    onSignIn();
+  } else if (loggedin === false) {
+    signOut();
+  }
 
   var coll = document.getElementsByClassName("collapsible");
   var i;
