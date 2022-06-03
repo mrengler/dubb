@@ -121,15 +121,18 @@ input[type="file"] {
   -moz-filter: blur(5px);
   -o-filter: blur(5px);
   -ms-filter: blur(5px);
-  filter: blur(5px);
-  width: 100px;
-  height: 100px;
-  background-color: #ccc;
-
+  filter: blur(1px);
 }
 
 .unblur {
   padding: 0;
+}
+
+.loader{ 
+  z-index:1; 
+  position: absolute; 
+  top: 50%; 
+  left: 50%; 
 }
 
 #logo {
