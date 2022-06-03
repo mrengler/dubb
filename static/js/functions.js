@@ -21,6 +21,8 @@ function onSignIn(googleUser) {
   var emailform = document.getElementById("email");
   emailform.value = email;
 
+  var inputdiv = document.getElementById("input-div");
+  inputdiv.className = 'unblur';
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
   var uploadinstruct = document.getElementById("upload-instruct")
@@ -61,6 +63,8 @@ function signOut() {
     console.log('User signed out.');
   });
 
+  var inputdiv = document.getElementById("input-div");
+  inputdiv.className = 'blur';
   var inputform = document.getElementById("input-form");
   inputform.disabled = true;
   var uploadinstruct = document.getElementById("upload-instruct")
