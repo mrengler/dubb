@@ -46,8 +46,8 @@
   .loader{ 
     z-index:1; 
     position: absolute; 
-    top: 66%; 
-    left: 34%;
+    top: 55%; 
+    left: 21%;
     font-size: 24px;
     font-weight: bold;
     background-color: #4a4cc7;
@@ -203,4 +203,8 @@ input[type="file"] {
   width: 100%;
   background-color: #ffc9f5;
   border-radius: 15px;
+}
+
+#sign-in {
+  padding: 10px;
 }
