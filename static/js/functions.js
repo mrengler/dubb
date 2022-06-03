@@ -57,6 +57,7 @@ function onSignIn(googleUser) {
   .catch((error) => {
       console.error("Error adding document: ", error);
   });
+  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
 }
 
 function signOut() {
@@ -91,6 +92,7 @@ function signOut() {
   signin.style.display = "block";
   var emailform = document.getElementById("email");
   emailform.value = ""
+  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
 }
 
 function onSubmit() {
