@@ -97,8 +97,10 @@ function signOut() {
 
 
   var signout = document.getElementById("sign-out");
+  console.log(signout);
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");
+  console.log(signin);
   signin.style.display = "block";
   var emailform = document.getElementById("email");
   emailform.value = ""
