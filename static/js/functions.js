@@ -41,12 +41,13 @@ function onSignIn(googleUser) {
   // speakersform.type = 'text';
   // var gobutton = document.getElementById("submit");
   // gobutton.type = 'submit';  
-  // var signout = document.getElementById("sign-out");
-  // signout.style.display = "block";
-  // var signin = document.getElementById("sign-in");
-  // signin.style.display = "none";
-  var topnavright = document.getElementById("topnav-right");
-  topnavright.innerHTML = '<div class="g-signin2" id="sign-in" data-onsuccess="onSignIn"></div>'
+
+  var signout = document.getElementById("sign-out");
+  signout.style.display = "block";
+  var signin = document.getElementById("sign-in");
+  signin.style.display = "none";
+  // var topnavright = document.getElementById("topnav-right");
+  // topnavright.innerHTML = '<div class="g-signin2" id="sign-in" data-onsuccess="onSignIn"></div>'
   
   var d = new Date(Date.now()).toString();
   db.collection("users").add({
@@ -88,15 +89,16 @@ function signOut() {
   // speakersform.type = 'hidden';
   // var gobutton = document.getElementById("submit");
   // gobutton.type = 'hidden';  
-  var topnavright = document.getElementById("topnav-right");
-  topnavright.innerHTML = '<a href="#" id="sign-out" onclick="signOut();">Sign out</a>'
+  
+  // var topnavright = document.getElementById("topnav-right");
+  // topnavright.innerHTML = '<a href="#" id="sign-out" onclick="signOut();">Sign out</a>'
 
 
 
-  // var signout = document.getElementById("sign-out");
-  // signout.style.display = "none";
-  // var signin = document.getElementById("sign-in");
-  // signin.style.display = "block";
+  var signout = document.getElementById("sign-out");
+  signout.style.display = "none";
+  var signin = document.getElementById("sign-in");
+  signin.style.display = "block";
   var emailform = document.getElementById("email");
   emailform.value = ""
   console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
