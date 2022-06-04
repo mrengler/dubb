@@ -60,7 +60,10 @@ function onSignIn(googleUser) {
   .catch((error) => {
       console.error("Error adding document: ", error);
   });
-  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+  var signout = document.getElementById("sign-out");
+  console.log(signout);
+  var signin = document.getElementById("sign-in");
+  console.log(signin);
 }
 
 function signOut() {
@@ -99,9 +102,11 @@ function signOut() {
   var signout = document.getElementById("sign-out");
   console.log(signout);
   signout.style.display = "none";
+  console.log(signout);
   var signin = document.getElementById("sign-in");
   console.log(signin);
   signin.style.display = "block";
+  console.log(signout);
   var emailform = document.getElementById("email");
   emailform.value = ""
   console.log(signout.style.display);
