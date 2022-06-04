@@ -27,28 +27,12 @@ function onSignIn(googleUser) {
   inputdiv.className = 'unblur';
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
-  // var uploadinstruct = document.getElementById("upload-instruct")
-  // uploadinstruct.hidden = false;
-  // var fileupload = document.getElementById("file-upload");
-  // fileupload.type = 'file';
-  // var uploadfile = document.getElementById("upload-file");
-  // uploadfile.style.display = 'inline-block';     
-  // var urlform = document.getElementById("url");
-  // urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
-  // var namesinstruct = document.getElementById("names-instruct")
-  // namesinstruct.hidden = false;
-  // var speakersform = document.getElementById("speakers");
-  // speakersform.type = 'text';
-  // var gobutton = document.getElementById("submit");
-  // gobutton.type = 'submit';  
 
   var signout = document.getElementById("sign-out");
   signout.style.display = "block";
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
-  // var topnavright = document.getElementById("topnav-right");
-  // topnavright.innerHTML = '<div class="g-signin2" id="sign-in" data-onsuccess="onSignIn"></div>'
-  
+
   var d = new Date(Date.now()).toString();
   db.collection("users").add({
       email: email,
@@ -77,25 +61,6 @@ function signOut() {
   inputdiv.className = 'blur';
   var inputform = document.getElementById("input-form");
   inputform.disabled = true;
-  // var uploadinstruct = document.getElementById("upload-instruct")
-  // uploadinstruct.hidden = true;
-  // var fileupload = document.getElementById("file-upload");
-  // fileupload.type = 'hidden';
-  // var uploadfile = document.getElementById("upload-file");
-  // uploadfile.style.display = 'none';    
-  // var urlform = document.getElementById("url");
-  // urlform.value = "Sign in to use Dubb";
-  // var namesinstruct = document.getElementById("names-instruct")
-  // namesinstruct.hidden = true;
-  // var speakersform = document.getElementById("speakers");
-  // speakersform.type = 'hidden';
-  // var gobutton = document.getElementById("submit");
-  // gobutton.type = 'hidden';  
-
-  // var topnavright = document.getElementById("topnav-right");
-  // topnavright.innerHTML = '<a href="#" id="sign-out" onclick="signOut();">Sign out</a>'
-
-
 
   var signout = document.getElementById("sign-out");
   signout.style.display = "none";
@@ -119,17 +84,6 @@ function onSubmit() {
   }).done(function( o ) {
      // do something
   });
-  // db.collection("requests").add({
-  //     email: email,
-  //     url: urlinput,
-  //     time: d
-  // })
-  // .then((docRef) => {
-  //     console.log("Document written with ID: ", docRef.id);
-  // })
-  // .catch((error) => {
-  //     console.error("Error adding document: ", error);
-  // });
 }
 
 window.onload=function(){
