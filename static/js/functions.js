@@ -139,26 +139,26 @@ function onSubmit() {
   // });
 }
 
-function testSetup() {
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = false;
-  var uploadinstruct = document.getElementById("upload-instruct")
-  uploadinstruct.hidden = false;
-  var uploadfile = document.getElementById("upload-file");
-  uploadfile.type = 'file';  
-  var urlform = document.getElementById("url");
-  urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
-  var namesinstruct = document.getElementById("names-instruct")
-  namesinstruct.hidden = false;
-  var speakersform = document.getElementById("speakers");
-  speakersform.type = 'text';
-  var gobutton = document.getElementById("submit");
-  gobutton.type = 'submit';  
-  var signout = document.getElementById("sign-out");
-  signout.style.display = "block";
-  var signin = document.getElementById("sign-in");
-  signin.style.display = "none";
-}
+// function testSetup() {
+//   var inputform = document.getElementById("input-form");
+//   inputform.disabled = false;
+//   var uploadinstruct = document.getElementById("upload-instruct")
+//   uploadinstruct.hidden = false;
+//   var uploadfile = document.getElementById("upload-file");
+//   uploadfile.type = 'file';  
+//   var urlform = document.getElementById("url");
+//   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
+//   var namesinstruct = document.getElementById("names-instruct")
+//   namesinstruct.hidden = false;
+//   var speakersform = document.getElementById("speakers");
+//   speakersform.type = 'text';
+//   var gobutton = document.getElementById("submit");
+//   gobutton.type = 'submit';  
+//   var signout = document.getElementById("sign-out");
+//   signout.style.display = "block";
+//   var signin = document.getElementById("sign-in");
+//   signin.style.display = "none";
+// }
 
 window.onload=function(){
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
@@ -190,5 +190,5 @@ window.onload=function(){
 
 
   // TO BE DELETED. FOR TESTING
-  testSetup();
+  // testSetup();
 }
