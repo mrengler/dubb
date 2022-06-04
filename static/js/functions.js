@@ -61,9 +61,7 @@ function onSignIn(googleUser) {
       console.error("Error adding document: ", error);
   });
   var signout = document.getElementById("sign-out");
-  console.log(signout);
   var signin = document.getElementById("sign-in");
-  console.log(signin);
 }
 
 function signOut() {
@@ -100,16 +98,11 @@ function signOut() {
 
 
   var signout = document.getElementById("sign-out");
-  console.log(signout);
   signout.style.display = "none";
-  console.log(signout);
   var signin = document.getElementById("sign-in");
-  console.log(signin);
   signin.style.display = "block";
-  console.log(signin);
   var emailform = document.getElementById("email");
   emailform.value = ""
-  console.log(signout.style.display);
 }
 
 function onSubmit() {
@@ -139,35 +132,11 @@ function onSubmit() {
   // });
 }
 
-// function testSetup() {
-//   var inputform = document.getElementById("input-form");
-//   inputform.disabled = false;
-//   var uploadinstruct = document.getElementById("upload-instruct")
-//   uploadinstruct.hidden = false;
-//   var uploadfile = document.getElementById("upload-file");
-//   uploadfile.type = 'file';  
-//   var urlform = document.getElementById("url");
-//   urlform.value = "https://open.spotify.com/episode/yourgreatpodcast";
-//   var namesinstruct = document.getElementById("names-instruct")
-//   namesinstruct.hidden = false;
-//   var speakersform = document.getElementById("speakers");
-//   speakersform.type = 'text';
-//   var gobutton = document.getElementById("submit");
-//   gobutton.type = 'submit';  
-//   var signout = document.getElementById("sign-out");
-//   signout.style.display = "block";
-//   var signin = document.getElementById("sign-in");
-//   signin.style.display = "none";
-// }
-
 window.onload=function(){
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
-  console.log(loggedin);
   if (loggedin === true) {
-    console.log('on load is signed in');
     onSignIn();
   } else if (loggedin === false) {
-    console.log('on load not signed in');
     signOut();
   }
 
@@ -188,7 +157,4 @@ window.onload=function(){
 
   $('#file-upload').bind('change', function() { var fileName = ''; fileName = $(this).val(); $('#file-selected').html(fileName); })
 
-
-  // TO BE DELETED. FOR TESTING
-  // testSetup();
 }
