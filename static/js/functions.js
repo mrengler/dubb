@@ -147,8 +147,10 @@ window.onload=function(){
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   console.log(loggedin);
   if (loggedin === true) {
+    console.log('on load is signed in');
     onSignIn();
   } else if (loggedin === false) {
+    console.log('on load not signed in');
     signOut();
   }
 
