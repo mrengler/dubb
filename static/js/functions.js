@@ -145,6 +145,7 @@ function testSetup() {
 
 window.onload=function(){
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
+  console.log(loggedin);
   if (loggedin === true) {
     onSignIn();
   } else if (loggedin === false) {
