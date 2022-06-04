@@ -98,10 +98,6 @@ input[type="file"] {
   color: white;
 }
 
-.topnav-right {
-  float: right;
-}
-
 .topnav h1 {
   float: left;
   padding: 0px;
@@ -152,6 +148,10 @@ input[type="file"] {
 
 .unblur {
   padding: 0;
+}
+
+#topnav-right {
+  float: right;
 }
 
 #logo {
