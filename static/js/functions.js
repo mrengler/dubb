@@ -64,6 +64,7 @@ function onSignIn(googleUser) {
 }
 
 function signOut() {
+  console.log('sign out called')
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function () {
     console.log('User signed out.');
@@ -89,7 +90,7 @@ function signOut() {
   // speakersform.type = 'hidden';
   // var gobutton = document.getElementById("submit");
   // gobutton.type = 'hidden';  
-  
+
   // var topnavright = document.getElementById("topnav-right");
   // topnavright.innerHTML = '<a href="#" id="sign-out" onclick="signOut();">Sign out</a>'
 
@@ -101,7 +102,7 @@ function signOut() {
   signin.style.display = "block";
   var emailform = document.getElementById("email");
   emailform.value = ""
-  console.log(gapi.auth2.getAuthInstance().isSignedIn.get());
+  console.log(signout.style.display);
 }
 
 function onSubmit() {
