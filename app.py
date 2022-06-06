@@ -160,9 +160,9 @@ def process():
         email = request.form['email'] 
 
         file = request.files['file']
-        print(file)
+        print(file.filename)
         if file:
-            if allowed_file(file):
+            if allowed_file(file.filename):
                 print('is allowed file')
                 filename = secure_filename(file.filename)
                 upload_path = os.path.join(uploads_dir, filename)
