@@ -7,7 +7,7 @@
   .loader{ 
     z-index:1; 
     position: absolute; 
-    top: 45%; 
+    top: 50%; 
     left: 42%;
     font-size: 24px;
     font-weight: bold;
