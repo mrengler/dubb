@@ -160,6 +160,7 @@ def process():
         email = request.form['email'] 
 
         file = request.files['file']
+        print(file)
         if file:
             if allowed_file(file):
                 print('is allowed file')
