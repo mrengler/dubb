@@ -8,7 +8,7 @@
     z-index:1; 
     position: absolute; 
     top: 50%; 
-    left: 42%;
+    left: 50%;
     -webkit-transform:translate(-50%, -50%);
     transform:translate(-50%, -50%);
     font-size: 24px;
@@ -48,8 +48,8 @@
   .loader span { 
     z-index:1; 
     position: absolute; 
-    top: 55%; 
-    left: 21%;
+    top: 50%; 
+    left: 50%;
     -webkit-transform:translate(-50%, -50%);
     transform:translate(-50%, -50%);
     font-size: 24px;
