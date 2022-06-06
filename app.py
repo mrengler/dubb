@@ -63,6 +63,11 @@ os.makedirs(uploads_dir, exist_ok=True)
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def get_template(refresh=False, failed=False):
     
     if refresh==False:
@@ -152,17 +157,11 @@ def enqueue():
 def process():
     if request.method == 'POST':
 
-        # return render_template('index.html')
+        email = request.form['email'] 
 
-        ### TO BE UNCOMMENTED
-        # email = request.form['email'] 
-
-        email = 'smgplank@gmail.com'
-
-        if email in allow_list:
-
-            file = request.files['file']
-            if file:
+        file = request.files['file']
+        if file:
+            if allowed_file(file):
                 filename = secure_filename(file.filename)
                 upload_path = os.path.join(uploads_dir, filename)
                 print('This is upload path: ' + upload_path)
@@ -170,52 +169,45 @@ def process():
                 content = upload_path
                 content_type = 'file'
                 upload_to_gs('writersvoice', upload_path, filename) ##update this to heroku variable
-            elif not file:
-                content = request.form['url']
-                content_type = 'url'
-                filename = re.sub(r'\W+', '', content) + '.wav'
-            # url = request.form['url']
-            # print(url)
+            else:
+                return render_template('index.html')
+        elif not file:
+            content = request.form['url']
+            content_type = 'url'
+            filename = re.sub(r'\W+', '', content) + '.wav'
 
-            # if file is not None:
-            #     filename = file
+        speakers = request.form['speakers']
+        speakers_input = [name.strip() for name in speakers.split(',')]
 
+        job = q.enqueue(
+            run_combined,
+            args=(
+                content,
+                content_type,
+                email,
+                speakers_input,
+                filename,
+                openai_model
+            ),
+            kwargs={
+                'paragraphs': True
+            },
+            timeout=600
+        )
 
-
-            speakers = request.form['speakers']
-            speakers_input = [name.strip() for name in speakers.split(',')]
-
-            job = q.enqueue(
-                run_combined,
-                args=(
-                    content,
-                    content_type,
-                    email,
-                    speakers_input,
-                    filename,
-                    openai_model
-                ),
-                kwargs={
-                    'paragraphs': True
-                },
-                timeout=600
-            )
-
-            db.collection("requests").document().set({
-                'email': email,
-                'content': content,
-                'speakers': speakers,
-                'time': datetime.now(),
-            })
+        db.collection("requests").document().set({
+            'email': email,
+            'content': content,
+            'speakers': speakers,
+            'time': datetime.now(),
+        })
 
 
 
-            return redirect(url_for('result', id=job.id))
-            # print('This is results: ' + results)
+        return redirect(url_for('result', id=job.id))
+        # print('This is results: ' + results)
 
-            # return {'article': converting, 'transcript': cleaned_sentences}
-        else:
-            return render_template('waitlist.html')
+        # return {'article': converting, 'transcript': cleaned_sentences}
     else:
         return render_template('index.html')
 
