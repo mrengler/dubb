@@ -4,11 +4,13 @@
     padding: 3% 15% 3% 15%;
   }
 
-  .loader{ 
+  .loader span { 
     z-index:1; 
-    position: relative; 
+    position: absolute; 
     top: 50%; 
     left: 42%;
+    -webkit-transform:translate(-50%, -50%);
+    transform:translate(-50%, -50%);
     font-size: 24px;
     font-weight: bold;
     background-color: #4a4cc7;
