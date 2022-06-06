@@ -162,6 +162,7 @@ def process():
         file = request.files['file']
         if file:
             if allowed_file(file):
+                print('is allowed file')
                 filename = secure_filename(file.filename)
                 upload_path = os.path.join(uploads_dir, filename)
                 print('This is upload path: ' + upload_path)
@@ -170,6 +171,7 @@ def process():
                 content_type = 'file'
                 upload_to_gs('writersvoice', upload_path, filename) ##update this to heroku variable
             else:
+                print('is not allowed file')
                 return render_template('index.html')
         elif not file:
             content = request.form['url']
