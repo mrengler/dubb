@@ -33,17 +33,21 @@ function onSignIn(googleUser) {
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
 
-  const username = ""
-  const userNameDoc = firebase.firestore().collection("users").where("email", "==", email).get()
-  console.log('username');
-  console.log(userNameDoc);
-  if(userNameDoc.empty) {
-    var d = new Date(Date.now()).toString();
-    db.collection("users").add({
-        email: email,
-        time: d
-    })      
-  }
+  const emailRecord = ""
+  const emailDoc = db.collection("users").where("email", "==", email);
+  emailDoc.get().then(function(doc) {
+      if (!doc.empty) {
+        var d = new Date(Date.now()).toString();
+        db.collection("users").add({
+            email: email,
+            time: d
+        }) 
+      } else {
+        console.log("No such document!");
+      }
+  }).catch(function(error) {
+      console.log("Error getting document:", error);
+  });
 
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
