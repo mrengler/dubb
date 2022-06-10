@@ -35,6 +35,8 @@ function onSignIn(googleUser) {
 
   const username = ""
   const userNameDoc = firebase.firestore().collection("users").where("email", "==", email).get()
+  console.log('username');
+  console.log(userNameDoc);
   if(userNameDoc.empty) {
     var d = new Date(Date.now()).toString();
     db.collection("users").add({
