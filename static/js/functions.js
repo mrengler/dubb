@@ -36,15 +36,14 @@ function onSignIn(googleUser) {
   const emailRecord = ""
   const emailDoc = db.collection("users").where("email", "==", email);
   emailDoc.get().then(function(doc) {
-      if (!doc.empty) {
+      if (doc.empty) {
         var d = new Date(Date.now()).toString();
         db.collection("users").add({
             email: email,
             time: d
         }) 
-      } else {
-        console.log("No such document!");
       }
+      
   }).catch(function(error) {
       console.log("Error getting document:", error);
   });
