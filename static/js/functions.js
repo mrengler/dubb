@@ -33,6 +33,16 @@ function onSignIn(googleUser) {
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
 
+  const username = ""
+  const userNameDoc = await firebase.firestore().collection("users").where("email", "==", email).get()
+  if(userNameDoc.empty) {
+    var d = new Date(Date.now()).toString();
+    db.collection("users").add({
+        email: email,
+        time: d
+    })      
+  }
+
   var d = new Date(Date.now()).toString();
   db.collection("users").add({
       email: email,
