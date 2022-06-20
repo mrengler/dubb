@@ -74,22 +74,6 @@ function signOut() {
   emailform.value = ""
 }
 
-function onSubmit() {
-  var urlform = document.getElementById("url");
-  var urlinput = urlform.value;
-  var d = new Date(Date.now()).toString();
-  console.log(urlinput);
-  $.ajax({
-    type: "POST",
-    url: "/",
-    // contentType: "application/json",
-    data: { url: urlinput},
-    // dataType: 'json'
-  }).done(function( o ) {
-     // do something
-  });
-}
-
 window.onload=function(){
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   if (loggedin === true) {
@@ -113,6 +97,15 @@ window.onload=function(){
     });
   }
 
-  $('#file-upload').bind('change', function() { var fileName = ''; fileName = $(this).val(); $('#file-selected').html(fileName); })
+  $('#file-upload').bind('change', function() { 
+    var fileName = ''; fileName = $(this).val(); $('#file-selected').html(fileName);
+    var urlinput = document.getElementById("url");
+    urlinput.required=false;
+  })
+
+    $('#url').bind('change', function() { 
+    var fileinput = document.getElementById("file-upload");
+    fileinput.required=false;
+  })
 
 }

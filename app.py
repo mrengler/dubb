@@ -157,10 +157,18 @@ def enqueue():
 def process():
     if request.method == 'POST':
 
-        email = request.form['email'] 
+        print("This is file and url")
+        print(request.files['file'])
+        print(request.form['url'])
+        email = request.form['email']
+
+        if (request.files['file'].filename == '') & (request.form['url'] == ''):
+            error="Please upload a file or include a url"
+            return render_template('index.html', error=error)
 
         file = request.files['file']
         print(file.filename)
+
         if file:
             if allowed_file(file.filename):
                 print('is allowed file')
@@ -217,7 +225,7 @@ def process():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', error=None)
 
 if __name__ == '__main__':
   app.run(debug=True)
