@@ -1,0 +1,11 @@
+.DS_Store
+google-credentials.json
+__pycache__/app.cpython-39.pyc
+__pycache__/helper_functions.cpython-39.pyc
+__pycache__/worker.cpython-39.pyc
+__pycache__/allow_list.cpython-39.pyc
+start_script.txt
+dump.rdb
+env/
+instance/
+__pycache__/app.cpython-39.pyc

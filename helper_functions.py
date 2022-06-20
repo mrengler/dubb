@@ -189,7 +189,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             return cleaned_sentences, start_times
     
     except:
-        print(response.json())
         
         return 'waiting', None
 
