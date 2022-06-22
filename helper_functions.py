@@ -320,7 +320,7 @@ def convert(
     
     for prompt_chunk in prompt_chunks:
         attempts = 0
-        while attempts < 3:
+        while attempts < 5:
             try:
                 summary_chunk_response = openai.Completion.create(
                     model=model,
@@ -384,9 +384,6 @@ def run_combined(
     skip_transcribe=False,
     transcript_id='',
     paragraphs=False):
-
-    print('This is list director')
-    print(os.listdir())
 
 
     if skip_upload==False:
@@ -460,8 +457,8 @@ def run_combined(
     
     combined = '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>'\
     + '<br><br><b>Title</b><br><br>' + title \
-    + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Description</b><br><br>' + description \
+    + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     
