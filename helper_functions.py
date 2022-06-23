@@ -233,7 +233,6 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
     
     chunk_i = 0
     
-    print(cleaned_sentences)
     for sentence in cleaned_sentences:
         sentence_chars = len([char for char in sentence])
         
@@ -418,7 +417,6 @@ def run_combined(
         cleaned_sentences, start_times = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    print(cleaned_sentences)
         
     summary_chunks, top_quotes = convert(
         user,
