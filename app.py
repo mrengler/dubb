@@ -119,6 +119,7 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(refresh=True)
     elif status == 'finished':
+        print(job.result)
         result, email = job.result
 
         response = requests.\
