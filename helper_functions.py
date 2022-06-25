@@ -436,15 +436,13 @@ def run_combined(
     print(summary_chunks)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
-    print(l1)
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
-    print(l2)
-    l3 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l2]
-    print(l3)
-    l4 = filter(lambda chunk: chunk != '', l3)
-    joined_l4 = '\n\n'.join(l4)
-    title_prompt = joined_l4 + '\n\nWrite the title of the article: "'
-    description_prompt = joined_l4 + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+    l3 = [chunk for chunk in filter(lambda chunk: chunk != '', l2)]
+    l4 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l3]
+    l5 = filter(lambda chunk: chunk != '', l4)
+    joined_l5 = '\n\n'.join(l5)
+    title_prompt = joined_l5 + '\n\nWrite the title of the article: "'
+    description_prompt = joined_l5 + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
 
     title_response = openai.Completion.create(
                     model='text-davinci-002',
