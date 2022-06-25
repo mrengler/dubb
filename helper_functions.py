@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 max_token_input = 1548
 max_tokens_output = 350
+max_tokens_output_base_model = 4097
 chars_per_token = 3.70
 
 
@@ -441,8 +442,8 @@ def run_combined(
     l4 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l3]
     l5 = filter(lambda chunk: chunk != '', l4)
     joined_l5 = '\n\n'.join(l5)
-    title_prompt = joined_l5 + '\n\nWrite the title of the article: "'
-    description_prompt = joined_l5 + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+    title_prompt = joined_l5[:int(max_tokens_output_base_model * chars_per_token)] + '\n\nWrite the title of the article: "'
+    description_prompt = joined_l5[:int(max_tokens_output_base_model * chars_per_token)] + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
 
     title_response = openai.Completion.create(
                     model='text-davinci-002',
