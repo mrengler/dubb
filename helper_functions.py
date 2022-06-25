@@ -473,6 +473,8 @@ def run_combined(
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
     
+    print(combined)
+
     return combined, user
     
 
