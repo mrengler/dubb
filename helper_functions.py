@@ -433,10 +433,14 @@ def run_combined(
 
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
+    print(summary_chunks)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
+    print(l1)
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
+    print(l2)
     l3 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l2]
+    print(l3)
     l4 = filter(lambda chunk: chunk != '', l3)
     joined_l4 = '\n\n'.join(l4)
     title_prompt = joined_l4 + '\n\nWrite the title of the article: "'
