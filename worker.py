@@ -11,7 +11,7 @@ listen = ['high', 'default', 'low']
 # conn = redis.from_url(redis_url)
 # url = urlparse(os.environ.get("REDIS_URL"))
 # conn = redis.Redis(host=url.hostname, port=url.port, username=url.username, password=url.password, ssl=True, ssl_cert_reqs=None)
-redis.from_url(os.environ.get("REDIS_URL"))
+conn = redis.from_url(os.environ.get("REDIS_URL"))
 
 if __name__ == '__main__':
     with Connection(conn):
