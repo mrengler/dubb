@@ -12,7 +12,7 @@ listen = ['high', 'default', 'low']
 # redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
 
 print('this is urlopen')
-print(urlopen(os.environ.get("REDIS_URL")).read())
+print(urlparse(os.environ.get("REDIS_URL")).read())
 
 # conn = redis.from_url(redis_url)
 url = urlparse(os.environ.get("REDIS_URL"))
