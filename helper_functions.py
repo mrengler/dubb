@@ -355,7 +355,8 @@ def convert(
                     user=user,
                 )
 
-                model.predict(prompts=top_quote_response)
+                picture = model.predict(prompts=top_quote_response)
+                print(picture)
 
                 summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
 
