@@ -7,7 +7,7 @@ chars_per_token = 3.70
 
 
 import youtube_dl
-import replicate
+# import replicate
 import requests
 import pandas as pd
 import datetime
@@ -27,10 +27,10 @@ load_dotenv()
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=os.environ('GOOGLE_APPLICATION_CREDENTIALS')
-REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+# REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
 
 
-model = replicate.models.get("pixray/text2image")
+# model = replicate.models.get("pixray/text2image")
 
 
 def millsecond_to_timestamp(ms):
@@ -355,8 +355,8 @@ def convert(
                     user=user,
                 )
 
-                picture = model.predict(prompts=top_quote_response)
-                print(picture)
+                # picture = model.predict(prompts=top_quote_response)
+                # print(picture)
 
                 summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
 
