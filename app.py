@@ -67,7 +67,8 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
 print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
 model = replicate.models.get("pixray/text2image")
-image = model.predictions.create(
+image = replicate.predictions.create(
+    version=model.versions.list()[0],
     input={"prompt":"Cairo skyline at sunset."}
 )
 print(image)
