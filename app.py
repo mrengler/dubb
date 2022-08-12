@@ -69,6 +69,12 @@ print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
 model = replicate.models.get("pixray/text2image")
 image = model.predict(prompts="Cairo skyline at sunset.")
 print('This is image output: ' + str(image.output))
+completed = False
+while completed != True:
+    sleep(5)
+    print(image.status)
+    if image.status == 'succeeded':
+        completed = True
 ## testing
 
 
