@@ -67,7 +67,8 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
 print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
 model = replicate.models.get("pixray/text2image")
-model.predict(prompts="Cairo skyline at sunset.")
+image = model.predict(prompts="Cairo skyline at sunset.")
+print('This is image output: ' + str(image.output))
 ## testing
 
 
@@ -93,6 +94,7 @@ def get_template(refresh=False, failed=False):
                 </div></body>
                 </html>'''
         elif failed==True:
+
             template_str='''<html>
                 <head>
                   {% if refresh %}
