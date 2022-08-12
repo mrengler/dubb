@@ -17,6 +17,7 @@ import firebase_admin
 from firebase_admin import credentials, auth, firestore
 from datetime import datetime
 from werkzeug.utils import secure_filename
+import replicate
 
 import os
 from dotenv import load_dotenv
@@ -61,6 +62,13 @@ uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
+
+## testing
+REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
+model = replicate.models.get("pixray/text2image")
+model.predict(prompts="Cairo skyline at sunset.")
+## testing
 
 
 def allowed_file(filename):
