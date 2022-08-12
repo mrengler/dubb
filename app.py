@@ -68,7 +68,6 @@ REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
 print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
 model = replicate.models.get("pixray/text2image")
 image = model.predict(prompts="Cairo skyline at sunset.")
-print('This is image output: ' + str(image.output))
 completed = False
 while completed != True:
     sleep(5)
