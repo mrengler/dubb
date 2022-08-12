@@ -64,20 +64,20 @@ os.makedirs(uploads_dir, exist_ok=True)
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
 ## testing
-REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
-print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
-model = replicate.models.get("pixray/text2image")
-image = replicate.predictions.create(
-    version=model.versions.list()[0],
-    input={"prompt":"Cairo skyline at sunset."}
-)
-print(image)
-completed = False
-while completed != True:
-    sleep(5)
-    print(image.status)
-    if image.status == 'succeeded':
-        completed = True
+# REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+# print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
+# model = replicate.models.get("pixray/text2image")
+# image = replicate.predictions.create(
+#     version=model.versions.list()[0],
+#     input={"prompt":"Cairo skyline at sunset."}
+# )
+# print(image)
+# completed = False
+# while completed != True:
+#     sleep(5)
+#     print(image.status)
+#     if image.status == 'succeeded':
+#         completed = True
 ## testing
 
 
