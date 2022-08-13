@@ -74,13 +74,31 @@ function signOut() {
   emailform.value = ""
 }
 
+function testingSignIn() {
+
+  var floatingsignon = document.getElementById("floating-sign-in");
+  floatingsignon.style.display = 'none';
+  var inputdiv = document.getElementById("input-div");
+  inputdiv.className = 'unblur';
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = false;
+
+  var signout = document.getElementById("sign-out");
+  signout.style.display = "block";
+  var signin = document.getElementById("sign-in");
+  signin.style.display = "none";
+}
+
 window.onload=function(){
+  // UNCOMMENT WHEN DONE WITH TESTING
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   if (loggedin === true) {
     onSignIn();
   } else if (loggedin === false) {
     signOut();
   }
+  // testingSignIn();
+  // UNCOMMENT WHEN DONE WITH TESTING
 
   var coll = document.getElementsByClassName("collapsible");
   var i;

@@ -64,20 +64,27 @@ os.makedirs(uploads_dir, exist_ok=True)
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
 ## testing
+
 # REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
-# print('this is REPLICATE_API_TOKEN:' + str(REPLICATE_API_TOKEN))
 # model = replicate.models.get("pixray/text2image")
 # image = replicate.predictions.create(
 #     version=model.versions.list()[0],
 #     input={"prompt":"Cairo skyline at sunset."}
 # )
-# print(image)
-# completed = False
-# while completed != True:
-#     sleep(5)
+# print('this is image')
+# print(image.status)
+# src=''
+# i = 0
+# while ((i < 50) and (src == '')):
+#     print(i)
+#     sleep(10)
+#     image.reload()
 #     print(image.status)
 #     if image.status == 'succeeded':
-#         completed = True
+#         print(image.output[-1])
+#         src = image.output[-1]
+#     i += 1
+
 ## testing
 
 
@@ -124,8 +131,11 @@ def get_template(refresh=False, failed=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">We're working on your results!<br><br>They will be sent to your email within 24 hours after we check them for quality.
-                Look in your inbox and spam folder for an email from dubb.results@gmail.com</div></body>
+            <body>
+                <div style="font-size:30px;">We're working on your results!<br><br>They will be sent to your email within 24 hours after we check them for quality.
+                Look in your inbox and spam folder for an email from dubb.results@gmail.com</div>
+                <img src="''' + src + '''"/>
+            </body>
             </html>'''
 
     return render_template_string(template_str, refresh=refresh)
@@ -248,4 +258,4 @@ def index():
     return render_template('index.html', error=None)
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run(ssl_context="adhoc")

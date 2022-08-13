@@ -12,6 +12,7 @@ import requests
 import pandas as pd
 import datetime
 import time
+import replicate
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -474,13 +475,38 @@ def run_combined(
                 )
 
     description = description_response.choices[0].text
+
+    ## testing
+    REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+    model = replicate.models.get("pixray/text2image")
+    image = replicate.predictions.create(
+        version=model.versions.list()[0],
+        input={"prompt":"Cairo skyline at sunset."}
+    )
+    print('this is image')
+    print(image.status)
+    src=''
+    i = 0
+    while ((i < 50) and (src == '')):
+        print(i)
+        sleep(10)
+        image.reload()
+        print(image.status)
+        if image.status == 'succeeded':
+            print(image.output[-1])
+            src = image.output[-1]
+        i += 1
+    ## testing
+
+
     
     combined = '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>'\
     + '<br><br><b>Title</b><br><br>' + title \
     + '<br><br><b>Description</b><br><br>' + description \
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
-    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present
+    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
+    + "<br><br><b><img src = '" + src + "'></b><br><br>"
     
     print(combined)
 
