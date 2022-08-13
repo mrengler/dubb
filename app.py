@@ -134,7 +134,6 @@ def get_template(refresh=False, failed=False):
             <body>
                 <div style="font-size:30px;">We're working on your results!<br><br>They will be sent to your email within 24 hours after we check them for quality.
                 Look in your inbox and spam folder for an email from dubb.results@gmail.com</div>
-                <img src="''' + src + '''"/>
             </body>
             </html>'''
 
