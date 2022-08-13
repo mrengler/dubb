@@ -327,7 +327,7 @@ def convert(
     
     summary_chunks = []
     top_quotes = []
-    images = []
+    # images = []
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
@@ -373,39 +373,39 @@ def convert(
                     top_quote = top_quote_response.choices[0].text
                     top_quotes.append(top_quote)
 
-                    top_quote_image_description_response = openai.Completion.create(
-                        model='text-davinci-002',
-                        prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
-                        max_tokens=max_tokens_output,
-                        temperature=0.0,
-                        presence_penalty=pres_penalty,
-                        stop='"',
-                        user=user,
-                    )
+                    # top_quote_image_description_response = openai.Completion.create(
+                    #     model='text-davinci-002',
+                    #     prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
+                    #     max_tokens=max_tokens_output,
+                    #     temperature=0.0,
+                    #     presence_penalty=pres_penalty,
+                    #     stop='"',
+                    #     user=user,
+                    # )
 
-                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
+                    # top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
 
-                    if top_quote_image_description_classification != '2': ##unsafe
-                        top_quote_image_description = top_quote_image_description_response.choices[0].text
-                        image = replicate.predictions.create(
-                            version=model.versions.list()[0],
-                            input={"prompt": top_quote_image_description}
-                        )
-                        print('this is image')
-                        print(image.status)
-                        src=''
-                        i = 0
-                        while ((i < 50) and (src == '')):
-                            print(i)
-                            time.sleep(10)
-                            image.reload()
-                            print(image.status)
-                            if image.status == 'succeeded':
-                                print(image.output[-1])
-                                src = image.output[-1]
-                            i += 1
+                    # if top_quote_image_description_classification != '2': ##unsafe
+                    #     top_quote_image_description = top_quote_image_description_response.choices[0].text
+                    #     image = replicate.predictions.create(
+                    #         version=model.versions.list()[0],
+                    #         input={"prompt": top_quote_image_description}
+                    #     )
+                    #     print('this is image')
+                    #     print(image.status)
+                    #     src=''
+                    #     i = 0
+                    #     while ((i < 50) and (src == '')):
+                    #         print(i)
+                    #         time.sleep(10)
+                    #         image.reload()
+                    #         print(image.status)
+                    #         if image.status == 'succeeded':
+                    #             print(image.output[-1])
+                    #             src = image.output[-1]
+                    #         i += 1
 
-                        images.append(src)
+                    #     images.append(src)
                     
 
                 else:
@@ -418,7 +418,8 @@ def convert(
                 print('number of attempts: ' + str(attempts))
                 time.sleep(30)
     
-    return summary_chunks, top_quotes, images
+    return summary_chunks, top_quotes
+    # , images
 
 
 def run_combined(
@@ -438,7 +439,7 @@ def run_combined(
     transcript_id='',
     paragraphs=False):
 
-    model = replicate.models.get("pixray/text2image")
+    # model = replicate.models.get("pixray/text2image")
 
     if skip_upload==False:
         # if content_type=='file':
@@ -464,7 +465,8 @@ def run_combined(
         time.sleep(60)
 
         
-    summary_chunks, top_quotes, images = convert(
+    # summary_chunks, top_quotes, images = convert(
+    summary_chunks, top_quotes = convert(  
         user,
         cleaned_sentences, 
         temperature,
@@ -481,7 +483,7 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
     print(summary_chunks)
 
-    present_images = "<img src='" + "'><br><br><img src='".join(images) + "'>"
+    # present_images = "<img src='" + "'><br><br><img src='".join(images) + "'>"
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -522,7 +524,7 @@ def run_combined(
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
-    + '<br><br><b>Images</b><br><br>' + present_images 
+    # + '<br><br><b>Images</b><br><br>' + present_images 
     
     print(combined)
 
