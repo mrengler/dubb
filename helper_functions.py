@@ -489,7 +489,7 @@ def run_combined(
     i = 0
     while ((i < 50) and (src == '')):
         print(i)
-        sleep(10)
+        time.sleep(10)
         image.reload()
         print(image.status)
         if image.status == 'succeeded':
