@@ -354,7 +354,7 @@ def convert(
             user=user,
         )
 
-        picture = model.predict(prompts=top_quote_response)
+        picture = replicate_model.predict(prompts=top_quote_response)
         print(picture)
 
         summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
@@ -393,7 +393,7 @@ def convert(
                 top_quote_image_description = top_quote_image_description_response.choices[0].text
                 print(top_quote_image_description)
                 image = replicate.predictions.create(
-                    version=model.versions.list()[0],
+                    version=replicate_model.versions.list()[0],
                     input={"prompt": top_quote_image_description}
                 )
                 print('this is image')
@@ -443,7 +443,7 @@ def run_combined(
     transcript_id='',
     paragraphs=False):
 
-    # model = replicate.models.get("pixray/text2image")
+    replicate_model = replicate.models.get("pixray/text2image")
 
     if skip_upload==False:
         # if content_type=='file':
