@@ -324,6 +324,8 @@ def convert(
     model="davinci:ft-summarize-2022-01-02-20-59-54",
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
+
+    replicate_model = replicate.models.get("pixray/text2image")
     
     summary_chunks = []
     top_quotes = []
@@ -443,7 +445,6 @@ def run_combined(
     transcript_id='',
     paragraphs=False):
 
-    replicate_model = replicate.models.get("pixray/text2image")
 
     if skip_upload==False:
         # if content_type=='file':
