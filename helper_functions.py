@@ -7,7 +7,7 @@ chars_per_token = 3.70
 
 
 import youtube_dl
-# import replicate
+import replicate
 import requests
 import pandas as pd
 import datetime
@@ -327,7 +327,7 @@ def convert(
     
     summary_chunks = []
     top_quotes = []
-    # images = []
+    images = []
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
@@ -354,8 +354,8 @@ def convert(
                     user=user,
                 )
 
-                # picture = model.predict(prompts=top_quote_response)
-                # print(picture)
+                picture = model.predict(prompts=top_quote_response)
+                print(picture)
 
                 summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
 
@@ -423,8 +423,7 @@ def convert(
                 print('number of attempts: ' + str(attempts))
                 time.sleep(30)
     
-    return summary_chunks, top_quotes
-    # , images
+    return summary_chunks, top_quotes, images
 
 
 def run_combined(
@@ -470,8 +469,8 @@ def run_combined(
         time.sleep(60)
 
         
-    # summary_chunks, top_quotes, images = convert(
-    summary_chunks, top_quotes = convert(  
+    summary_chunks, top_quotes, images = convert(
+    # summary_chunks, top_quotes = convert(  
         user,
         cleaned_sentences, 
         temperature,
@@ -488,7 +487,7 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
     print(summary_chunks)
 
-    # present_images = "<img src='" + "'><br><br><img src='".join(images) + "'>"
+    present_images = "<img src='" + "'><br><br><img src='".join(images) + "'>"
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -529,7 +528,7 @@ def run_combined(
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
-    # + '<br><br><b>Images</b><br><br>' + present_images 
+    + '<br><br><b>Images</b><br><br>' + present_images 
     
     print(combined)
 
