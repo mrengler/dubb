@@ -396,7 +396,7 @@ def convert(
                 print(top_quote_image_description)
                 image = replicate.predictions.create(
                     version=replicate_model.versions.list()[0],
-                    input={"prompt": top_quote_image_description}
+                    input={"prompt": "A dog chasing after it's bone"}
                 )
                 print('this is image')
                 print(image.status)
