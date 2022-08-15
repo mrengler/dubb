@@ -3,6 +3,7 @@ from __future__ import absolute_import
 max_token_input = 1548
 max_tokens_output = 350
 max_tokens_output_base_model = 4097
+max_tokens_output_image_description = 60
 chars_per_token = 3.70
 
 
@@ -380,7 +381,7 @@ def convert(
                     top_quote_image_description_response = openai.Completion.create(
                         model='text-davinci-002',
                         prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
-                        max_tokens=max_tokens_output,
+                        max_tokens=max_tokens_output_image_description,
                         temperature=0.0,
                         presence_penalty=pres_penalty,
                         stop='"',
