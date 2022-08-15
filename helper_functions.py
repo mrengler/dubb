@@ -373,39 +373,44 @@ def convert(
                     top_quote = top_quote_response.choices[0].text
                     top_quotes.append(top_quote)
 
-                    # top_quote_image_description_response = openai.Completion.create(
-                    #     model='text-davinci-002',
-                    #     prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
-                    #     max_tokens=max_tokens_output,
-                    #     temperature=0.0,
-                    #     presence_penalty=pres_penalty,
-                    #     stop='"',
-                    #     user=user,
-                    # )
+                    top_quote_image_description_response = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
+                        max_tokens=max_tokens_output,
+                        temperature=0.0,
+                        presence_penalty=pres_penalty,
+                        stop='"',
+                        user=user,
+                    )
 
-                    # top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
+                    print(top_quote_image_description_response)
 
-                    # if top_quote_image_description_classification != '2': ##unsafe
-                    #     top_quote_image_description = top_quote_image_description_response.choices[0].text
-                    #     image = replicate.predictions.create(
-                    #         version=model.versions.list()[0],
-                    #         input={"prompt": top_quote_image_description}
-                    #     )
-                    #     print('this is image')
-                    #     print(image.status)
-                    #     src=''
-                    #     i = 0
-                    #     while ((i < 50) and (src == '')):
-                    #         print(i)
-                    #         time.sleep(10)
-                    #         image.reload()
-                    #         print(image.status)
-                    #         if image.status == 'succeeded':
-                    #             print(image.output[-1])
-                    #             src = image.output[-1]
-                    #         i += 1
+                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
 
-                    #     images.append(src)
+                    print(top_quote_image_description_classification)
+
+                    if top_quote_image_description_classification != '2': ##unsafe
+                        top_quote_image_description = top_quote_image_description_response.choices[0].text
+                        print(top_quote_image_description)
+                        image = replicate.predictions.create(
+                            version=model.versions.list()[0],
+                            input={"prompt": top_quote_image_description}
+                        )
+                        print('this is image')
+                        print(image.status)
+                        src=''
+                        i = 0
+                        while ((i < 50) and (src == '')):
+                            print(i)
+                            time.sleep(10)
+                            image.reload()
+                            print(image.status)
+                            if image.status == 'succeeded':
+                                print(image.output[-1])
+                                src = image.output[-1]
+                            i += 1
+
+                        images.append(src)
                     
 
                 else:
