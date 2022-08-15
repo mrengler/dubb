@@ -400,6 +400,7 @@ def convert(
                 )
                 print('this is image')
                 print(image.status)
+                print(image)
                 src=''
                 i = 0
                 while ((i < 50) and (src == '')):
@@ -408,6 +409,7 @@ def convert(
                     image.reload()
                     print(image.status)
                     if image.status == 'succeeded':
+                        print(image)
                         print(image.output[-1])
                         src = image.output[-1]
                     i += 1
