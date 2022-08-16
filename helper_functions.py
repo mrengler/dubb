@@ -5,6 +5,7 @@ max_tokens_output = 350
 max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
+num_images_to_produce = 3
 
 
 import youtube_dl
@@ -332,6 +333,8 @@ def convert(
     top_quotes = []
     images = []
 
+    image_count = 0
+
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
     
     for prompt_chunk in prompt_chunks:
@@ -357,9 +360,6 @@ def convert(
                     user=user,
                 )
 
-                picture = replicate_model.predict(prompts=top_quote_response)
-                print(picture)
-
                 summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
 
                 if summary_classification != '2': ##unsafe
@@ -378,46 +378,48 @@ def convert(
                     top_quote = top_quote_response.choices[0].text
                     top_quotes.append(top_quote)
 
-                    top_quote_image_description_response = openai.Completion.create(
-                        model='text-davinci-002',
-                        prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
-                        max_tokens=max_tokens_output_image_description,
-                        temperature=0.0,
-                        presence_penalty=pres_penalty,
-                        stop='"',
-                        user=user,
-                    )
+                    if image_count < num_images_to_produce:
 
-                    print(top_quote_image_description_response)
-
-                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
-
-                    print(top_quote_image_description_classification)
-
-                    if top_quote_image_description_classification != '2': ##unsafe
-                        top_quote_image_description = top_quote_image_description_response.choices[0].text
-                        print(top_quote_image_description)
-                        image = replicate.predictions.create(
-                            version=replicate_model.versions.list()[0],
-                            input={"prompts": top_quote_image_description}
+                        top_quote_image_description_response = openai.Completion.create(
+                            model='text-davinci-002',
+                            prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
+                            max_tokens=max_tokens_output_image_description,
+                            temperature=0.0,
+                            presence_penalty=pres_penalty,
+                            stop='"',
+                            user=user,
                         )
-                        print('this is image')
-                        print(image.status)
-                        print(image)
-                        src=''
-                        i = 0
-                        while ((i < 50) and (src == '')):
-                            print(i)
-                            time.sleep(10)
-                            image.reload()
-                            print(image.status)
-                            if image.status == 'succeeded':
-                                print(image)
-                                print(image.output[-1])
-                                src = image.output[-1]
-                            i += 1
 
-                        images.append(src)
+                        print(top_quote_image_description_response)
+
+                        top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
+
+                        print(top_quote_image_description_classification)
+
+                        if top_quote_image_description_classification != '2': ##unsafe
+                            top_quote_image_description = top_quote_image_description_response.choices[0].text
+                            print(top_quote_image_description)
+                            image = replicate.predictions.create(
+                                version=replicate_model.versions.list()[0],
+                                input={"prompts": top_quote_image_description}
+                            )
+                            print('this is image')
+                            print(image.status)
+                            src=''
+                            i = 0
+                            while ((i < 50) and (src == '')):
+                                print(i)
+                                time.sleep(10)
+                                image.reload()
+                                print(image.status)
+                                if image.status == 'succeeded':
+                                    print(image)
+                                    print(image.output[-1])
+                                    src = image.output[-1]
+                                i += 1
+
+                            images.append(src)
+                            image_count += 1
                             
 
                 else:
@@ -476,7 +478,6 @@ def run_combined(
 
         
     summary_chunks, top_quotes, images = convert(
-    # summary_chunks, top_quotes = convert(  
         user,
         cleaned_sentences, 
         temperature,
