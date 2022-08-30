@@ -127,18 +127,18 @@ def result(id):
         result, email = job.result
         # result, email, prompt_chunks = job.result
 
-        # response = requests.\
-        #     post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
-        #         auth=("api", app.config['MAILGUN_API_KEY']),
-        #          data={
-        #              "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
-        #              "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
-        #              "subject": "Dubb results",
-        #              "text": result,
-        #              "html": result
-        #          }
-        #      )
-        # print(response.raise_for_status()) 
+        response = requests.\
+            post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
+                auth=("api", app.config['MAILGUN_API_KEY']),
+                 data={
+                     "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
+                     "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
+                     "subject": "Dubb results",
+                     "text": result,
+                     "html": result
+                 }
+             )
+        print(response.raise_for_status()) 
 
         return get_template()
 
