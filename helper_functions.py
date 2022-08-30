@@ -397,7 +397,7 @@ def convert(
 
                         top_quote_image_description_response = openai.Completion.create(
                             model='text-davinci-002',
-                            prompt=top_quote + '\n\nThe description of the image that accompanies this quote is:"',
+                            prompt=top_quote + '\n\nWrite the simple description of the image that accompanies this quote in language a 5 year old could understand: “',
                             max_tokens=max_tokens_output_image_description,
                             temperature=0.0,
                             presence_penalty=pres_penalty,
@@ -416,7 +416,10 @@ def convert(
                             print(top_quote_image_description)
                             image = replicate.predictions.create(
                                 version=replicate_model.versions.list()[0],
-                                input={"prompt": top_quote_image_description}
+                                input={
+                                    "prompt": "A simple, colorful, cartoon drawing: " + top_quote_image_description,
+                                    "num_inference_steps": 200
+                                    }
                             )
                             print('This is replicate model')
                             print(replicate_model)
