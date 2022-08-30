@@ -90,7 +90,7 @@ function testingSignIn() {
 }
 
 window.onload=function(){
-  UNCOMMENT WHEN DONE WITH TESTING
+  // UNCOMMENT WHEN DONE WITH TESTING
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   if (loggedin === true) {
     onSignIn();
