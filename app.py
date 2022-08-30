@@ -63,30 +63,6 @@ os.makedirs(uploads_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
-## testing
-
-# REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
-# model = replicate.models.get("pixray/text2image")
-# image = replicate.predictions.create(
-#     version=model.versions.list()[0],
-#     input={"prompt":"Cairo skyline at sunset."}
-# )
-# print('this is image')
-# print(image.status)
-# src=''
-# i = 0
-# while ((i < 50) and (src == '')):
-#     print(i)
-#     sleep(10)
-#     image.reload()
-#     print(image.status)
-#     if image.status == 'succeeded':
-#         print(image.output[-1])
-#         src = image.output[-1]
-#     i += 1
-
-## testing
-
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -149,19 +125,20 @@ def result(id):
     elif status == 'finished':
         print(job.result)
         result, email = job.result
+        # result, email, prompt_chunks = job.result
 
-        response = requests.\
-            post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
-                auth=("api", app.config['MAILGUN_API_KEY']),
-                 data={
-                     "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
-                     "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
-                     "subject": "Dubb results",
-                     "text": result,
-                     "html": result
-                 }
-             )
-        print(response.raise_for_status()) 
+        # response = requests.\
+        #     post("https://api.mailgun.net/v3/%s/messages" % app.config['MAILGUN_DOMAIN'],
+        #         auth=("api", app.config['MAILGUN_API_KEY']),
+        #          data={
+        #              "from": 'dubb@'+ str(app.config['MAILGUN_DOMAIN']),
+        #              "to": str(app.config['MAIL_USERNAME']), ## to be updated to email
+        #              "subject": "Dubb results",
+        #              "text": result,
+        #              "html": result
+        #          }
+        #      )
+        # print(response.raise_for_status()) 
 
         return get_template()
 

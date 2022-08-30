@@ -9,12 +9,12 @@ num_images_to_produce = 3
 
 
 import youtube_dl
-import replicate
 import requests
 import pandas as pd
 import datetime
 import time
 import replicate
+import re
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -259,7 +259,7 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
         prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
     elif for_transcript==False:
         prompt_chunks.append(' ' + "\n".join(chunk) + prompt_end_string)
-    
+
     return prompt_chunks
 
     
@@ -316,6 +316,19 @@ def content_filter(content_to_classify, user):
 
     return output_label
 
+def clean_chunk(txt):
+    txt_split = re.split('\n\n', txt)
+    txt_groups = []
+    for s in txt_split:
+        s = s.lstrip()
+        if s[-1:] not in ['.', '!', '?']:
+            s_sub = re.split('(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', s)
+            s_keep = s_sub[:-1]
+            s = ' '.join(s_keep)
+        txt_groups.append(s)
+    
+    txt = '\n\n'.join(txt_groups)
+    return txt
 
 def convert(
     user,
@@ -327,7 +340,7 @@ def convert(
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
 
-    replicate_model = replicate.models.get("pixray/text2image")
+    replicate_model = replicate.models.get("stability-ai/stable-diffusion")
     
     summary_chunks = []
     top_quotes = []
@@ -350,6 +363,7 @@ def convert(
                     stop=complete_end_string,
                     user=user,
                 )
+
                 top_quote_response = openai.Completion.create(
                     model='text-curie-001',
                     prompt=prompt_chunk + '\n\nThe most interesting quote from the transcript is:"',
@@ -364,6 +378,7 @@ def convert(
 
                 if summary_classification != '2': ##unsafe
                     summary_chunk = summary_chunk_response.choices[0].text
+                    summary_chunk = clean_chunk(summary_chunk)
                     summary_chunks.append(summary_chunk)
                 else:
                     print('UNSAFE RESPONSE:')
@@ -401,8 +416,12 @@ def convert(
                             print(top_quote_image_description)
                             image = replicate.predictions.create(
                                 version=replicate_model.versions.list()[0],
-                                input={"prompts": top_quote_image_description}
+                                input={"prompt": top_quote_image_description}
                             )
+                            print('This is replicate model')
+                            print(replicate_model)
+                            print(replicate_model.versions.list()[0])
+
                             print('this is image')
                             print(image.status)
                             src=''
@@ -433,6 +452,7 @@ def convert(
                 time.sleep(30)
     
     return summary_chunks, top_quotes, images
+    # return summary_chunks, top_quotes, prompt_chunks
 
 
 def run_combined(
@@ -478,6 +498,7 @@ def run_combined(
 
         
     summary_chunks, top_quotes, images = convert(
+    # summary_chunks, top_quotes, prompt_chunks = convert(
         user,
         cleaned_sentences, 
         temperature,
@@ -492,7 +513,6 @@ def run_combined(
 
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
-    print(summary_chunks)
 
     present_images = "<img src='" + "'><br><br><img src='".join(images) + "'>"
 
@@ -540,6 +560,7 @@ def run_combined(
     print(combined)
 
     return combined, user
+    # return prompt_chunks, user
     
 
 def present_article(article):
