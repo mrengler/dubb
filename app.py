@@ -33,8 +33,6 @@ app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
 app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
 app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
 
-# mail = Mail(app)
-
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
 
