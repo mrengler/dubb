@@ -29,9 +29,9 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
-app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
-app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
+# app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
+# app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
+# app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
 
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]

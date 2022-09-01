@@ -30,8 +30,8 @@
         <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
       </div>
     </div>
-    <h3>Let AI help you promote your podcast, so you can focus on the conversations</h3>
-    <h6>Dubb listens to your podcast and writes marketing content to recruit new listeners</h6>
+    <h3>Marketing magic for your podcast, using AI</h3>
+    <h6>Dubb listens to your podcast and creates marketing content to recruit new listeners</h6>
     {% if error %}
       <p class=error><strong>Error:</strong> {{ error }}
     {% endif %}
@@ -48,9 +48,9 @@
                 Choose File
             </label>
             <span id="file-selected"></span>
-            <p>...or enter the url of the podcast episode (Spotify, Google Podcasts, Youtube)</p>
+            <p>...or enter the url of the podcast episode (Google Podcasts, Youtube)</p>
             <input type="file" id="file-upload" accept=".wav,.mp3" name="file" required/>
-            <input type="text" id="url" name="url" placeholder="https://open.spotify.com/episode/yourgreatpodcast" size="50" required><br><br>
+            <input type="text" id="url" name="url" placeholder="https://podcasts.google.com/feed/yourgreatpodcast" size="50" required><br><br>
             <p id="names-instruct">List the speakers in order of appearance, with a comma separating each name. Add any advertisers too.</p>
             <input type="text" id="speakers" name="speakers" placeholder="Jane Doe, Ad, John Smith" size="50" required><br>
             <input type="hidden" id="email" name="email" value="">

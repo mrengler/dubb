@@ -29,8 +29,10 @@ load_dotenv()
 
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"]=os.environ('GOOGLE_APPLICATION_CREDENTIALS')
 REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+MAILGUN_API_KEY = os.environ["MAILGUN_API_KEY"]
+MAILGUN_DOMAIN = os.environ["MAILGUN_DOMAIN"]
+MAIL_USERNAME = os.environ["MAIL_USERNAME"]
 
 
 def millsecond_to_timestamp(ms):
@@ -366,7 +368,7 @@ def convert(
 
                 top_quote_response = openai.Completion.create(
                     model='text-curie-001',
-                    prompt=prompt_chunk + '\n\nThe most interesting quote from the transcript is:"',
+                    prompt=prompt_chunk + '\n\nThe most interesting quote from the transcript is: "',
                     max_tokens=max_tokens_output,
                     temperature=0.0,
                     presence_penalty=pres_penalty,
@@ -558,12 +560,21 @@ def run_combined(
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
-    + '<br><br><b>Images</b><br><br>' + present_images 
-    
-    print(combined)
+    + '<br><br><b>Images</b><br><br>' + present_images
 
+    response = requests.\
+        post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+            auth=("api", MAILGUN_API_KEY),
+             data={
+                 "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                 "to": str(MAIL_USERNAME), ## to be updated to email
+                 "subject": "Dubb results",
+                 "text": combined,
+                 "html": combined
+             }
+         )
+    
     return combined, user
-    # return prompt_chunks, user
     
 
 def present_article(article):
