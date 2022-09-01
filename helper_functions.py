@@ -61,7 +61,7 @@ def download_yt(url, filename):
                 '-ac', '1'
             ],
             'prefer_ffmpeg': True,
-            'keepvideo': False, ## needs to be updated if this introduces a bug
+            'keepvideo': False,
             'nocheckcertificate': True,
             'outtmpl': filename,
             'verbose': True,
@@ -457,7 +457,6 @@ def convert(
                 time.sleep(30)
     
     return summary_chunks, top_quotes, images
-    # return summary_chunks, top_quotes, prompt_chunks
 
 
 def run_combined(
@@ -479,10 +478,6 @@ def run_combined(
 
 
     if skip_upload==False:
-        # if content_type=='file':
-        #     upload_to_gs(bucket_name, content, filename)
-
-        # elif content_type=='url':
         if content_type=='url':
             status = download_yt(content, filename)
             if status == 'failed':
@@ -503,7 +498,6 @@ def run_combined(
 
         
     summary_chunks, top_quotes, images = convert(
-    # summary_chunks, top_quotes, prompt_chunks = convert(
         user,
         cleaned_sentences, 
         temperature,
