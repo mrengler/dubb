@@ -79,7 +79,7 @@ def get_template(result=None, refresh=False, failed=False):
                   <link rel="stylesheet" href="https://unpkg.com/style.css">
                 </head>
                 <body style="padding: 3% 10% 3% 10%">
-                <body><div style="font-size:30px;">Your results are ready! Check them out below. Your results will also be sent to your email within 24 hours after we check them for quality.
+                <body><div style="font-size:30px;">Your results are ready! Check them out below. Your results will also be sent to your email within 24 hours.
                 Look in your inbox and spam folder for an email from dubb.results@gmail.com. Please check your results before posting them publicly.
                 <br><br
                 ''' + result + '''
@@ -175,6 +175,10 @@ def process():
                 return render_template('index.html')
         elif not file:
             content = request.form['url']
+            if not (('podcasts.google' in content) or ('youtube' in content)):
+                error="Please link to your podcast episode from Google Podcasts or Youtube, or upload the file of your episode"
+                return render_template('index.html', error=error)
+
             content_type = 'url'
             filename = re.sub(r'\W+', '', content) + '.wav'
 

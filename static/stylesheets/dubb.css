@@ -141,6 +141,10 @@ input[type="file"] {
   padding: 0;
 }
 
+.error {
+  color: #ff0000;
+}
+
 #topnav-right {
   float: right;
 }
