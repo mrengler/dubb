@@ -342,7 +342,7 @@ def convert(
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
 
-    replicate_model = replicate.models.get("stability-ai/stable-diffusion")
+    replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
     
     summary_chunks = []
     top_quotes = []
@@ -401,7 +401,7 @@ def convert(
                             model='text-davinci-002',
                             prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
                             max_tokens=max_tokens_output_image_description,
-                            temperature=0.0,
+                            temperature=0.7,
                             presence_penalty=pres_penalty,
                             stop='"',
                             user=user,
@@ -419,8 +419,9 @@ def convert(
                             image = replicate.predictions.create(
                                 version=replicate_model.versions.list()[0],
                                 input={
-                                    "prompt": "A simple, colorful, cartoon drawing: " + top_quote_image_description,
-                                    "num_inference_steps": 200
+                                    "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
+                                    "zoom": "0: (1.01)",
+                                    "fps": 10,
                                     }
                             )
                             print('This is replicate model')
@@ -528,9 +529,10 @@ def run_combined(
                     model='text-davinci-002',
                     prompt=title_prompt,
                     max_tokens=50,
-                    temperature=0.0,
+                    temperature=0.7,
                     user=user,
                     stop='"',
+                    n=3,
                 )
 
     title = title_response.choices[0].text
@@ -553,7 +555,7 @@ def run_combined(
 
 
     
-    combined = '<br><br><b>Title</b><br><br>' + title \
+    combined = '<br><br><b>Title Suggestions</b><br><br>' + title \
     + '<br><br><b>Description Suggestions</b><br><br>' + description \
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
