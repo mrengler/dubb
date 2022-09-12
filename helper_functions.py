@@ -565,8 +565,8 @@ def run_combined(
     + '<br><br><b>Description Suggestions</b><br><br>' + description \
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
-    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
-    + '<br><br><b>Images</b><br><br>' + present_images
+    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present 
+    # + '<br><br><b>Images</b><br><br>' + present_images
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
