@@ -516,7 +516,7 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    present_images = "<video src='" + "'><br><br><video src='".join(images) + "'>"
+    present_images = "<video autoplay><source src='" + "' type='video/mp4'></video><br><br><video src='".join(images) + "' type='video/mp4'></video>"
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
