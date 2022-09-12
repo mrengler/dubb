@@ -367,7 +367,7 @@ def convert(
                 )
 
                 top_quote_response = openai.Completion.create(
-                    model='text-curie-001',
+                    model='text-davinci-002',
                     prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
                     max_tokens=max_tokens_output,
                     temperature=0.0,
@@ -542,15 +542,19 @@ def run_combined(
                     temperature=0.0,
                     user=user,
                     stop='\n',
+                    n=3,
                 )
 
-    description = description_response.choices[0].text
+    description = '<br><br>'.join([
+        description_response.choices[0].text,
+        description_response.choices[0].text,
+        description_response.choices[2].text
+    ])
 
 
     
-    combined = '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>'\
-    + '<br><br><b>Title</b><br><br>' + title \
-    + '<br><br><b>Description</b><br><br>' + description \
+    combined = '<br><br><b>Title</b><br><br>' + title \
+    + '<br><br><b>Description Suggestions</b><br><br>' + description \
     + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
     + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
     + '<br><br><b>Transcript</b><br><br>' + present_sentences_present \
@@ -563,8 +567,8 @@ def run_combined(
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
                  "subject": "Dubb results",
-                 "text": combined,
-                 "html": combined
+                 "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined,
+                 "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined
              }
          )
     
