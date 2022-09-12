@@ -439,8 +439,10 @@ def convert(
                                 print(image.status)
                                 if image.status == 'succeeded':
                                     print(image)
-                                    print(image.output[-1])
-                                    src = image.output[-1]
+                                    # print(image.output[-1])
+                                    # src = image.output[-1]
+                                    print(image.output)
+                                    src = image.output
                                 i += 1
 
                             images.append(src)
@@ -535,13 +537,17 @@ def run_combined(
                     n=3,
                 )
 
-    title = title_response.choices[0].text
+    title = '<br><br>'.join([
+        title_response.choices[0].text,
+        title_response.choices[1].text,
+        title_response.choices[2].text
+    ])
 
     description_response = openai.Completion.create(
                     model='text-davinci-002',
                     prompt=description_prompt,
                     max_tokens=max_tokens_output,
-                    temperature=0.0,
+                    temperature=0.7,
                     user=user,
                     stop='\n',
                     n=3,
@@ -549,7 +555,7 @@ def run_combined(
 
     description = '<br><br>'.join([
         description_response.choices[0].text,
-        description_response.choices[0].text,
+        description_response.choices[1].text,
         description_response.choices[2].text
     ])
 
