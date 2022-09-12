@@ -562,12 +562,18 @@ def run_combined(
 
 
     
-    combined = '<br><br><b>Title Suggestions</b><br><br>' + title \
-    + '<br><br><b>Description Suggestions</b><br><br>' + description \
-    + '<br><br><b>Article</b><br><br>' + present_summary_chunks \
-    + '<br><br><b>Top Quotes</b><br><br>' + present_top_quotes \
-    + '<br><br><b>Transcript</b><br><br>' + present_sentences_present 
-    # + '<br><br><b>Images</b><br><br>' + present_images
+    combined = '<br><br><b>Sections<br><br><b><a href="#title_suggestions">Title Suggestions</a>' \
+    + '<br><a href="#description_suggestions">Description Suggestions</a>' \
+    + '<br><a href="#article">Article</a>' \
+    + '<br><a href="#top_quotes">Top Quotes</a>' \
+    + '<br><a href="#transcript">Transcript</a>' \
+    # + '<br><a href="#images">Images</a>' \
+    + '<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>' + title \
+    + '<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>' + description \
+    + '<br><br><b><a id="article">Article</a></b><br><br>' + present_summary_chunks \
+    + '<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>' + present_top_quotes \
+    + '<br><br><b><a id="transcript">Transcript</a></b><br><br>' + present_sentences_present 
+    # + '<br><br><b><a id="images">Images</a></b><br><br>' + present_images
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
