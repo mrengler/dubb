@@ -176,7 +176,7 @@ def process():
         elif not file:
             content = request.form['url']
             if not (('podcasts.google' in content) or ('youtube' in content)):
-                error="Please link to your podcast episode from Google Podcasts or Youtube, or upload the file of your episode"
+                error="Sorry, we don't support that podcast player. Please link to your podcast episode from Google Podcasts or Youtube, or upload the file of your episode."
                 return render_template('index.html', error=error)
 
             content_type = 'url'
