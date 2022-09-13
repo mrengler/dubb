@@ -519,6 +519,9 @@ def run_combined(
 
     present_images = "<video autoplay controls><source src='" + "' type='video/mp4'></video><br><br><video autoplay controls><source src='".join(images) + "' type='video/mp4'></video>"
 
+    print('this is present_images')
+    print(present_images)
+
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
     l3 = [chunk for chunk in filter(lambda chunk: chunk != '', l2)]
