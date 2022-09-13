@@ -517,7 +517,7 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    present_images = "<video autoplay controls><source src='" + "' type='video/mp4'></video><br><br><video autoplay controls><source src='".join(images) + "' type='video/mp4'></video>"
+    present_images = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(images) + """' type='video/mp4'></video>"""
 
     print('this is present_images')
     print(present_images)
@@ -563,20 +563,6 @@ def run_combined(
         description_response.choices[2].text
     ])
 
-    print("""<br><br><b>Result Sections</b>""" \
-    + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
-    + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
-    + """<br><a href="#article">Blog Post</a>""" \
-    + """<br><a href="#top_quotes">Top Quotes</a>""" \
-    + """<br><a href="#transcript">Transcript</a>""" \
-    + """<br><a href="#images">Images</a>""" \
-    + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
-    + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
-    + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
-    + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present)
-
-
     
     combined = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
@@ -589,7 +575,7 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
     + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_images
 
     response = requests.\
