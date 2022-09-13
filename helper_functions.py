@@ -5,7 +5,8 @@ max_tokens_output = 350
 max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
-num_images_to_produce = 3
+# num_images_to_produce = 3
+num_images_to_produce = 0
 
 
 import youtube_dl
@@ -569,13 +570,13 @@ def run_combined(
     + """<br><a href="#article">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
-    + """<br><a href="#images">Images</a>""" \
+    + """<br><a href="#Animations">Images</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
-    + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_images
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
