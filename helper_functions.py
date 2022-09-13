@@ -6,7 +6,7 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 1
+num_images_to_produce = 0
 
 
 import youtube_dl
@@ -447,12 +447,10 @@ def convert(
                                 i += 1
 
 
-                            os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
-                            # images.append(src)
-                            images.append("joined.mp4")
+                            # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
+                            images.append(src)
+                            # images.append("joined.mp4")
                             image_count += 1
-
-                            os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
                             
 
                 else:
