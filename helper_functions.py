@@ -6,7 +6,7 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 0
+num_images_to_produce = 1
 
 
 import youtube_dl
@@ -517,7 +517,7 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    present_images = "<video autoplay><source src='" + "' type='video/mp4'></video><br><br><video src='".join(images) + "' type='video/mp4'></video>"
+    present_images = "<video autoplay controls><source src='" + "' type='video/mp4'></video><br><br><video autoplay controls><source src='".join(images) + "' type='video/mp4'></video>"
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -560,9 +560,10 @@ def run_combined(
         description_response.choices[2].text
     ])
 
-    print("""<br><br><b>Sections<br><a href="#title_suggestions">Title Suggestions</a>""" \
+    print("""<br><br><b>Result Sections</b>""" \
+    + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
     + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
-    + """<br><a href="#article">Article</a>""" \
+    + """<br><a href="#article">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><a href="#images">Images</a>""" \
@@ -574,9 +575,10 @@ def run_combined(
 
 
     
-    combined = """<br><br><b>Sections<br><a href="#title_suggestions">Title Suggestions</a>""" \
+    combined = """<br><br><b>Result Sections</b>""" \
+    + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
     + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
-    + """<br><a href="#article">Article</a>""" \
+    + """<br><a href="#article">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><a href="#images">Images</a>""" \
@@ -584,8 +586,8 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present 
-    # + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_images
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_images
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
