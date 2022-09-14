@@ -458,7 +458,7 @@ def convert(
                             # images.append("joined.mp4")
                             image_count += 1
                     
-                    find_top_quote = [timestamp, sentence for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
+                    find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
                     print('this is find_top_quote')
                     print(find_top_quote)       
 
