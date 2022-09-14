@@ -186,6 +186,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
                         start_times.append(start_time)
+                        start_times_unformatted.append(start_time_unformatted)
                     current_speaker = speaker
                     current_speaker_sentences = [sentence]
                     num_sentences_used = 1
@@ -356,9 +357,6 @@ def convert(
     image_count = 0
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
-    print('this is start_times_unformatted')
-    print(start_times_unformatted)
-    print(cleaned_sentences)
 
     cleaned_sentences_timestamps = zip(start_times_unformatted, cleaned_sentences)
     
@@ -434,12 +432,7 @@ def convert(
                                     "fps": 10,
                                     }
                             )
-                            print('This is replicate model')
-                            print(replicate_model)
-                            print(replicate_model.versions.list()[0])
 
-                            print('this is image')
-                            print(image.status)
                             src=''
                             i = 0
                             while ((i < 50) and (src == '')):
@@ -461,7 +454,6 @@ def convert(
                             # images.append("joined.mp4")
                             image_count += 1
                     
-                    print([(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps])
                     find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
                     print('this is find_top_quote')
                     print(find_top_quote)       
