@@ -356,6 +356,9 @@ def convert(
     image_count = 0
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
+    print('this is start_times_unformatted')
+    print(start_times_unformatted)
+    print(cleaned_sentences)
 
     cleaned_sentences_timestamps = zip(start_times_unformatted, cleaned_sentences)
     
