@@ -21,6 +21,7 @@ openai==0.16.0
 openpyxl==3.0.9
 pandas==1.4.1
 pandas-stubs==1.2.0.53
+pydub==0.25.1
 pyOpenSSL==21.0.0
 python-dateutil==2.8.2
 python-dotenv==0.19.2

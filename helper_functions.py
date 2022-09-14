@@ -15,6 +15,7 @@ import pandas as pd
 import datetime
 import time
 import replicate
+from pydub import AudioSegment
 import re
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
@@ -456,7 +457,13 @@ def convert(
                     
                     find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
                     print('this is find_top_quote')
-                    print(find_top_quote)       
+                    print(find_top_quote)
+
+                    tq_start = find_top_quote[0][0]
+                    tq_start_i = start_times_unformatted.index(tq_start)
+                    tq_end = start_times_unformatted.index(tq_start_i + 1)
+
+
 
                 else:
                     print('UNSAFE RESPONSE:')
