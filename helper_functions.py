@@ -158,7 +158,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     
         sentences = response.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
-        speakers_duplicate = [speaker for speaker, sentence, start_time in sentences_diarized]
+        speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
         speaker_hash = {}
         for i,speaker in enumerate(speakers_input):
