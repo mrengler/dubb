@@ -515,6 +515,8 @@ def run_combined(
         transcript_id = assembly_start_transcribe(audio_file)
     
     cleaned_sentences = 'waiting'
+    ### to be deleted
+    time.sleep(60)
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
