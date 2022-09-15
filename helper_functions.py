@@ -341,7 +341,8 @@ def clean_chunk(txt):
 def convert(
     user,
     cleaned_sentences,
-    start_times_unformatted, 
+    start_times_unformatted,
+    audio, 
     temp, 
     pres_penalty, 
     # n=20, 
@@ -354,6 +355,7 @@ def convert(
     summary_chunks = []
     top_quotes = []
     images = []
+    audio_clips = []
 
     image_count = 0
 
@@ -456,15 +458,13 @@ def convert(
                             image_count += 1
                     
                     find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
-                    print('this is find_top_quote')
-                    print(find_top_quote)
 
                     tq_start = find_top_quote[0][0]
-                    print(tq_start)
                     tq_start_i = start_times_unformatted.index(tq_start)
-                    print(tq_start_i)
                     tq_end = start_times_unformatted[tq_start_i + 1]
-                    print(tq_end)
+
+                    top_quote_audio = audio[tq_start:tq_end]
+                    audio_clips.append(top_quote_audio)
 
 
 
@@ -478,7 +478,7 @@ def convert(
                 print('number of attempts: ' + str(attempts))
                 time.sleep(30)
     
-    return summary_chunks, top_quotes, images
+    return summary_chunks, top_quotes, images, audio_clips
 
 
 def run_combined(
@@ -518,11 +518,14 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
+    audio = AudioSegment.from_mp3(filename)
+
         
-    summary_chunks, top_quotes, images = convert(
+    summary_chunks, top_quotes, images, audio_clips = convert(
         user,
         cleaned_sentences,
-        start_times_unformatted, 
+        start_times_unformatted,
+        audio, 
         temperature,
         presence_penalty, 
         model=model,
@@ -537,9 +540,7 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
 
     present_images = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(images) + """' type='video/mp4'></video>"""
-
-    print('this is present_images')
-    print(present_images)
+    present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -595,6 +596,7 @@ def run_combined(
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
     # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
 
     response = requests.\
