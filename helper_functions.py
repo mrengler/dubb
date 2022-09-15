@@ -518,7 +518,7 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    audio = AudioSegment.from_mp3(filename)
+    audio = AudioSegment.from_mp3(audio_file)
 
         
     summary_chunks, top_quotes, images, audio_clips = convert(
