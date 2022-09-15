@@ -524,6 +524,8 @@ def run_combined(
     audio = None
     try:
         audio = AudioSegment.from_mp3(filename)
+        print('this is audio run_combined')
+        print(audio)
     except:
         pass
 
