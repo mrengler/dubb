@@ -463,7 +463,7 @@ def convert(
                     print(tq_start)
                     tq_start_i = start_times_unformatted.index(tq_start)
                     print(tq_start_i)
-                    tq_end = start_times_unformatted.index(tq_start_i + 1)
+                    tq_end = start_times_unformatted[tq_start_i + 1]
                     print(tq_end)
 
 
