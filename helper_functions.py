@@ -55,7 +55,7 @@ def download_yt(url, filename):
             'format': 'bestaudio/best',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'wav',
+                'preferredcodec': 'mp3',
                 'preferredquality': '192'
             }],
             'postprocessor_args': [
@@ -518,7 +518,7 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    audio = AudioSegment.from_mp3(audio_file)
+    audio = AudioSegment.from_mp3(filename)
 
         
     summary_chunks, top_quotes, images, audio_clips = convert(
