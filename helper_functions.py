@@ -545,7 +545,11 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
 
     present_images = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(images) + """' type='video/mp4'></video>"""
-    present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
+    
+    if audio != None:
+        present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
+    else:
+        present_audio_clips = ""
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -600,7 +604,7 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
     + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
     # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
 
