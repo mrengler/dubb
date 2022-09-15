@@ -459,9 +459,12 @@ def convert(
                     print('this is find_top_quote')
                     print(find_top_quote)
 
-                    # tq_start = find_top_quote[0][0]
-                    # tq_start_i = start_times_unformatted.index(tq_start)
-                    # tq_end = start_times_unformatted.index(tq_start_i + 1)
+                    tq_start = find_top_quote[0][0]
+                    print(tq_start)
+                    tq_start_i = start_times_unformatted.index(tq_start)
+                    print(tq_start_i)
+                    tq_end = start_times_unformatted.index(tq_start_i + 1)
+                    print(tq_end)
 
 
 
