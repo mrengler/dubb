@@ -162,7 +162,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
     unique_speakers = list(dict.fromkeys(speakers_duplicate))
     if len(unique_speakers) < len(speakers_input):
-        speakers_input = [:len(unique_speakers)]
+        speakers_input = speakers_input[:len(unique_speakers)]
 
     speaker_hash = {}
     for i,speaker in enumerate(speakers_input):
