@@ -463,6 +463,8 @@ def convert(
                     tq_start_i = start_times_unformatted.index(tq_start)
                     tq_end = start_times_unformatted[tq_start_i + 1]
 
+                    print('This is audio')
+                    print(audio)
                     if audio != None:
                         top_quote_audio = audio[tq_start:tq_end]
                         audio_clips.append(top_quote_audio)
