@@ -454,7 +454,6 @@ def convert(
 
                             # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
                             images.append(src)
-                            # images.append("joined.mp4")
                             image_count += 1
                     
                     find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
@@ -523,7 +522,7 @@ def run_combined(
 
     audio = None
     try:
-        audio = AudioSegment.from_mp3(filename)
+        audio = AudioSegment.from_mp3(audio_file)
         print('this is audio run_combined')
         print(audio)
     except:
