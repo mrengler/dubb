@@ -461,9 +461,12 @@ def convert(
             
             find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
 
-            tq_start = find_top_quote[0][0]
-            tq_start_i = start_times_unformatted.index(tq_start)
-            tq_end = start_times_unformatted[tq_start_i + 1]
+            tq_end = find_top_quote[0][0]
+            tq_end_i = start_times_unformatted.index(tq_end)
+            if tq_end_i > 0:
+                tq_start = start_times_unformatted[tq_end_i - 1]
+            elif tq_end_i == 0:
+                tq_start = 0
 
             print('This is audio')
             print(audio)
