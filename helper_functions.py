@@ -526,6 +526,8 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
+    print('this is listdir()')
+    print(os.listdir())
     # audio = None
     print(filename)
     # try:
