@@ -367,121 +367,121 @@ def convert(
     cleaned_sentences_timestamps = zip(start_times_unformatted, cleaned_sentences)
     
     for prompt_chunk in prompt_chunks:
-        attempts = 0
-        while attempts < 5:
-            try:
-                summary_chunk_response = openai.Completion.create(
-                    model=model,
-                    prompt=prompt_chunk,
-                    max_tokens=max_tokens_output,
-                    temperature=temp,
-                    presence_penalty=pres_penalty,
-                    stop=complete_end_string,
-                    user=user,
-                )
+        # attempts = 0
+        # while attempts < 5:
+        #     try:
+        summary_chunk_response = openai.Completion.create(
+            model=model,
+            prompt=prompt_chunk,
+            max_tokens=max_tokens_output,
+            temperature=temp,
+            presence_penalty=pres_penalty,
+            stop=complete_end_string,
+            user=user,
+        )
 
-                top_quote_response = openai.Completion.create(
+        top_quote_response = openai.Completion.create(
+            model='text-davinci-002',
+            prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
+            max_tokens=max_tokens_output,
+            temperature=0.0,
+            presence_penalty=pres_penalty,
+            stop='"',
+            user=user,
+        )
+
+        summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
+
+        if summary_classification != '2': ##unsafe
+            summary_chunk = summary_chunk_response.choices[0].text
+            summary_chunk = clean_chunk(summary_chunk)
+            summary_chunks.append(summary_chunk)
+        else:
+            print('UNSAFE RESPONSE:')
+            print(summary_chunk_response)
+
+        top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
+        
+        print('This is top quote classification: ' + str(top_quote_classification))
+
+        if top_quote_classification != '2': ##unsafe
+
+            top_quote = top_quote_response.choices[0].text
+            top_quotes.append(top_quote)
+
+            if image_count < num_images_to_produce:
+
+                top_quote_image_description_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
-                    max_tokens=max_tokens_output,
-                    temperature=0.0,
+                    prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
+                    max_tokens=max_tokens_output_image_description,
+                    temperature=0.7,
                     presence_penalty=pres_penalty,
                     stop='"',
                     user=user,
                 )
 
-                summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
+                print(top_quote_image_description_response)
 
-                if summary_classification != '2': ##unsafe
-                    summary_chunk = summary_chunk_response.choices[0].text
-                    summary_chunk = clean_chunk(summary_chunk)
-                    summary_chunks.append(summary_chunk)
-                else:
-                    print('UNSAFE RESPONSE:')
-                    print(summary_chunk_response)
+                top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
 
-                top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
-                
-                print('This is top quote classification: ' + str(top_quote_classification))
+                print(top_quote_image_description_classification)
 
-                if top_quote_classification != '2': ##unsafe
+                if top_quote_image_description_classification != '2': ##unsafe
+                    top_quote_image_description = top_quote_image_description_response.choices[0].text
+                    print(top_quote_image_description)
+                    image = replicate.predictions.create(
+                        version=replicate_model.versions.list()[0],
+                        input={
+                            "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
+                            "zoom": "0: (1.01)",
+                            "fps": 10,
+                            }
+                    )
 
-                    top_quote = top_quote_response.choices[0].text
-                    top_quotes.append(top_quote)
-
-                    if image_count < num_images_to_produce:
-
-                        top_quote_image_description_response = openai.Completion.create(
-                            model='text-davinci-002',
-                            prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
-                            max_tokens=max_tokens_output_image_description,
-                            temperature=0.7,
-                            presence_penalty=pres_penalty,
-                            stop='"',
-                            user=user,
-                        )
-
-                        print(top_quote_image_description_response)
-
-                        top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
-
-                        print(top_quote_image_description_classification)
-
-                        if top_quote_image_description_classification != '2': ##unsafe
-                            top_quote_image_description = top_quote_image_description_response.choices[0].text
-                            print(top_quote_image_description)
-                            image = replicate.predictions.create(
-                                version=replicate_model.versions.list()[0],
-                                input={
-                                    "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
-                                    "zoom": "0: (1.01)",
-                                    "fps": 10,
-                                    }
-                            )
-
-                            src=''
-                            i = 0
-                            while ((i < 50) and (src == '')):
-                                print(i)
-                                time.sleep(10)
-                                image.reload()
-                                print(image.status)
-                                if image.status == 'succeeded':
-                                    print(image)
-                                    # print(image.output[-1])
-                                    # src = image.output[-1]
-                                    print(image.output)
-                                    src = image.output
-                                i += 1
+                    src=''
+                    i = 0
+                    while ((i < 50) and (src == '')):
+                        print(i)
+                        time.sleep(10)
+                        image.reload()
+                        print(image.status)
+                        if image.status == 'succeeded':
+                            print(image)
+                            # print(image.output[-1])
+                            # src = image.output[-1]
+                            print(image.output)
+                            src = image.output
+                        i += 1
 
 
-                            # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
-                            images.append(src)
-                            image_count += 1
-                    
-                    find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
-
-                    tq_start = find_top_quote[0][0]
-                    tq_start_i = start_times_unformatted.index(tq_start)
-                    tq_end = start_times_unformatted[tq_start_i + 1]
-
-                    print('This is audio')
-                    print(audio)
-                    if audio != None:
-                        top_quote_audio = audio[tq_start:tq_end]
-                        audio_clips.append(top_quote_audio)
-
-
-
-                else:
-                    print('UNSAFE RESPONSE:')
-                    print(top_quote_response)
+                    # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
+                    images.append(src)
+                    image_count += 1
             
-                break
-            except:
-                attempts += 1
-                print('number of attempts: ' + str(attempts))
-                time.sleep(30)
+            find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
+
+            tq_start = find_top_quote[0][0]
+            tq_start_i = start_times_unformatted.index(tq_start)
+            tq_end = start_times_unformatted[tq_start_i + 1]
+
+            print('This is audio')
+            print(audio)
+            if audio != None:
+                top_quote_audio = audio[tq_start:tq_end]
+                audio_clips.append(top_quote_audio)
+
+
+
+        else:
+            print('UNSAFE RESPONSE:')
+            print(top_quote_response)
+            
+                # break
+            # except:
+            #     attempts += 1
+            #     print('number of attempts: ' + str(attempts))
+            #     time.sleep(30)
     
     return summary_chunks, top_quotes, images, audio_clips
 
