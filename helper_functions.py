@@ -468,11 +468,11 @@ def convert(
             elif tq_end_i == 0:
                 tq_start = 0
 
-            print('This is audio')
-            print(audio)
-            if audio != None:
-                top_quote_audio = audio[tq_start:tq_end]
-                audio_clips.append(top_quote_audio)
+            # print('This is audio')
+            # print(audio)
+            # if audio != None:
+            #     top_quote_audio = audio[tq_start:tq_end]
+            #     audio_clips.append(top_quote_audio)
 
 
 
