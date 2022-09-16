@@ -526,13 +526,14 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    audio = None
-    try:
-        audio = AudioSegment.from_mp3(audio_file)
-        print('this is audio run_combined')
-        print(audio)
-    except:
-        pass
+    # audio = None
+    print(audio_file)
+    # try:
+    audio = AudioSegment.from_mp3(audio_file)
+    print('this is audio run_combined')
+    print(audio)
+    # except:
+        # pass
 
         
     summary_chunks, top_quotes, images, audio_clips = convert(
