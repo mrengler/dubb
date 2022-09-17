@@ -468,11 +468,11 @@ def convert(
             elif tq_end_i == 0:
                 tq_start = 0
 
-            # print('This is audio')
-            # print(audio)
-            # if audio != None:
-            #     top_quote_audio = audio[tq_start:tq_end]
-            #     audio_clips.append(top_quote_audio)
+            print('This is audio')
+            print(audio)
+            if audio != None:
+                top_quote_audio = audio[tq_start:tq_end]
+                audio_clips.append(top_quote_audio)
 
 
 
@@ -616,8 +616,8 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
-    # + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
+    + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
     # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
 
     response = requests.\
