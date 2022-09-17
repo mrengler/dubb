@@ -531,7 +531,7 @@ def run_combined(
     # audio = None
     print(filename)
     # try:
-    audio = AudioSegment.from_mp3(filename)
+    audio = AudioSegment.from_file(filename)
     print('this is audio run_combined')
     print(audio)
     # except:
