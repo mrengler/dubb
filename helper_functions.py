@@ -472,9 +472,10 @@ def convert(
             print(audio)
             if audio != None:
                 top_quote_audio = audio[tq_start:tq_end]
-                top_quote_audio_export = top_quote_audio.export(str(tq_start) + "_" + str(tq_end) + ".mp3", format="mp3")
-                print(top_quote_audio_export)
-                audio_clips.append(top_quote_audio_export)
+                top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
+                top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                print(top_quote_audio_filename)
+                audio_clips.append(top_quote_audio_filename)
 
 
 
