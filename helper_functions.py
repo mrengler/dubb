@@ -473,6 +473,7 @@ def convert(
             if audio != None:
                 top_quote_audio = audio[tq_start:tq_end]
                 top_quote_audio_export = top_quote_audio.export(str(tq_start) + "_" + str(tq_end) + ".mp3", format="mp3")
+                print(top_quote_audio_export)
                 audio_clips.append(top_quote_audio_export)
 
 
@@ -560,6 +561,7 @@ def run_combined(
     present_images = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(images) + """' type='video/mp4'></video>"""
     
     if audio != None:
+        print(audio_clips)
         present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
     else:
         present_audio_clips = ""
