@@ -126,7 +126,7 @@ def result(id):
         combined, audio_clips, user = job.result
         print(audio_clips)
         present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
-        combined += + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
+        combined += """<br><br><b><a id="audio_clips">Audio Clips</a></b><br><br>""" + present_audio_clips
         return get_template(combined)
 
 
