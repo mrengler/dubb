@@ -123,7 +123,7 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(refresh=True)
     elif status == 'finished':
-        combined, audio_files, user = job.result
+        combined, audio_clips, user = job.result
         print(audio_clips)
         present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
         combined += + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
