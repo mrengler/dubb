@@ -345,7 +345,7 @@ def convert(
     user,
     cleaned_sentences,
     start_times_unformatted,
-    # audio, 
+    audio, 
     temp, 
     pres_penalty, 
     # n=20, 
@@ -468,14 +468,13 @@ def convert(
             elif tq_end_i == 0:
                 tq_start = 0
 
-            # print('This is audio')
-            # print(audio)
-            # if audio != None:
-            #     top_quote_audio = audio[tq_start:tq_end]
-            #     top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
-            #     top_quote_audio.export(top_quote_audio_filename, format="mp3")
-            #     print(top_quote_audio_filename)
-            #     audio_clips.append(top_quote_audio_filename)
+
+            if audio != None:
+                top_quote_audio = audio[tq_start:tq_end]
+                top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
+                top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                print(top_quote_audio_filename)
+                audio_clips.append(top_quote_audio_filename)
 
 
 
@@ -489,8 +488,7 @@ def convert(
             #     print('number of attempts: ' + str(attempts))
             #     time.sleep(30)
     
-    return summary_chunks, top_quotes, images
-    # , audio_clips
+    return summary_chunks, top_quotes, images, audio_clips
 
 
 def run_combined(
@@ -530,18 +528,17 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    # try:
-        # audio = AudioSegment.from_file(filename)
-    # except:
-        # pass
+    try:
+        audio = AudioSegment.from_file(filename)
+    except:
+        pass
 
         
-    # summary_chunks, top_quotes, images, audio_clips = convert(
-    summary_chunks, top_quotes, images = convert(
+    summary_chunks, top_quotes, images, audio_clips = convert(
         user,
         cleaned_sentences,
         start_times_unformatted,
-        # audio, 
+        audio, 
         temperature,
         presence_penalty, 
         model=model,
@@ -632,7 +629,7 @@ def run_combined(
              }
          )
     
-    return combined, user
+    return combined, audio_clips, user
     
 
 def present_article(article):
