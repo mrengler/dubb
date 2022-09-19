@@ -484,17 +484,23 @@ def convert(
             
             try:
                 find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
-
+                print(find_top_quote)
                 tq_end = find_top_quote[0][0]
                 tq_end_i = start_times_unformatted.index(tq_end)
+                print(tq_end_i)
+
                 if tq_end_i > 0:
                     tq_start = start_times_unformatted[tq_end_i - 1]
                 elif tq_end_i == 0:
                     tq_start = 0
 
+                print(audio)
+
                 if audio != None:
                     top_quote_audio = audio[tq_start:tq_end]
+                    print(top_quote_audio)
                     top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                    print(top_quote_audio_filename)
                     top_quote_audio.export(top_quote_audio_filename, format="mp3")
                     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
                     audio_filenames.append(top_quote_audio_filename)
