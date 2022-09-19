@@ -483,6 +483,9 @@ def convert(
                     image_count += 1
             
             try:
+                print('this is debug section')
+                print(top_quote)
+                print(cleaned_sentences_timestamps)
                 find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
                 print(find_top_quote)
                 tq_end = find_top_quote[0][0]
