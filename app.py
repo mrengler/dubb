@@ -129,8 +129,8 @@ def result(id):
             download_from_gs('writersvoice', audio_filename, audio_filename)
         print('This is audio_clips_filenames')
         print(audio_filenames)
-        present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
-        combined += """<br><br><b><a id="audio_clips">Audio Clips</a></b><br><br>""" + present_audio_clips
+        # present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
+        # combined += """<br><br><b><a id="audio_clips">Audio Clips</a></b><br><br>""" + present_audio_clips
         return get_template(combined)
 
 
