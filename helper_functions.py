@@ -98,6 +98,28 @@ def upload_to_gs(bucket_name, source_file_name, destination_file_name):
         )
     )
 
+def download_from_gs(bucket_name, source_file_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The ID of your GCS object
+    # source_blob_name = "storage-object-name"
+
+    # The path to which the file should be downloaded
+    # destination_file_name = "local/path/to/file"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    # Construct a client side representation of a blob.
+    # Note `Bucket.blob` differs from `Bucket.get_blob` as it doesn't retrieve
+    # any content from Google Cloud Storage. As we don't need additional data,
+    # using `Bucket.blob` is preferred here.
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
 
 def generate_download_signed_url_v4(bucket_name, blob_name):
     """Generates a v4 signed URL for downloading a blob.
@@ -345,10 +367,11 @@ def convert(
     user,
     cleaned_sentences,
     start_times_unformatted,
-    audio, 
+    audio,
+    filename,
+    bucket_name, 
     temp, 
     pres_penalty, 
-    # n=20, 
     model="davinci:ft-summarize-2022-01-02-20-59-54",
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
@@ -358,7 +381,6 @@ def convert(
     summary_chunks = []
     top_quotes = []
     images = []
-    audio_clips = []
     audio_filenames = []
 
     image_count = 0
@@ -368,131 +390,130 @@ def convert(
     cleaned_sentences_timestamps = zip(start_times_unformatted, cleaned_sentences)
     
     for prompt_chunk in prompt_chunks:
-        # attempts = 0
-        # while attempts < 5:
-        #     try:
-        summary_chunk_response = openai.Completion.create(
-            model=model,
-            prompt=prompt_chunk,
-            max_tokens=max_tokens_output,
-            temperature=temp,
-            presence_penalty=pres_penalty,
-            stop=complete_end_string,
-            user=user,
-        )
+        attempts = 0
+        while attempts < 5:
+            try:
+            summary_chunk_response = openai.Completion.create(
+                model=model,
+                prompt=prompt_chunk,
+                max_tokens=max_tokens_output,
+                temperature=temp,
+                presence_penalty=pres_penalty,
+                stop=complete_end_string,
+                user=user,
+            )
 
-        top_quote_response = openai.Completion.create(
-            model='text-davinci-002',
-            prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
-            max_tokens=max_tokens_output,
-            temperature=0.0,
-            presence_penalty=pres_penalty,
-            stop='"',
-            user=user,
-        )
+            top_quote_response = openai.Completion.create(
+                model='text-davinci-002',
+                prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
+                max_tokens=max_tokens_output,
+                temperature=0.0,
+                presence_penalty=pres_penalty,
+                stop='"',
+                user=user,
+            )
 
-        summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
+            summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
 
-        if summary_classification != '2': ##unsafe
-            summary_chunk = summary_chunk_response.choices[0].text
-            summary_chunk = clean_chunk(summary_chunk)
-            summary_chunks.append(summary_chunk)
-        else:
-            print('UNSAFE RESPONSE:')
-            print(summary_chunk_response)
+            if summary_classification != '2': ##unsafe
+                summary_chunk = summary_chunk_response.choices[0].text
+                summary_chunk = clean_chunk(summary_chunk)
+                summary_chunks.append(summary_chunk)
+            else:
+                print('UNSAFE RESPONSE:')
+                print(summary_chunk_response)
 
-        top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
-        
-        print('This is top quote classification: ' + str(top_quote_classification))
+            top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
+            
+            print('This is top quote classification: ' + str(top_quote_classification))
 
-        if top_quote_classification != '2': ##unsafe
+            if top_quote_classification != '2': ##unsafe
 
-            top_quote = top_quote_response.choices[0].text
-            top_quotes.append(top_quote)
+                top_quote = top_quote_response.choices[0].text
+                top_quotes.append(top_quote)
 
-            if image_count < num_images_to_produce:
+                if image_count < num_images_to_produce:
 
-                top_quote_image_description_response = openai.Completion.create(
-                    model='text-davinci-002',
-                    prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
-                    max_tokens=max_tokens_output_image_description,
-                    temperature=0.7,
-                    presence_penalty=pres_penalty,
-                    stop='"',
-                    user=user,
-                )
-
-                print(top_quote_image_description_response)
-
-                top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
-
-                print(top_quote_image_description_classification)
-
-                if top_quote_image_description_classification != '2': ##unsafe
-                    top_quote_image_description = top_quote_image_description_response.choices[0].text
-                    print(top_quote_image_description)
-                    image = replicate.predictions.create(
-                        version=replicate_model.versions.list()[0],
-                        input={
-                            "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
-                            "zoom": "0: (1.01)",
-                            "fps": 10,
-                            }
+                    top_quote_image_description_response = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
+                        max_tokens=max_tokens_output_image_description,
+                        temperature=0.7,
+                        presence_penalty=pres_penalty,
+                        stop='"',
+                        user=user,
                     )
 
-                    src=''
-                    i = 0
-                    while ((i < 50) and (src == '')):
-                        print(i)
-                        time.sleep(10)
-                        image.reload()
-                        print(image.status)
-                        if image.status == 'succeeded':
-                            print(image)
-                            # print(image.output[-1])
-                            # src = image.output[-1]
-                            print(image.output)
-                            src = image.output
-                        i += 1
+                    print(top_quote_image_description_response)
+
+                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
+
+                    print(top_quote_image_description_classification)
+
+                    if top_quote_image_description_classification != '2': ##unsafe
+                        top_quote_image_description = top_quote_image_description_response.choices[0].text
+                        print(top_quote_image_description)
+                        image = replicate.predictions.create(
+                            version=replicate_model.versions.list()[0],
+                            input={
+                                "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
+                                "zoom": "0: (1.01)",
+                                "fps": 10,
+                                }
+                        )
+
+                        src=''
+                        i = 0
+                        while ((i < 50) and (src == '')):
+                            print(i)
+                            time.sleep(10)
+                            image.reload()
+                            print(image.status)
+                            if image.status == 'succeeded':
+                                print(image)
+                                # print(image.output[-1])
+                                # src = image.output[-1]
+                                print(image.output)
+                                src = image.output
+                            i += 1
 
 
-                    # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
-                    images.append(src)
-                    image_count += 1
+                        # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
+                        images.append(src)
+                        image_count += 1
+                
+                try:
+                    find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
+
+                    tq_end = find_top_quote[0][0]
+                    tq_end_i = start_times_unformatted.index(tq_end)
+                    if tq_end_i > 0:
+                        tq_start = start_times_unformatted[tq_end_i - 1]
+                    elif tq_end_i == 0:
+                        tq_start = 0
+
+                    if audio != None:
+                        top_quote_audio = audio[tq_start:tq_end]
+                        top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                        top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                        upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                        audio_filenames.append(top_quote_audio_filename)
+                except:
+                    pass
+
+
+
+            else:
+                print('UNSAFE RESPONSE:')
+                print(top_quote_response)
             
-            try:
-                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
-
-                tq_end = find_top_quote[0][0]
-                tq_end_i = start_times_unformatted.index(tq_end)
-                if tq_end_i > 0:
-                    tq_start = start_times_unformatted[tq_end_i - 1]
-                elif tq_end_i == 0:
-                    tq_start = 0
-
-
-                if audio != None:
-                    top_quote_audio = audio[tq_start:tq_end]
-                    top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
-                    top_quote_audio_clip = top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                    audio_clips.append(top_quote_audio_clip)
-                    audio_filenames.append(top_quote_audio_filename)
+                break
             except:
-                pass
-
-
-
-        else:
-            print('UNSAFE RESPONSE:')
-            print(top_quote_response)
-            
-                # break
-            # except:
-            #     attempts += 1
-            #     print('number of attempts: ' + str(attempts))
-            #     time.sleep(30)
+                attempts += 1
+                print('number of attempts: ' + str(attempts))
+                time.sleep(30)
     
-    return summary_chunks, top_quotes, images, audio_clips, audio_filenames
+    return summary_chunks, top_quotes, images, audio_filenames
 
 
 def run_combined(
@@ -538,11 +559,13 @@ def run_combined(
         audio = None
 
         
-    summary_chunks, top_quotes, images, audio_clips, audio_filenames = convert(
+    summary_chunks, top_quotes, images, audio_filenames = convert(
         user,
         cleaned_sentences,
         start_times_unformatted,
-        audio, 
+        audio,
+        filename,
+        bucket_name, 
         temperature,
         presence_penalty, 
         model=model,
@@ -633,7 +656,7 @@ def run_combined(
              }
          )
     
-    return combined, audio_clips, audio_filenames, user
+    return combined, audio_filenames, user
     
 
 def present_article(article):
