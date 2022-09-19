@@ -388,6 +388,10 @@ def convert(
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
     cleaned_sentences_timestamps = zip(start_times_unformatted, cleaned_sentences)
+    print('this is cleaned_sentences_timestamps original')
+    print([(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps])
+    print(start_times_unformatted)
+    print(cleaned_sentences)
     
     for prompt_chunk in prompt_chunks:
         attempts = 0
