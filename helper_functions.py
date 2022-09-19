@@ -459,22 +459,25 @@ def convert(
                     images.append(src)
                     image_count += 1
             
-            find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
+            try:
+                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
 
-            tq_end = find_top_quote[0][0]
-            tq_end_i = start_times_unformatted.index(tq_end)
-            if tq_end_i > 0:
-                tq_start = start_times_unformatted[tq_end_i - 1]
-            elif tq_end_i == 0:
-                tq_start = 0
+                tq_end = find_top_quote[0][0]
+                tq_end_i = start_times_unformatted.index(tq_end)
+                if tq_end_i > 0:
+                    tq_start = start_times_unformatted[tq_end_i - 1]
+                elif tq_end_i == 0:
+                    tq_start = 0
 
 
-            if audio != None:
-                top_quote_audio = audio[tq_start:tq_end]
-                top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
-                top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                print(top_quote_audio_filename)
-                audio_clips.append(top_quote_audio_filename)
+                if audio != None:
+                    top_quote_audio = audio[tq_start:tq_end]
+                    top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
+                    top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                    print(top_quote_audio_filename)
+                    audio_clips.append(top_quote_audio_filename)
+            except:
+                pass
 
 
 
