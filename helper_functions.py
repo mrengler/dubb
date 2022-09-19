@@ -531,7 +531,7 @@ def run_combined(
     try:
         audio = AudioSegment.from_file(filename)
     except:
-        pass
+        audio = None
 
         
     summary_chunks, top_quotes, images, audio_clips = convert(
