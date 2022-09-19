@@ -358,7 +358,8 @@ def convert(
     summary_chunks = []
     top_quotes = []
     images = []
-    audio_clips_filenames = []
+    audio_clips = []
+    audio_filenames = []
 
     image_count = 0
 
@@ -474,8 +475,8 @@ def convert(
                     top_quote_audio = audio[tq_start:tq_end]
                     top_quote_audio_filename = str(tq_start) + "_" + str(tq_end) + ".mp3"
                     top_quote_audio_clip = top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                    print(top_quote_audio_filename)
-                    audio_clips_filenames.append((top_quote_audio_clip, top_quote_audio_filename))
+                    audio_clips.append(top_quote_audio_clip)
+                    audio_filenames.append(top_quote_audio_filename)
             except:
                 pass
 
@@ -491,7 +492,7 @@ def convert(
             #     print('number of attempts: ' + str(attempts))
             #     time.sleep(30)
     
-    return summary_chunks, top_quotes, images, audio_clips_filenames
+    return summary_chunks, top_quotes, images, audio_clips, audio_filenames
 
 
 def run_combined(
@@ -537,7 +538,7 @@ def run_combined(
         audio = None
 
         
-    summary_chunks, top_quotes, images, audio_clips_filenames = convert(
+    summary_chunks, top_quotes, images, audio_clips, audio_filenames = convert(
         user,
         cleaned_sentences,
         start_times_unformatted,
@@ -632,7 +633,7 @@ def run_combined(
              }
          )
     
-    return combined, audio_clips_filenames, user
+    return combined, audio_clips, audio_filenames, user
     
 
 def present_article(article):
