@@ -123,6 +123,7 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(refresh=True)
     elif status == 'finished':
+        print(job.result)
         combined, audio_clips_filenames, user = job.result
         audio_clips = [audio_clip for (audio_clip, audio_file_name) in audio_clips_filenames]
         audio_filenames = [audio_file_name for (audio_clip, audio_file_name) in audio_clips_filenames]
