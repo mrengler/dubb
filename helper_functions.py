@@ -490,7 +490,7 @@ def convert(
                 print('this is debug section')
                 print("'" + top_quote + "'")
                 print([(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps])
-                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote in sentence]
+                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if re.search(top_quote, sentence, re.IGNORECASE)]
                 print(find_top_quote)
                 tq_end = find_top_quote[0][0]
                 tq_end_i = start_times_unformatted.index(tq_end)
