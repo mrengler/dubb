@@ -6,7 +6,9 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 0
+num_images_to_produce = 1
+double = 2
+frame_rate = 10
 
 
 import youtube_dl
@@ -17,6 +19,7 @@ import time
 import replicate
 from pydub import AudioSegment
 import re
+import math
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -349,6 +352,7 @@ def content_filter(content_to_classify, user):
 
     return output_label
 
+
 def clean_chunk(txt):
     txt_split = re.split('\n\n', txt)
     txt_groups = []
@@ -362,6 +366,16 @@ def clean_chunk(txt):
     
     txt = '\n\n'.join(txt_groups)
     return txt
+
+
+def get_length(filename):
+    result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+                             "format=duration", "-of",
+                             "default=noprint_wrappers=1:nokey=1", filename],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT)
+    return float(result.stdout)
+
 
 def convert(
     user,
@@ -381,7 +395,8 @@ def convert(
     summary_chunks = []
     top_quotes = []
     images = []
-    audio_filenames = [] 
+    audio_filenames = []
+    image_audio_filenames = [] 
 
     image_count = 0
 
@@ -483,35 +498,28 @@ def convert(
                         i += 1
 
 
-                    # os.system("ffmpeg -i \"concat:" + src + "|" + src + "|" src + "|" + "\" -codec copy joined.mp4")
                     images.append(src)
                     image_count += 1
             
+            ## generate audiograms
             try:
                 print('this is debug section')
                 print("'" + top_quote + "'")
                 if len(top_quote.split('\n\n')) == 1:
                     find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
-                    print(find_top_quote)
                     tq_end = find_top_quote[0][0]
                     tq_end_i = start_times_unformatted.index(tq_end)
-                    print(tq_end_i)
 
                     if tq_end_i > 0:
                         tq_start = start_times_unformatted[tq_end_i - 1]
                     elif tq_end_i == 0:
                         tq_start = 0
 
-                    print('this is start and stop')
-                    print(tq_start)
-                    print(tq_end)
 
                 elif len(top_quote.split('\n\n')) > 1:
                     find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
-                    print(find_top_quote_start)
                     tq_end_false = find_top_quote_start[0][0]
                     tq_end_false_i = start_times_unformatted.index(tq_end_false)
-                    print(tq_end_false_i)
 
                     if tq_end_false_i > 0:
                         tq_start = start_times_unformatted[tq_end_false_i - 1]
@@ -522,21 +530,28 @@ def convert(
 
                     tq_end = find_top_quote_end[0][0]
 
-                    print('this is start and stop')
-                    print(tq_start)
-                    print(tq_end)
-
-
-                    print(audio)
 
                 if audio != None:
                     top_quote_audio = audio[tq_start:tq_end]
-                    print(top_quote_audio)
                     top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                    print(top_quote_audio_filename)
                     top_quote_audio.export(top_quote_audio_filename, format="mp3")
                     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
                     audio_filenames.append(top_quote_audio_filename)
+
+                    ##generate audio and visuals combined
+                    if image_count < num_images_to_produce:
+                        l = get_length(src)
+                        fps_full = l * double * frame_rate
+                        desired_length = len(top_quote_audio_filename)
+                        multiplier = desired_length / (l * double)
+                        loop = math.ceil(multiplier)
+
+                        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+
+                        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
+                        image_audio_filenames.append(image_audio_filename)
             except:
                 pass
 
@@ -552,7 +567,7 @@ def convert(
             #     print('number of attempts: ' + str(attempts))
             #     time.sleep(30)
     
-    return summary_chunks, top_quotes, images, audio_filenames
+    return summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames
 
 
 def run_combined(
@@ -598,7 +613,7 @@ def run_combined(
         audio = None
 
         
-    summary_chunks, top_quotes, images, audio_filenames = convert(
+    summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
         user,
         cleaned_sentences,
         start_times_unformatted,
@@ -686,7 +701,9 @@ def run_combined(
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            files=[("attachment", open(audio_filename, "rb").read()) for audio_filename in audio_filenames],
+            files=[("attachment", open(audio_filename, "rb").read()) for audio_filename in audio_filenames] + \
+            [("attachment", open(image, "rb").read()) for image in images] + \
+            [("attachment", open(image_audio_filename, "rb").read()) for image_audio_filename in image_audio_filenames],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
