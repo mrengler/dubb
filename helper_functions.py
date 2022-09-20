@@ -501,6 +501,10 @@ def convert(
                     elif tq_end_i == 0:
                         tq_start = 0
 
+                    print('this is start and stop')
+                    print(tq_start)
+                    print(tq_end)
+
                 elif len(top_quote.split('\n\n')) > 1:
                     find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
                     print(find_top_quote_start)
@@ -517,7 +521,9 @@ def convert(
 
                     tq_end = find_top_quote_end[0][0]
 
-
+                    print('this is start and stop')
+                    print(tq_start)
+                    print(tq_end)
 
 
                 print(audio)
