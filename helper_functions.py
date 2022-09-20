@@ -502,58 +502,58 @@ def convert(
                     image_count += 1
             
             ## generate audiograms
-            # try:
-            print('this is debug section')
-            print("'" + top_quote + "'")
-            if len(top_quote.split('\n\n')) == 1:
-                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
-                tq_end = find_top_quote[0][0]
-                tq_end_i = start_times_unformatted.index(tq_end)
+            try:
+                print('this is debug section')
+                print("'" + top_quote + "'")
+                if len(top_quote.split('\n\n')) == 1:
+                    find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
+                    tq_end = find_top_quote[0][0]
+                    tq_end_i = start_times_unformatted.index(tq_end)
 
-                if tq_end_i > 0:
-                    tq_start = start_times_unformatted[tq_end_i - 1]
-                elif tq_end_i == 0:
-                    tq_start = 0
-
-
-            elif len(top_quote.split('\n\n')) > 1:
-                find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
-                tq_end_false = find_top_quote_start[0][0]
-                tq_end_false_i = start_times_unformatted.index(tq_end_false)
-
-                if tq_end_false_i > 0:
-                    tq_start = start_times_unformatted[tq_end_false_i - 1]
-                elif tq_end_false_i == 0:
-                    tq_start = 0
-
-                find_top_quote_end = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[-1].casefold() in sentence.casefold()]
-
-                tq_end = find_top_quote_end[0][0]
+                    if tq_end_i > 0:
+                        tq_start = start_times_unformatted[tq_end_i - 1]
+                    elif tq_end_i == 0:
+                        tq_start = 0
 
 
-            if audio != None:
-                top_quote_audio = audio[tq_start:tq_end]
-                top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
-                audio_filenames.append(top_quote_audio_filename)
+                elif len(top_quote.split('\n\n')) > 1:
+                    find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
+                    tq_end_false = find_top_quote_start[0][0]
+                    tq_end_false_i = start_times_unformatted.index(tq_end_false)
 
-                ##generate audio and visuals combined
-                if image_count < num_images_to_produce:
-                    l = get_length(src)
-                    fps_full = l * double * frame_rate
-                    desired_length = len(top_quote_audio_filename)
-                    multiplier = desired_length / (l * double)
-                    loop = math.ceil(multiplier)
+                    if tq_end_false_i > 0:
+                        tq_start = start_times_unformatted[tq_end_false_i - 1]
+                    elif tq_end_false_i == 0:
+                        tq_start = 0
 
-                    image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                    os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+                    find_top_quote_end = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[-1].casefold() in sentence.casefold()]
 
-                    image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                    os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
-                    image_audio_filenames.append(image_audio_filename)
-            # except:
-            #     pass
+                    tq_end = find_top_quote_end[0][0]
+
+
+                if audio != None:
+                    top_quote_audio = audio[tq_start:tq_end]
+                    top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                    top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                    upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                    audio_filenames.append(top_quote_audio_filename)
+
+                    ##generate audio and visuals combined
+                    if image_count < num_images_to_produce:
+                        l = get_length(src)
+                        fps_full = l * double * frame_rate
+                        desired_length = len(top_quote_audio_filename)
+                        multiplier = desired_length / (l * double)
+                        loop = math.ceil(multiplier)
+
+                        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+
+                        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
+                        image_audio_filenames.append(image_audio_filename)
+            except:
+                pass
 
 
 
@@ -701,8 +701,7 @@ def run_combined(
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            files=[("attachment", open(audio_filename, "rb").read()) for audio_filename in audio_filenames] + \
-            [("attachment", open(image_audio_filename, "rb").read()) for image_audio_filename in image_audio_filenames],
+            files=[("attachment", open(audio_filename, "rb").read()) for audio_filename in audio_filenames],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
