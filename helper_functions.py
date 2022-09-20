@@ -434,6 +434,7 @@ def convert(
         if top_quote_classification != '2': ##unsafe
 
             top_quote = top_quote_response.choices[0].text
+            top_quote = top_quote.replace("'The full transcript:\n\n'", '')
             top_quotes.append(top_quote)
 
             if image_count < num_images_to_produce:
