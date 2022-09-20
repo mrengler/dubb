@@ -486,44 +486,44 @@ def convert(
                     images.append(src)
                     image_count += 1
             
-            try:
-                print('this is debug section')
-                print("'" + top_quote + "'")
-                if len(top_quote.split('\n\n')) == 1:
-                    find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
-                    print(find_top_quote)
-                    tq_end = find_top_quote[0][0]
-                    tq_end_i = start_times_unformatted.index(tq_end)
-                    print(tq_end_i)
+            # try:
+            print('this is debug section')
+            print("'" + top_quote + "'")
+            if len(top_quote.split('\n\n')) == 1:
+                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
+                print(find_top_quote)
+                tq_end = find_top_quote[0][0]
+                tq_end_i = start_times_unformatted.index(tq_end)
+                print(tq_end_i)
 
-                    if tq_end_i > 0:
-                        tq_start = start_times_unformatted[tq_end_i - 1]
-                    elif tq_end_i == 0:
-                        tq_start = 0
+                if tq_end_i > 0:
+                    tq_start = start_times_unformatted[tq_end_i - 1]
+                elif tq_end_i == 0:
+                    tq_start = 0
 
-                    print('this is start and stop')
-                    print(tq_start)
-                    print(tq_end)
+                print('this is start and stop')
+                print(tq_start)
+                print(tq_end)
 
-                elif len(top_quote.split('\n\n')) > 1:
-                    find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
-                    print(find_top_quote_start)
-                    tq_end_false = find_top_quote_start[0][0]
-                    tq_end_false_i = start_times_unformatted.index(tq_end)
-                    print(tq_end_false_i)
+            elif len(top_quote.split('\n\n')) > 1:
+                find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
+                print(find_top_quote_start)
+                tq_end_false = find_top_quote_start[0][0]
+                tq_end_false_i = start_times_unformatted.index(tq_end)
+                print(tq_end_false_i)
 
-                    if tq_end_false_i > 0:
-                        tq_start = start_times_unformatted[tq_end_false_i - 1]
-                    elif tq_end_false_i == 0:
-                        tq_start = 0
+                if tq_end_false_i > 0:
+                    tq_start = start_times_unformatted[tq_end_false_i - 1]
+                elif tq_end_false_i == 0:
+                    tq_start = 0
 
-                    find_top_quote_end = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[-1].casefold() in sentence.casefold()]
+                find_top_quote_end = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[-1].casefold() in sentence.casefold()]
 
-                    tq_end = find_top_quote_end[0][0]
+                tq_end = find_top_quote_end[0][0]
 
-                    print('this is start and stop')
-                    print(tq_start)
-                    print(tq_end)
+                print('this is start and stop')
+                print(tq_start)
+                print(tq_end)
 
 
                 print(audio)
