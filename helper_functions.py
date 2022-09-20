@@ -509,7 +509,7 @@ def convert(
                 find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
                 print(find_top_quote_start)
                 tq_end_false = find_top_quote_start[0][0]
-                tq_end_false_i = start_times_unformatted.index(tq_end)
+                tq_end_false_i = start_times_unformatted.index(tq_end_false)
                 print(tq_end_false_i)
 
                 if tq_end_false_i > 0:
