@@ -536,8 +536,8 @@ def convert(
                     top_quote_audio.export(top_quote_audio_filename, format="mp3")
                     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
                     audio_filenames.append(top_quote_audio_filename)
-            except:
-                pass
+            # except:
+            #     pass
 
 
 
