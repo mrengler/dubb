@@ -713,6 +713,8 @@ def run_combined(
 
     shutil.make_archive(dir_name, 'zip', dir_name)
 
+    time.sleep(120)
+
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
