@@ -6,8 +6,8 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 1
-num_image_audios_to_produce = 1
+num_images_to_produce = 0
+num_image_audios_to_produce = 0
 double = 2
 frame_rate = 10
 # dir_name = 'media_assets'
@@ -704,9 +704,9 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
-    + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips \
-    + """<br><br><b><a id="animations">Video Clips</a></b><br><br>""" + present_image_audio_clips
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    # + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    # + """<br><br><b><a id="animations">Video Clips</a></b><br><br>""" + present_image_audio_clips
 
 
     # shutil.make_archive('media', 'zip', dir_name)
