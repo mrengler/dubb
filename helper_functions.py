@@ -10,7 +10,7 @@ num_images_to_produce = 1
 num_image_audios_to_produce = 1
 double = 2
 frame_rate = 10
-dir_name = 'media_assets'
+# dir_name = 'media_assets'
 
 
 import youtube_dl
@@ -396,8 +396,8 @@ def convert(
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
     
-    if not os.path.exists(dir_name):
-        os.mkdir(dir_name)
+    # if not os.path.exists(dir_name):
+    #     os.mkdir(dir_name)
 
     summary_chunks = []
     top_quotes = []
@@ -541,7 +541,7 @@ def convert(
 
             if audio != None:
                 top_quote_audio = audio[tq_start:tq_end]
-                top_quote_audio_filename = dir_name + '/' + filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                 top_quote_audio.export(top_quote_audio_filename, format="mp3")
                 audio_filenames.append(top_quote_audio_filename)
 
@@ -553,10 +553,10 @@ def convert(
                     multiplier = desired_length / (l * double)
                     loop = math.ceil(multiplier)
 
-                    image_looped_filename = dir_name + '/' + "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                    image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
 
-                    image_audio_filename = dir_name + '/' + "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                    image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
                     image_audio_filenames.append(image_audio_filename)
 
@@ -642,13 +642,13 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    present_images = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(images) + """' type='video/mp4'></video>"""
+    present_image_audio_clips = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     
-    # if audio != None:
-    #     print(audio_clips)
-    #     present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
-    # else:
-    #     present_audio_clips = ""
+    if audio != None:
+        print(audio_clips)
+        present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_clips) + """' type='audio/mpeg'></audio>"""
+    else:
+        present_audio_clips = ""
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -703,25 +703,19 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
-    # + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
-    # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
+    + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    + """<br><br><b><a id="animations">Video Clips</a></b><br><br>""" + present_image_audio_clips
 
-    
-    attachment_files = audio_filenames + image_audio_filenames
-    print('this is attachment_files')
-    print(attachment_files)
 
-    shutil.make_archive('media', 'zip', dir_name)
-
-    time.sleep(120)
+    # shutil.make_archive('media', 'zip', dir_name)
 
     print(os.listdir())
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            files=[("attachment", open('media' + ".zip", "rb"))],
+            # files=[("attachment", open('media' + ".zip", "rb"))],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
@@ -731,7 +725,7 @@ def run_combined(
              }
          )
     
-    return combined, audio_filenames, user
+    return combined, audio_filenames, image_audio_filenames, user
     
 
 def present_article(article):
