@@ -544,6 +544,7 @@ def convert(
                 top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                 top_quote_audio.export(top_quote_audio_filename, format="mp3")
                 audio_filenames.append(top_quote_audio_filename)
+                upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
                 ##generate audio and visuals combined
                 if image_audio_count < num_image_audios_to_produce:
@@ -559,6 +560,7 @@ def convert(
                     image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
                     image_audio_filenames.append(image_audio_filename)
+                    upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
                     image_audio_count += 1
             # except:
