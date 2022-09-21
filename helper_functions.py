@@ -7,6 +7,7 @@ max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
 num_images_to_produce = 1
+num_image_audios_to_produce = 1
 double = 2
 frame_rate = 10
 
@@ -399,6 +400,7 @@ def convert(
     image_audio_filenames = [] 
 
     image_count = 0
+    image_audio_count = 0
 
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
@@ -539,7 +541,7 @@ def convert(
                 audio_filenames.append(top_quote_audio_filename)
 
                 ##generate audio and visuals combined
-                if image_count < num_images_to_produce:
+                if image_audio_count < num_image_audios_to_produce:
                     l = get_length(src)
                     fps_full = l * double * frame_rate
                     desired_length = len(top_quote_audio_filename)
@@ -552,6 +554,8 @@ def convert(
                     image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
                     image_audio_filenames.append(image_audio_filename)
+
+                    image_audio_count += 1
             # except:
             #     pass
 
