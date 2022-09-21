@@ -698,6 +698,11 @@ def run_combined(
     # + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips
     # + """<br><br><b><a id="animations">Animations</a></b><br><br>""" + present_images
 
+    
+    attachment_files = audio_filenames + image_audio_filenames
+    print('this is attachment_files')
+    print(attachment_files)
+
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
