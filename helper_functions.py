@@ -712,14 +712,16 @@ def run_combined(
     print('this is attachment_files')
     print(attachment_files)
 
-    shutil.make_archive(dir_name, 'zip', dir_name)
+    shutil.make_archive('media', 'zip', dir_name)
 
     time.sleep(120)
+
+    print(os.listdir())
 
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            files=[("attachment", open(dir_name + ".zip", "rb"))],
+            files=[("attachment", open('media' + ".zip", "rb"))],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
