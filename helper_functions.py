@@ -701,7 +701,7 @@ def run_combined(
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            files=[("attachment", open(audio_filename, "rb").read()) for audio_filename in audio_filenames],
+            files=[("attachment", open(filename, "rb").read()) for filename in audio_filenames + image_audio_filenames],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
