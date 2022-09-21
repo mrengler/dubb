@@ -21,6 +21,7 @@ import replicate
 from pydub import AudioSegment
 import re
 import math
+import subprocess
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
