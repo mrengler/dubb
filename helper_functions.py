@@ -620,13 +620,11 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    print('before audio=')
     try:
-        audio = AudioSegment.from_file(filename)
+        audio = AudioSegment.from_wav(filename)
     except:
         audio = None
-        print('exception on audio=')
-    print('after audio=')
+        print('error with AudioSegment')
 
         
     summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
