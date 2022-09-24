@@ -188,7 +188,7 @@ def process():
                 return render_template('index.html', error=error)
 
             content_type = 'url'
-            filename = re.sub(r'\W+', '', content) + '.wav'
+            filename = re.sub(r'\W+', '', content) + '.mp3'
 
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]

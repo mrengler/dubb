@@ -62,7 +62,7 @@ def download_yt(url, filename):
             'format': 'bestaudio/best',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'wav',
+                'preferredcodec': 'mp3',
                 'preferredquality': '192'
             }],
             'postprocessor_args': [
@@ -625,7 +625,7 @@ def run_combined(
         time.sleep(60)
 
     try:
-        audio = AudioSegment.from_wav(filename)
+        audio = AudioSegment.from_mp3(filename)
     except:
         audio = None
         print('error with AudioSegment')
