@@ -541,9 +541,13 @@ def convert(
                 tq_end = find_top_quote_end[0][0]
 
 
+            print('This is start end')
+            print(tq_start, tq_end)
+            print(audio)
             if audio != None:
                 top_quote_audio = audio[tq_start:tq_end]
                 top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                print(top_quote_audio_filename)
                 top_quote_audio.export(top_quote_audio_filename, format="mp3")
                 audio_filenames.append(top_quote_audio_filename)
                 upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
