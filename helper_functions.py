@@ -560,6 +560,7 @@ def convert(
 
                     image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+                    upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
 
                     image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
