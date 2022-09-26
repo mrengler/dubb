@@ -385,7 +385,7 @@ def convert(
     user,
     cleaned_sentences,
     sentences_diarized,
-    audio,
+    # audio,
     filename,
     bucket_name, 
     temp, 
@@ -527,11 +527,13 @@ def convert(
             elif tq_end_i == len(sentences_diarized) - 1:
                 tq_end = 100000000000
 
+            tq_duration = math.ceil((tq_end - tq_start) / 1000)
+
             print('This is start end')
             print(tq_start, tq_end)
             print(audio)
             if audio != None:
-                top_quote_audio = audio[tq_start:tq_end]
+                top_quote_audio = AudioSegment(filename, format='mp3', start_second=math.ceil(tq_start / 1000), duration=tq_duration)
                 top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                 print(top_quote_audio_filename)
                 top_quote_audio.export(top_quote_audio_filename, format="mp3")
@@ -611,18 +613,18 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    try:
-        audio = AudioSegment.from_mp3(filename)
-    except:
-        audio = None
-        print('error with AudioSegment')
+    # try:
+    #     audio = AudioSegment.from_mp3(filename)
+    # except:
+    #     audio = None
+    #     print('error with AudioSegment')
 
         
     summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
         user,
         cleaned_sentences,
         sentences_diarized,
-        audio,
+        # audio,
         filename,
         bucket_name, 
         temperature,
