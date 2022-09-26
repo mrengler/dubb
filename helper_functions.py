@@ -533,7 +533,7 @@ def convert(
             print(tq_start, tq_end)
             # print(audio)
             # if audio != None:
-            top_quote_audio = AudioSegment(filename, format='mp3', start_second=math.ceil(tq_start / 1000), duration=tq_duration)
+            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=math.ceil(tq_start / 1000), duration=tq_duration)
             top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
             print(top_quote_audio_filename)
             top_quote_audio.export(top_quote_audio_filename, format="mp3")
