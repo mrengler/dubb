@@ -517,7 +517,7 @@ def convert(
 
 
             # elif len(top_quote.split('\n\n')) > 1:
-            find_top_quote_start = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()]
+            find_top_quote_start = [(timestamp, sentence) for (_, sentence, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()]
             tq_end_false = find_top_quote_start[0][0]
             tq_end_false_i = start_times_unformatted.index(tq_end_false)
 
@@ -526,7 +526,7 @@ def convert(
             elif tq_end_false_i == 0:
                 tq_start = 0
 
-            find_top_quote_end = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()]
+            find_top_quote_end = [(timestamp, sentence) for (_, sentence, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()]
 
             tq_end = find_top_quote_end[0][0]
 
