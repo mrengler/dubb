@@ -233,7 +233,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             start_times.append(start_time)
             start_times_unformatted.append(start_time_unformatted)
 
-            return cleaned_paragraphs, start_times, start_times_unformatted
+            return cleaned_paragraphs, start_times, start_times_unformatted, sentences_diarized
 
         elif paragraphs==False:
 
@@ -241,10 +241,10 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             start_times = [start_time for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
             start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
 
-            return cleaned_sentences, start_times, start_times_unformatted
+            return cleaned_sentences, start_times, start_times_unformatted, sentences_diarized
         
     except:
-        return 'waiting', None, None
+        return 'waiting', None, None, None
 
 
 def get_max_lines(exchanges, n):
@@ -384,7 +384,7 @@ def get_length(filename):
 def convert(
     user,
     cleaned_sentences,
-    start_times_unformatted,
+    sentences_diarized,
     audio,
     filename,
     bucket_name, 
@@ -395,9 +395,6 @@ def convert(
     complete_end_string=[" +++"]):
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
-    
-    # if not os.path.exists(dir_name):
-    #     os.mkdir(dir_name)
 
     summary_chunks = []
     top_quotes = []
@@ -408,14 +405,9 @@ def convert(
     image_count = 0
     image_audio_count = 0
 
+    start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
-    cleaned_sentences_timestamps = [(timestamp, sentence) for (timestamp, sentence) in zip(start_times_unformatted, cleaned_sentences)]
-    print('this is cleaned_sentences_timestamps original')
-    print([(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps])
-    print(start_times_unformatted)
-    print(cleaned_sentences)
-    
     for prompt_chunk in prompt_chunks:
         attempts = 0
         # while attempts < 5:
@@ -513,30 +505,30 @@ def convert(
             # try:
             print('this is debug section')
             print("'" + top_quote + "'")
-            if len(top_quote.split('\n\n')) == 1:
-                find_top_quote = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.casefold() in sentence.casefold()]
-                tq_end = find_top_quote[0][0]
-                tq_end_i = start_times_unformatted.index(tq_end)
+            # if len(top_quote.split('\n\n')) == 1:
+                # find_top_quote = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote.casefold() in sentence.casefold()]
+                # tq_end = find_top_quote[0][0]
+                # tq_end_i = start_times_unformatted.index(tq_end)
 
-                if tq_end_i > 0:
-                    tq_start = start_times_unformatted[tq_end_i - 1]
-                elif tq_end_i == 0:
-                    tq_start = 0
+                # if tq_end_i > 0:
+                #     tq_start = start_times_unformatted[tq_end_i - 1]
+                # elif tq_end_i == 0:
+                #     tq_start = 0
 
 
-            elif len(top_quote.split('\n\n')) > 1:
-                find_top_quote_start = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[0].casefold() in sentence.casefold()]
-                tq_end_false = find_top_quote_start[0][0]
-                tq_end_false_i = start_times_unformatted.index(tq_end_false)
+            # elif len(top_quote.split('\n\n')) > 1:
+            find_top_quote_start = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()]
+            tq_end_false = find_top_quote_start[0][0]
+            tq_end_false_i = start_times_unformatted.index(tq_end_false)
 
-                if tq_end_false_i > 0:
-                    tq_start = start_times_unformatted[tq_end_false_i - 1]
-                elif tq_end_false_i == 0:
-                    tq_start = 0
+            if tq_end_false_i > 0:
+                tq_start = start_times_unformatted[tq_end_false_i - 1]
+            elif tq_end_false_i == 0:
+                tq_start = 0
 
-                find_top_quote_end = [(timestamp, sentence) for (timestamp, sentence) in cleaned_sentences_timestamps if top_quote.split('\n\n')[-1].casefold() in sentence.casefold()]
+            find_top_quote_end = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()]
 
-                tq_end = find_top_quote_end[0][0]
+            tq_end = find_top_quote_end[0][0]
 
 
             print('This is start end')
@@ -620,7 +612,7 @@ def run_combined(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
     try:
@@ -633,7 +625,7 @@ def run_combined(
     summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
         user,
         cleaned_sentences,
-        start_times_unformatted,
+        sentences_diarized,
         audio,
         filename,
         bucket_name, 
@@ -763,7 +755,7 @@ def get_transcript(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, start_times_unformatted = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(10)
         
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=for_transcript)
