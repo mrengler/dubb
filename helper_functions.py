@@ -543,7 +543,7 @@ def convert(
                     l = get_length(src)
                     fps_full = l * double * frame_rate
                     desired_length = len(top_quote_audio_filename) / 1000
-                    multiplier = desired_length / (l * double)
+                    multiplier = desired_length / l
                     loop = math.ceil(multiplier)
 
                     image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
