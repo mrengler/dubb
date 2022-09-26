@@ -517,19 +517,15 @@ def convert(
 
 
             # elif len(top_quote.split('\n\n')) > 1:
-            find_top_quote_start = [(timestamp, sentence) for (_, sentence, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()]
-            tq_end_false = find_top_quote_start[0][0]
-            tq_end_false_i = start_times_unformatted.index(tq_end_false)
+            tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()][0]
 
-            if tq_end_false_i > 0:
-                tq_start = start_times_unformatted[tq_end_false_i - 1]
-            elif tq_end_false_i == 0:
-                tq_start = 0
+            find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()][0]
+            tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
-            find_top_quote_end = [(timestamp, sentence) for (_, sentence, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()]
-
-            tq_end = find_top_quote_end[0][0]
-
+            if tq_end_i < len(sentences_diarized) - 1:
+                tq_end = start_times_unformatted[tq_end_i + 1]
+            elif tq_end_i == len(sentences_diarized) - 1:
+                tq_end = 100000000000
 
             print('This is start end')
             print(tq_start, tq_end)
