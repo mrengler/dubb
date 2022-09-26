@@ -554,7 +554,7 @@ def convert(
                 if image_audio_count < num_image_audios_to_produce:
                     l = get_length(src)
                     fps_full = l * double * frame_rate
-                    desired_length = len(top_quote_audio_filename)
+                    desired_length = len(top_quote_audio_filename) / 1000
                     multiplier = desired_length / (l * double)
                     loop = math.ceil(multiplier)
 
