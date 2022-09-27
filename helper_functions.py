@@ -408,6 +408,8 @@ def convert(
     start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
+    print(sentences_diarized)
+
     for prompt_chunk in prompt_chunks:
         attempts = 0
         # while attempts < 5:
@@ -452,7 +454,7 @@ def convert(
 
             top_quote = top_quote.replace("The full transcript:\n\n", '')
             for speaker in speakers_input:
-                top_quote = top_quote.replace(speaker + ":", '')
+                top_quote = top_quote.replace(speaker + ": ", '')
             top_quotes.append(top_quote)
 
             if image_count < num_images_to_produce:
