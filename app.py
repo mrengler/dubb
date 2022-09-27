@@ -131,10 +131,10 @@ def result(id):
         print(os.listdir())
         combined, audio_filenames, image_audio_filenames, user = job.result
         for audio_filename in audio_filenames:
-            download_from_gs('writersvoice', audio_filename, 'media/' + audio_filename)
+            download_from_gs('writersvoice', audio_filename, audio_filename)
             # send_media(audio_filename)
         for image_audio_filename in image_audio_filenames:
-            download_from_gs('writersvoice', image_audio_filename, 'media/' + image_audio_filename)
+            download_from_gs('writersvoice', image_audio_filename, image_audio_filename)
             # send_media(image_audio_filename)        
         # print('This is audio_clips_filenames')
         print(os.listdir())
