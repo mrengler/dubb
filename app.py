@@ -124,6 +124,7 @@ def result(id):
         return get_template(refresh=True)
     elif status == 'finished':
         print(job.result)
+        print(os.listdir())
         combined, audio_filenames, image_audio_filenames, user = job.result
         for audio_filename in audio_filenames:
             download_from_gs('writersvoice', audio_filename, 'media/' + audio_filename)
