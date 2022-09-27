@@ -2,7 +2,7 @@ import json
 import requests
 import smtplib
 from email.mime.text import MIMEText
-from flask import request, Flask, url_for, render_template, render_template_string, redirect
+from flask import request, Flask, url_for, render_template, render_template_string, redirect, send_file
 from flask_mail import Mail, Message
 from helper_functions import *
 from allow_list import allow_list
@@ -127,8 +127,10 @@ def result(id):
         combined, audio_filenames, image_audio_filenames, user = job.result
         for audio_filename in audio_filenames:
             download_from_gs('writersvoice', audio_filename, audio_filename)
+            send_file(audio_filename)
         for image_audio_filename in image_audio_filenames:
-            download_from_gs('writersvoice', image_audio_filename, image_audio_filename)        
+            download_from_gs('writersvoice', image_audio_filename, image_audio_filename)
+            send_file(image_audio_filename)        
         # print('This is audio_clips_filenames')
         print(os.listdir())
         # present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
