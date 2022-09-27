@@ -649,7 +649,7 @@ def run_combined(
     present_image_audio_clips = """<video autoplay controls><source src='""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src='""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     
     # if audio != None:
-    present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
+    present_audio_clips = """<audio controls><source src='media/""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='media/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
     # else:
     #     present_audio_clips = ""
 

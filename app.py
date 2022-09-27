@@ -127,10 +127,10 @@ def result(id):
         combined, audio_filenames, image_audio_filenames, user = job.result
         for audio_filename in audio_filenames:
             download_from_gs('writersvoice', audio_filename, audio_filename)
-            send_file(audio_filename)
+            send_media(audio_filename)
         for image_audio_filename in image_audio_filenames:
             download_from_gs('writersvoice', image_audio_filename, image_audio_filename)
-            send_file(image_audio_filename)        
+            send_media(image_audio_filename)        
         # print('This is audio_clips_filenames')
         print(os.listdir())
         # present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
@@ -226,6 +226,11 @@ def process():
         # return {'article': converting, 'transcript': cleaned_sentences}
     else:
         return render_template('index.html')
+
+
+@app.route('/media/<path:path>')
+def send_media(path):
+    return send_from_directory('media', path)
 
 
 @app.route('/')
