@@ -517,9 +517,9 @@ def convert(
 
 
             # elif len(top_quote.split('\n\n')) > 1:
-            tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote[:20].casefold() in sentence.casefold()][0]
+            tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[0].casefold() in sentence.casefold()][0]
 
-            find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote[-20:].casefold() in sentence.casefold()][0]
+            find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[-1].casefold() in sentence.casefold()][0]
             tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
             if tq_end_i < len(sentences_diarized) - 1:
