@@ -522,49 +522,50 @@ def convert(
 
 
             # elif len(top_quote.split('\n\n')) > 1:
-            tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[0].casefold() in sentence.casefold()][0]
+            try:
+                tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[0].casefold() in sentence.casefold()][0]
 
-            find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[-1].casefold() in sentence.casefold()][0]
-            tq_end_i = start_times_unformatted.index(find_top_quote_end)
+                find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[-1].casefold() in sentence.casefold()][0]
+                tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
-            if tq_end_i < len(sentences_diarized) - 1:
-                tq_end = start_times_unformatted[tq_end_i + 1]
-            elif tq_end_i == len(sentences_diarized) - 1:
-                tq_end = 100000000000
+                if tq_end_i < len(sentences_diarized) - 1:
+                    tq_end = start_times_unformatted[tq_end_i + 1]
+                elif tq_end_i == len(sentences_diarized) - 1:
+                    tq_end = 100000000000
 
-            tq_duration = (tq_end - tq_start) / 1000
+                tq_duration = (tq_end - tq_start) / 1000
 
-            print('This is start end')
-            print(tq_start, tq_end)
-            # print(audio)
-            # if audio != None:
-            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-            top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-            print(top_quote_audio_filename)
-            top_quote_audio.export(top_quote_audio_filename, format="mp3")
-            audio_filenames.append(top_quote_audio_filename)
-            upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                print('This is start end')
+                print(tq_start, tq_end)
+                # print(audio)
+                # if audio != None:
+                top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                print(top_quote_audio_filename)
+                top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                audio_filenames.append(top_quote_audio_filename)
+                upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
-            ##generate audio and visuals combined
-            if image_audio_count < num_image_audios_to_produce:
-                l = get_length(src)
-                fps_full = l * double * frame_rate
-                desired_length = len(top_quote_audio_filename) / 1000
-                multiplier = desired_length / l
-                loop = math.ceil(multiplier)
+                ##generate audio and visuals combined
+                if image_audio_count < num_image_audios_to_produce:
+                    l = get_length(src)
+                    fps_full = l * double * frame_rate
+                    desired_length = len(top_quote_audio_filename) / 1000
+                    multiplier = desired_length / l
+                    loop = math.ceil(multiplier)
 
-                image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
-                upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+                    image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                    os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+                    upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
 
-                image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
-                image_audio_filenames.append(image_audio_filename)
-                upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+                    image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                    os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
+                    image_audio_filenames.append(image_audio_filename)
+                    upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
-                image_audio_count += 1
-            # except:
-            #     pass
+                    image_audio_count += 1
+            except:
+                pass
 
 
 
