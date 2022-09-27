@@ -55,9 +55,13 @@ cred = credentials.Certificate(ENV_KEYS)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-# Create a directory in a known location to save files to.
+# Create a directory in a known location to save uploaded files to.
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 os.makedirs(uploads_dir, exist_ok=True)
+
+# Create a directory in a known location to save created files to.
+media_dir = os.path.join(app.instance_path, 'media')
+os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
