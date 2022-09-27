@@ -2,7 +2,7 @@ import json
 import requests
 import smtplib
 from email.mime.text import MIMEText
-from flask import request, Flask, url_for, render_template, render_template_string, redirect, send_file
+from flask import request, Flask, url_for, render_template, render_template_string, redirect, send_from_directory
 from flask_mail import Mail, Message
 from helper_functions import *
 from allow_list import allow_list
