@@ -385,7 +385,7 @@ def convert(
     user,
     cleaned_sentences,
     sentences_diarized,
-    # audio,
+    speakers_input,
     filename,
     bucket_name, 
     temp, 
@@ -432,7 +432,9 @@ def convert(
             user=user,
         )
 
-        summary_classification = content_filter(summary_chunk_response.choices[0].text, user)
+        top_quote = top_quote_response.choices[0].text
+
+        summary_classification = content_filter(top_quote, user)
 
         if summary_classification != '2': ##unsafe
             summary_chunk = summary_chunk_response.choices[0].text
@@ -448,8 +450,9 @@ def convert(
 
         if top_quote_classification != '2': ##unsafe
 
-            top_quote = top_quote_response.choices[0].text
-            top_quote = top_quote.replace("'The full transcript:\n\n'", '')
+            top_quote = top_quote.replace("The full transcript:\n\n", '')
+            for speaker in speakers_input:
+                top_quote = top_quote.replace(speaker + ":", '')
             top_quotes.append(top_quote)
 
             if image_count < num_images_to_produce:
@@ -527,13 +530,13 @@ def convert(
             elif tq_end_i == len(sentences_diarized) - 1:
                 tq_end = 100000000000
 
-            tq_duration = math.ceil((tq_end - tq_start) / 1000)
+            tq_duration = (tq_end - tq_start) / 1000
 
             print('This is start end')
             print(tq_start, tq_end)
             # print(audio)
             # if audio != None:
-            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=math.ceil(tq_start / 1000), duration=tq_duration)
+            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
             top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
             print(top_quote_audio_filename)
             top_quote_audio.export(top_quote_audio_filename, format="mp3")
@@ -624,7 +627,7 @@ def run_combined(
         user,
         cleaned_sentences,
         sentences_diarized,
-        # audio,
+        speakers_input,
         filename,
         bucket_name, 
         temperature,
