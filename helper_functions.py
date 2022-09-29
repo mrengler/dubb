@@ -484,8 +484,6 @@ def convert(
                             "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
                             "zoom": "0: (1.01)",
                             "fps": 10,
-                            "W": 1080,
-                            "H": 1920,
                             }
                     )
 
@@ -552,16 +550,25 @@ def convert(
                 if image_audio_count < num_image_audios_to_produce:
                     l = get_length(src)
                     fps_full = l * double * frame_rate
-                    desired_length = len(top_quote_audio_filename) / 1000
-                    multiplier = desired_length / l
+                    desired_length = get_length(top_quote_audio_filename)
+                    multiplier = desired_length / (l * 2)
                     loop = math.ceil(multiplier)
 
+                    ##make looped animation
                     image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
                     os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
                     upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
 
+                    ###join looped animation with audio
                     image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                    os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + image_audio_filename)
+                    tmp_image_audio_filename = 'tmp_' + image_audio_filename
+                    os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
+                    
+                    ##trim end of video
+                    tmp_l = get_length(tmp_image_audio_filename)
+                    trim_l = tmp_l - desired_length
+                    os.system("""ffmpeg -sseof -""" + str(trim_l) + """ -i """ + tmp_image_audio_filename + """ -c copy """ + image_audio_filename)
+
                     image_audio_filenames.append(image_audio_filename)
                     upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
