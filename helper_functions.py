@@ -461,7 +461,7 @@ def convert(
 
                 top_quote_image_description_response = openai.Completion.create(
                     model='text-davinci-002',
-                    prompt=top_quote + '\n\nThe description of the landscape scene that accompanies this quote is: “',
+                    prompt=top_quote + '\n\nThe detailed description of the animation that accompanies this quote is: “',
                     max_tokens=max_tokens_output_image_description,
                     temperature=0.7,
                     presence_penalty=pres_penalty,
