@@ -6,8 +6,8 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 0
-num_image_audios_to_produce = 0
+num_images_to_produce = 2
+num_image_audios_to_produce = 2
 double = 2
 frame_rate = 10
 # dir_name = 'media_assets'
@@ -484,6 +484,8 @@ def convert(
                             "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
                             "zoom": "0: (1.01)",
                             "fps": 10,
+                            "W": 1080,
+                            "H": 1920,
                             }
                     )
 
