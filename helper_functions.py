@@ -708,14 +708,15 @@ def run_combined(
     + """<br><a href="#article">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
-    + """<br><a href="#Animations">Images</a>""" \
+    + """<br><a href="#audio">Audio Clips</a>""" \
+    + """<br><a href="#video">Video Clips</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
-    + """<br><br><b><a id="transcript">Audio Clips</a></b><br><br>""" + present_audio_clips \
-    + """<br><br><b><a id="animations">Video Clips</a></b><br><br>""" + present_image_audio_clips
+    + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips
 
 
     response = requests.\
