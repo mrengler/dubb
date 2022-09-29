@@ -6,8 +6,8 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 chars_per_token = 3.70
 # num_images_to_produce = 3
-num_images_to_produce = 3
-num_image_audios_to_produce = 3
+num_images_to_produce = 0
+num_image_audios_to_produce = 0
 double = 2
 frame_rate = 10
 # dir_name = 'media_assets'
@@ -649,7 +649,7 @@ def run_combined(
     present_image_audio_clips = """<video autoplay controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video autoplay controls><source src=https://storage.googleapis.com/writersvoice/'""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     
     # if audio != None:
-    present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
+    present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
     # else:
     #     present_audio_clips = ""
 
