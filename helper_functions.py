@@ -565,9 +565,7 @@ def convert(
                     os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
                     
                     ##trim end of video
-                    tmp_l = get_length(tmp_image_audio_filename)
-                    trim_l = tmp_l - desired_length
-                    os.system("""ffmpeg -sseof -""" + str(trim_l) + """ -i """ + tmp_image_audio_filename + """ -c copy """ + image_audio_filename)
+                    os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
                     image_audio_filenames.append(image_audio_filename)
                     upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
