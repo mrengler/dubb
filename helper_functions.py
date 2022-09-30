@@ -731,7 +731,7 @@ def run_combined(
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
-    + """<br><br><b><a id="blog_post">Blog Post</a></b><br><br>""" + article \
+    + """<br><br><b><a id="blog_post">Blog Post</a></b>""" + article \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
 
     combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
