@@ -658,8 +658,12 @@ def run_combined(
 
     present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
-    email_present_image_audio_clips = '<br><br>'.join(image_audio_filenames)
-    email_present_audio_clips = '<br><br>'.join(audio_filenames)
+    
+    tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]
+    tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in iaudio_filenames]
+
+    email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+    email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -731,10 +735,10 @@ def run_combined(
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
-    combined_email = """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips
     
-    combined_html = """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_image_audio_clips \
+    combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips
 
 
