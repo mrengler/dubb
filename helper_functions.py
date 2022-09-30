@@ -657,12 +657,9 @@ def run_combined(
     present_top_quotes = '<br><br>'.join(top_quotes)
 
     present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
-
-    
-    # if audio != None:
     present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
-    # else:
-    #     present_audio_clips = ""
+    email_present_image_audio_clips = '<br><br>'.join(image_audio_filenames)
+    email_present_audio_clips = '<br><br>'.join(audio_filenames)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
     l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
@@ -671,6 +668,8 @@ def run_combined(
     l5 = filter(lambda chunk: chunk != '', l4)
     joined_l5 = '\n\n'.join(l5)
     prompt_base = joined_l5[:int(max_tokens_output_base_model * chars_per_token)]
+    print('this is prompt_base')
+    print(prompt_base)
     title_prompt = prompt_base + '\n\nWrite the title of the article: "'
     description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
     article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
@@ -716,9 +715,9 @@ def run_combined(
     )
 
     article = article_response.choices[0].text
+    print(article)
 
-    
-    combined = """<br><br><b>Result Sections</b>""" \
+    combined_base = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
     + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
     + """<br><a href="#blog_post">Blog Post</a>""" \
@@ -730,8 +729,12 @@ def run_combined(
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="blog_post">Blog Post</a></b><br><br>""" + article \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
-    + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+
+    combined_email = """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
+    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips
+    
+    combined_html = """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_image_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips
 
 
@@ -743,12 +746,12 @@ def run_combined(
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
                  "subject": "Dubb results",
-                 "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined,
-                 "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined
+                 "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email,
+                 "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email
              }
          )
     
-    return combined, audio_filenames, image_audio_filenames, user
+    return combined_html, audio_filenames, image_audio_filenames, user
     
 
 def present_article(article):
