@@ -719,7 +719,7 @@ def run_combined(
     )
 
     article = article_response.choices[0].text
-    print(article)
+    article = article.replace("\n\n", "<br><br>")
 
     combined_base = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
