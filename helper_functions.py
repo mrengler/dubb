@@ -726,20 +726,21 @@ def run_combined(
     + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
     + """<br><a href="#blog_post">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
-    + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><a href="#audio">Audio Clips</a>""" \
     + """<br><a href="#video">Video Clips</a>""" \
+    + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
     + """<br><br><b><a id="blog_post">Blog Post</a></b><br><br>""" + article \
-    + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+    + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
 
     combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
-    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips
+    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips \
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
     
     combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
-    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips
+    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
+    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
 
     response = requests.\
