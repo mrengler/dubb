@@ -4,6 +4,7 @@ max_token_input = 1548
 max_tokens_output = 350
 max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
+max_tokens_output_article_final = 2000
 chars_per_token = 3.70
 # num_images_to_produce = 3
 num_images_to_produce = 2
@@ -614,6 +615,8 @@ def run_combined(
                 return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
             elif status == 'passed':
                 upload_to_gs(bucket_name, filename, filename)
+        elif content_type=='file':
+            download_from_gs(bucket_name, filename, filename)
 
     audio_file = generate_download_signed_url_v4(bucket_name, filename)
     
@@ -667,18 +670,20 @@ def run_combined(
     l4 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l3]
     l5 = filter(lambda chunk: chunk != '', l4)
     joined_l5 = '\n\n'.join(l5)
-    title_prompt = joined_l5[:int(max_tokens_output_base_model * chars_per_token)] + '\n\nWrite the title of the article: "'
-    description_prompt = joined_l5[:int(max_tokens_output_base_model * chars_per_token)] + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+    prompt_base = joined_l5[:int(max_tokens_output_base_model * chars_per_token)]
+    title_prompt = prompt_base + '\n\nWrite the title of the article: "'
+    description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+    article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
 
     title_response = openai.Completion.create(
-                    model='text-davinci-002',
-                    prompt=title_prompt,
-                    max_tokens=50,
-                    temperature=0.9,
-                    user=user,
-                    stop='"',
-                    n=3,
-                )
+        model='text-davinci-002',
+        prompt=title_prompt,
+        max_tokens=50,
+        temperature=0.9,
+        user=user,
+        stop='"',
+        n=3,
+    )
 
     title = '<br><br>'.join([
         title_response.choices[0].text,
@@ -687,14 +692,14 @@ def run_combined(
     ])
 
     description_response = openai.Completion.create(
-                    model='text-davinci-002',
-                    prompt=description_prompt,
-                    max_tokens=max_tokens_output,
-                    temperature=0.9,
-                    user=user,
-                    stop='\n',
-                    n=3,
-                )
+        model='text-davinci-002',
+        prompt=description_prompt,
+        max_tokens=max_tokens_output,
+        temperature=0.9,
+        user=user,
+        stop='\n',
+        n=3,
+    )
 
     description = '<br><br>'.join([
         description_response.choices[0].text,
@@ -702,18 +707,28 @@ def run_combined(
         description_response.choices[2].text
     ])
 
+    article_response = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=article_prompt,
+        max_tokens=max_tokens_output_article_final,
+        temperature=0.7,
+        user=user,
+    )
+
+    article = article_response.choices[0].text
+
     
     combined = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
     + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
-    + """<br><a href="#article">Blog Post</a>""" \
+    + """<br><a href="#blog_post">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><a href="#audio">Audio Clips</a>""" \
     + """<br><a href="#video">Video Clips</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
-    + """<br><br><b><a id="article">Article</a></b><br><br>""" + present_summary_chunks \
+    + """<br><br><b><a id="blog_post">Blog Post</a></b><br><br>""" + article \
     + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present \
     + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
