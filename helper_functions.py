@@ -660,7 +660,7 @@ def run_combined(
     present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
     
     tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]
-    tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in iaudio_filenames]
+    tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in audio_filenames]
 
     email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
     email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
