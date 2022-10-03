@@ -504,8 +504,8 @@ def convert(
                                 "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
                                 "zoom": "0: (1.01)",
                                 "fps": 10,
-                                "width": 1080,
-                                "height": 1920,
+                                "width": 108,
+                                "height": 192,
                                 }
                         )
 
