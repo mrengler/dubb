@@ -3,7 +3,7 @@ from __future__ import absolute_import
 max_token_input = 1548
 max_tokens_output = 350
 max_tokens_output_base_model = 4097
-max_tokens_output_image_description = 60
+max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
 chars_per_token = 3.70
 num_image_audios_to_produce = 3
