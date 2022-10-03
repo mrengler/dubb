@@ -710,9 +710,14 @@ def run_combined(
         description_response.choices[2].text        
     ]
 
+    print('this is description options')
+    print(description_options)
+
     description_options = [d[0].upper() + d[1:] for d in description_options]
+    print(description_options)
 
     description = '<br><br>'.join(description_options)
+    print(description)
 
     article_response = openai.Completion.create(
         model='text-davinci-002',
