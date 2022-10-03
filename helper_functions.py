@@ -501,7 +501,7 @@ def convert(
                         image = replicate.predictions.create(
                             version=replicate_model.versions.list()[0],
                             input={
-                                "animation_prompts": top_quote_image_description + ', trending on Artstation',
+                                "animation_prompts": top_quote_image_description + ' by edward hopper, vibrant colors, trending on artstation',
                                 "zoom": "0: (1.01)",
                                 "fps": 10,
                                 }
