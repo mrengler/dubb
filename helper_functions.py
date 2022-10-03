@@ -497,15 +497,13 @@ def convert(
 
                     if top_quote_image_description_classification != '2': ##unsafe
                         top_quote_image_description = top_quote_image_description_response.choices[0].text
-                        top_quote_image_description = top_quote_image_description.replace('"', '')
+                        top_quote_image_description = top_quote_image_description.replace('”', '')
                         image = replicate.predictions.create(
                             version=replicate_model.versions.list()[0],
                             input={
-                                "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
+                                "animation_prompts": top_quote_image_description + ', trending on Artstation',
                                 "zoom": "0: (1.01)",
                                 "fps": 10,
-                                "width": 108,
-                                "height": 192,
                                 }
                         )
 
@@ -662,11 +660,14 @@ def run_combined(
         n=3,
     )
 
-    title = '<br><br>'.join([
+    title_options = [
         title_response.choices[0].text,
         title_response.choices[1].text,
         title_response.choices[2].text
-    ])
+    ]
+    title_options = list(set(title_options))
+
+    title = '<br><br>'.join(title_options)
 
     description_response = openai.Completion.create(
         model='text-davinci-002',
