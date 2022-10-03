@@ -713,6 +713,7 @@ def run_combined(
     print('this is description options')
     print(description_options)
 
+    description_options = [d.lstrip() for d in description_options]
     description_options = [d[0].upper() + d[1:] for d in description_options]
     print(description_options)
 
