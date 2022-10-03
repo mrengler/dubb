@@ -6,12 +6,10 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 60
 max_tokens_output_article_final = 2000
 chars_per_token = 3.70
-# num_images_to_produce = 3
-num_images_to_produce = 3
 num_image_audios_to_produce = 3
 double = 2
 frame_rate = 10
-# dir_name = 'media_assets'
+min_video_length = 20
 
 
 import youtube_dl
@@ -457,72 +455,11 @@ def convert(
             for speaker in speakers_input:
                 top_quote = top_quote.replace(speaker + ": ", '')
             top_quotes.append(top_quote)
-
-            if image_count < num_images_to_produce:
-
-                top_quote_image_description_response = openai.Completion.create(
-                    model='text-davinci-002',
-                    prompt=top_quote + '\n\nThe detailed description of the animation that accompanies this quote is: “',
-                    max_tokens=max_tokens_output_image_description,
-                    temperature=0.7,
-                    presence_penalty=pres_penalty,
-                    stop='"',
-                    user=user,
-                )
-
-                print(top_quote_image_description_response)
-
-                top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
-
-                print(top_quote_image_description_classification)
-
-                if top_quote_image_description_classification != '2': ##unsafe
-                    top_quote_image_description = top_quote_image_description_response.choices[0].text
-                    print(top_quote_image_description)
-                    image = replicate.predictions.create(
-                        version=replicate_model.versions.list()[0],
-                        input={
-                            "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
-                            "zoom": "0: (1.01)",
-                            "fps": 10,
-                            }
-                    )
-
-                    src=''
-                    i = 0
-                    while ((i < 50) and (src == '')):
-                        print(i)
-                        time.sleep(10)
-                        image.reload()
-                        print(image.status)
-                        if image.status == 'succeeded':
-                            print(image)
-                            # print(image.output[-1])
-                            # src = image.output[-1]
-                            print(image.output)
-                            src = image.output
-                        i += 1
-
-
-                    images.append(src)
-                    image_count += 1
             
             ## generate audiograms
             # try:
             print('this is debug section')
             print("'" + top_quote + "'")
-            # if len(top_quote.split('\n\n')) == 1:
-                # find_top_quote = [(timestamp, sentence) for (_, sentences, _, timestamp) in sentences_diarized if top_quote.casefold() in sentence.casefold()]
-                # tq_end = find_top_quote[0][0]
-                # tq_end_i = start_times_unformatted.index(tq_end)
-
-                # if tq_end_i > 0:
-                #     tq_start = start_times_unformatted[tq_end_i - 1]
-                # elif tq_end_i == 0:
-                #     tq_start = 0
-
-
-            # elif len(top_quote.split('\n\n')) > 1:
             try:
                 tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[0].casefold() in sentence.casefold()][0]
 
@@ -536,10 +473,6 @@ def convert(
 
                 tq_duration = (tq_end - tq_start) / 1000
 
-                print('This is start end')
-                print(tq_start, tq_end)
-                # print(audio)
-                # if audio != None:
                 top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
                 top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                 print(top_quote_audio_filename)
@@ -548,30 +481,71 @@ def convert(
                 upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
                 ##generate audio and visuals combined
-                if image_audio_count < num_image_audios_to_produce:
-                    l = get_length(src)
-                    fps_full = l * double * frame_rate
-                    desired_length = get_length(top_quote_audio_filename)
-                    multiplier = desired_length / (l * 2)
-                    loop = math.ceil(multiplier)
+                if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
 
-                    ##make looped animation
-                    image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                    os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
-                    upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+                    top_quote_image_description_response = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt=top_quote + '\n\nThe detailed description of the animation that accompanies this quote is: “',
+                        max_tokens=max_tokens_output_image_description,
+                        temperature=0.7,
+                        presence_penalty=pres_penalty,
+                        stop='"',
+                        user=user,
+                    )
 
-                    ###join looped animation with audio
-                    image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                    tmp_image_audio_filename = 'tmp_' + image_audio_filename
-                    os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
-                    
-                    ##trim end of video
-                    os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
+                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
 
-                    image_audio_filenames.append(image_audio_filename)
-                    upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+                    if top_quote_image_description_classification != '2': ##unsafe
+                        top_quote_image_description = top_quote_image_description_response.choices[0].text
+                        top_quote_image_description = top_quote_image_description.replace('"', '')
+                        image = replicate.predictions.create(
+                            version=replicate_model.versions.list()[0],
+                            input={
+                                "animation_prompts": top_quote_image_description + ' For You page on TikTok.',
+                                "zoom": "0: (1.01)",
+                                "fps": 10,
+                                }
+                        )
 
-                    image_audio_count += 1
+                        src=''
+                        i = 0
+                        while ((i < 50) and (src == '')):
+                            time.sleep(10)
+                            image.reload()
+                            if image.status == 'succeeded':
+                                print(image)
+                                print(image.output)
+                                src = image.output
+                            i += 1
+
+
+                        images.append(src)
+                        image_count += 1
+
+
+                        l = get_length(src)
+                        fps_full = l * double * frame_rate
+                        desired_length = get_length(top_quote_audio_filename)
+                        multiplier = desired_length / (l * 2)
+                        loop = math.ceil(multiplier)
+
+                        ##make looped animation
+                        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+                        upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+
+                        ###join looped animation with audio
+                        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                        tmp_image_audio_filename = 'tmp_' + image_audio_filename
+                        os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
+                        
+                        ##trim end of video
+                        os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
+
+                        image_audio_filenames.append(image_audio_filename)
+                        upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+
+                        image_audio_count += 1
             except:
                 pass
 
@@ -672,8 +646,6 @@ def run_combined(
     l5 = filter(lambda chunk: chunk != '', l4)
     joined_l5 = '\n\n'.join(l5)
     prompt_base = joined_l5[:int(max_tokens_output_base_model * chars_per_token)]
-    print('this is prompt_base')
-    print(prompt_base)
     title_prompt = prompt_base + '\n\nWrite the title of the article: "'
     description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
     article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
@@ -710,15 +682,10 @@ def run_combined(
         description_response.choices[2].text        
     ]
 
-    print('this is description options')
-    print(description_options)
-
     description_options = [d.lstrip() for d in description_options]
     description_options = [d[0].upper() + d[1:] for d in description_options]
-    print(description_options)
 
     description = '<br><br>'.join(description_options)
-    print(description)
 
     article_response = openai.Completion.create(
         model='text-davinci-002',
