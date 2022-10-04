@@ -503,6 +503,9 @@ def convert(
                 ##generate audio and visuals combined
                 if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
 
+                    print('this is first prompt:')
+                    print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote in copious detail:\n\nThe image is of')
+
                     top_quote_image_description_response = openai.Completion.create(
                         model='text-davinci-002',
                         prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote in copious detail:\n\nThe image is of',
@@ -520,15 +523,20 @@ def convert(
                     top_quote_image_description = top_quote_image_description.lstrip()
                     top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
 
+                    print("top_quote_image_description")
                     print(top_quote_image_description)
+
+                    print("this is second prompt:")
+                    print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
 
                     top_quote_image_description_response_part_2 = openai.Completion.create(
                         model='text-davinci-002',
-                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:',
+                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
                         max_tokens=max_tokens_output_image_description,
                         temperature=0.7,
                         presence_penalty=pres_penalty,
                         user=user,
+                        stop='"',
                     )
 
                     top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
@@ -540,15 +548,20 @@ def convert(
                     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
                     top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
 
+                    print("this is top_quote_image_description_part_2")
                     print(top_quote_image_description_part_2)
+
+                    print("this is third prompt:")
+                    print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
 
                     top_quote_image_description_response_part_3 = openai.Completion.create(
                         model='text-davinci-002',
-                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:',
+                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
                         max_tokens=max_tokens_output_image_description,
                         temperature=0.7,
                         presence_penalty=pres_penalty,
                         user=user,
+                        stop='"',
                     )
 
                     top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
