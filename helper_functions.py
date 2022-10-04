@@ -485,7 +485,7 @@ def convert(
 
                     top_quote_image_description_response = openai.Completion.create(
                         model='text-davinci-002',
-                        prompt=top_quote + '\n\nThe detailed description of the animation that accompanies this quote is: “',
+                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this text in copious detail:\n\nThe image is of',
                         max_tokens=max_tokens_output_image_description,
                         temperature=0.7,
                         presence_penalty=pres_penalty,
@@ -497,11 +497,13 @@ def convert(
 
                     if top_quote_image_description_classification != '2': ##unsafe
                         top_quote_image_description = top_quote_image_description_response.choices[0].text
-                        top_quote_image_description = top_quote_image_description.replace('”', '')
+                        top_quote_image_description = top_quote_image_description.lstrip()
+                        top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+                        
                         image = replicate.predictions.create(
                             version=replicate_model.versions.list()[0],
                             input={
-                                "animation_prompts": top_quote_image_description + ' by edward hopper, vibrant colors, trending on artstation',
+                                "animation_prompts": top_quote_image_description + ' By Edward Hopper. Vibrant colors. Trending on ArtStation.',
                                 "zoom": "0: (1.01)",
                                 "fps": 10,
                                 }
