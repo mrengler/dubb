@@ -504,11 +504,11 @@ def convert(
                 if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
 
                     print('this is first prompt:')
-                    print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote in copious detail:\n\nThe image is of')
+                    print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of')
 
                     top_quote_image_description_response = openai.Completion.create(
                         model='text-davinci-002',
-                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote in copious detail:\n\nThe image is of',
+                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of',
                         max_tokens=max_tokens_output_image_description,
                         temperature=0.7,
                         presence_penalty=pres_penalty,
