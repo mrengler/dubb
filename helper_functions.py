@@ -457,22 +457,42 @@ def convert(
             top_quotes.append(top_quote)
             
             ## generate audiograms
-            # try:
             print('this is debug section')
             print("'" + top_quote + "'")
             try:
-                tq_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[0].casefold() in sentence.casefold()][0]
 
-                find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)[-1].casefold() in sentence.casefold()][0]
+                top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)
+
+                ## use a different start sentence if the first or last are too short
+                off_index_start = 0
+                for sentence in top_quote_split:
+                    if len(sentence) >= 10:
+                        break
+                    else:
+                        off_index_start += 1
+                        
+                off_index_end = -1
+                for sentence in reversed(top_quote_split):
+                    if len(sentence) >= 10:
+                        break
+                    else:
+                        off_index_end -= 1
+
+                ## find quote audio start time, end time, duration
+                find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
+                tq_start_i = start_times_unformatted.index(find_top_quote_start)
+                tq_start = start_times_unformatted[tq_start_i - off_index_start]
+                find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
                 tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
                 if tq_end_i < len(sentences_diarized) - 1:
-                    tq_end = start_times_unformatted[tq_end_i + 1]
+                    tq_end = start_times_unformatted[tq_end_i - off_index_end]
                 elif tq_end_i == len(sentences_diarized) - 1:
                     tq_end = 100000000000
 
                 tq_duration = (tq_end - tq_start) / 1000
 
+                ## generate audio segment of quote
                 top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
                 top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                 print(top_quote_audio_filename)
@@ -485,27 +505,77 @@ def convert(
 
                     top_quote_image_description_response = openai.Completion.create(
                         model='text-davinci-002',
-                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this text in copious detail:\n\nThe image is of',
+                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote in copious detail:\n\nThe image is of',
                         max_tokens=max_tokens_output_image_description,
                         temperature=0.7,
                         presence_penalty=pres_penalty,
-                        stop='"',
                         user=user,
                     )
 
-                    top_quote_image_description_classification = content_filter(top_quote_image_description_response.choices[0].text, user)
+                    top_quote_image_description = top_quote_image_description_response.choices[0].text
 
-                    if top_quote_image_description_classification != '2': ##unsafe
-                        top_quote_image_description = top_quote_image_description_response.choices[0].text
-                        top_quote_image_description = top_quote_image_description.lstrip()
-                        top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
-                        
+                    ## first log the classification
+                    top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+
+                    top_quote_image_description = top_quote_image_description.lstrip()
+                    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+
+                    print(top_quote_image_description)
+
+                    top_quote_image_description_response_part_2 = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:',
+                        max_tokens=max_tokens_output_image_description,
+                        temperature=0.7,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                    )
+
+                    top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
+
+                    ## first log the classification
+                    top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
+
+                    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
+                    top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
+                    top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
+
+                    print(top_quote_image_description_part_2)
+
+                    top_quote_image_description_response_part_3 = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:',
+                        max_tokens=max_tokens_output_image_description,
+                        temperature=0.7,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                    )
+
+                    top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+
+                    ## first log the classification
+                    top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
+
+                    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
+                    top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
+                    top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
+
+                    print(top_quote_image_description_part_3)                    
+
+
+                    if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
+
+                        style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
                         image = replicate.predictions.create(
                             version=replicate_model.versions.list()[0],
                             input={
-                                "animation_prompts": top_quote_image_description + ' By Edward Hopper. Vibrant colors. Trending on ArtStation.',
+                                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
+                                + top_quote_image_description_part_2 + style_text + ' | 20: ' \
+                                + top_quote_image_description_part_3 + style_text,
                                 "zoom": "0: (1.01)",
                                 "fps": 10,
+                                "color_coherence": "Match Frame 0 HSV",
+                                "sampler": "euler_ancestral",
                                 }
                         )
 
