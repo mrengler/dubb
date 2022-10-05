@@ -582,10 +582,10 @@ def convert(
                         image = replicate.predictions.create(
                             version=replicate_model.versions.list()[0],
                             input={
-                                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
-                                + top_quote_image_description_part_2 + style_text + ' | 20: ' \
+                                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 30: '\
+                                + top_quote_image_description_part_2 + style_text + ' | 60: ' \
                                 + top_quote_image_description_part_3 + style_text,
-                                "zoom": "0: (1.01)",
+                                "zoom": "0: (1.00)",
                                 "fps": 10,
                                 "color_coherence": "Match Frame 0 HSV",
                                 "sampler": "euler_ancestral",
