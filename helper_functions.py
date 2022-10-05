@@ -589,6 +589,7 @@ def convert(
                                 "fps": 10,
                                 "color_coherence": "Match Frame 0 HSV",
                                 "sampler": "euler_ancestral",
+                                "max_frames": 90,
                                 }
                         )
 
