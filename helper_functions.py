@@ -943,7 +943,7 @@ def run_combined(
                 user,
                 filename,
                 num_image_audios,
-                description,
+                description_options[0],
                 top_quote,
                 top_quote_audio_filename,
                 presence_penalty,
