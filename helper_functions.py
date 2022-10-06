@@ -384,6 +384,7 @@ def create_videos(
     description,
     top_quote,
     top_quote_audio_filename,
+    pres_penalty,
     bucket_name):
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
@@ -939,6 +940,7 @@ def run_combined(
                 description,
                 top_quote,
                 top_quote_audio_filename,
+                presence_penalty,
                 bucket_name
             )
             image_audio_filenames.append(image_audio_filename)
