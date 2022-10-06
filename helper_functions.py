@@ -521,7 +521,6 @@ def create_videos(
         ##trim end of video
         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
-        image_audio_filenames.append(image_audio_filename)
         upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
         # image_audio_count += 1
