@@ -379,6 +379,153 @@ def get_length(filename):
         stderr=subprocess.STDOUT)
     return float(result.stdout)
 
+def create_videos(
+    user,
+    description,
+    top_quote,
+    top_quote_audio_filename,
+    bucket_name):
+
+    replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
+
+    # if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
+
+    print('this is first prompt:')
+
+    prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
+    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe image features'
+
+    print(prompt_text)
+
+    top_quote_image_description_response = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=prompt_text,
+        max_tokens=max_tokens_output_image_description,
+        temperature=0.0,
+        presence_penalty=pres_penalty,
+        user=user,
+    )
+
+    top_quote_image_description = top_quote_image_description_response.choices[0].text
+
+    ## first log the classification
+    top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+
+    top_quote_image_description = top_quote_image_description.lstrip()
+    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+
+    print("top_quote_image_description")
+    print(top_quote_image_description)
+
+    print("this is second prompt:")
+    print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
+
+    top_quote_image_description_response_part_2 = openai.Completion.create(
+        model='text-davinci-002',
+        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
+        max_tokens=max_tokens_output_image_description,
+        temperature=0.7,
+        presence_penalty=pres_penalty,
+        user=user,
+        stop='"',
+    )
+
+    top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
+
+    ## first log the classification
+    top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
+
+    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
+    top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
+    top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
+
+    print("this is top_quote_image_description_part_2")
+    print(top_quote_image_description_part_2)
+
+    print("this is third prompt:")
+    print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
+
+    top_quote_image_description_response_part_3 = openai.Completion.create(
+        model='text-davinci-002',
+        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
+        max_tokens=max_tokens_output_image_description,
+        temperature=0.7,
+        presence_penalty=pres_penalty,
+        user=user,
+        stop='"',
+    )
+
+    top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+
+    ## first log the classification
+    top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
+
+    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
+    top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
+    top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
+
+    print(top_quote_image_description_part_3)                    
+
+
+    if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
+
+        style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        image = replicate.predictions.create(
+            version=replicate_model.versions.list()[0],
+            input={
+                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
+                + top_quote_image_description_part_2 + style_text + ' | 20: ' \
+                + top_quote_image_description_part_3 + style_text,
+                "zoom": "0: (1.00)",
+                "fps": 10,
+                "color_coherence": "Match Frame 0 HSV",
+                "sampler": "euler_ancestral",
+                }
+        )
+
+        src=''
+        i = 0
+        while ((i < 50) and (src == '')):
+            time.sleep(10)
+            image.reload()
+            if image.status == 'succeeded':
+                print(image)
+                print(image.output)
+                src = image.output
+            i += 1
+
+
+        # images.append(src)
+        # image_count += 1
+
+
+        l = get_length(src)
+        fps_full = l * double * frame_rate
+        desired_length = get_length(top_quote_audio_filename)
+        multiplier = desired_length / (l * 2)
+        loop = math.ceil(multiplier)
+
+        ##make looped animation
+        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+        upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+
+        ###join looped animation with audio
+        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+        tmp_image_audio_filename = 'tmp_' + image_audio_filename
+        os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
+        
+        ##trim end of video
+        os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
+
+        image_audio_filenames.append(image_audio_filename)
+        upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+
+        # image_audio_count += 1
+
+        return image_audio_filename
+
+
 
 def convert(
     user,
@@ -393,7 +540,7 @@ def convert(
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
 
-    replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
+    # replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
 
     summary_chunks = []
     top_quotes = []
@@ -501,138 +648,138 @@ def convert(
                 upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
                 ##generate audio and visuals combined
-                if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
+                # if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
 
-                    print('this is first prompt:')
-                    print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of')
+                #     print('this is first prompt:')
+                #     print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of')
 
-                    top_quote_image_description_response = openai.Completion.create(
-                        model='text-davinci-002',
-                        prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of',
-                        max_tokens=max_tokens_output_image_description,
-                        temperature=0.7,
-                        presence_penalty=pres_penalty,
-                        user=user,
-                    )
+                #     top_quote_image_description_response = openai.Completion.create(
+                #         model='text-davinci-002',
+                #         prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of',
+                #         max_tokens=max_tokens_output_image_description,
+                #         temperature=0.7,
+                #         presence_penalty=pres_penalty,
+                #         user=user,
+                #     )
 
-                    top_quote_image_description = top_quote_image_description_response.choices[0].text
+                #     top_quote_image_description = top_quote_image_description_response.choices[0].text
 
-                    ## first log the classification
-                    top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+                #     ## first log the classification
+                #     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
 
-                    top_quote_image_description = top_quote_image_description.lstrip()
-                    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+                #     top_quote_image_description = top_quote_image_description.lstrip()
+                #     top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
 
-                    print("top_quote_image_description")
-                    print(top_quote_image_description)
+                #     print("top_quote_image_description")
+                #     print(top_quote_image_description)
 
-                    print("this is second prompt:")
-                    print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
+                #     print("this is second prompt:")
+                #     print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
 
-                    top_quote_image_description_response_part_2 = openai.Completion.create(
-                        model='text-davinci-002',
-                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
-                        max_tokens=max_tokens_output_image_description,
-                        temperature=0.7,
-                        presence_penalty=pres_penalty,
-                        user=user,
-                        stop='"',
-                    )
+                #     top_quote_image_description_response_part_2 = openai.Completion.create(
+                #         model='text-davinci-002',
+                #         prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
+                #         max_tokens=max_tokens_output_image_description,
+                #         temperature=0.7,
+                #         presence_penalty=pres_penalty,
+                #         user=user,
+                #         stop='"',
+                #     )
 
-                    top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
+                #     top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
 
-                    ## first log the classification
-                    top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
+                #     ## first log the classification
+                #     top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
 
-                    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
-                    top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
-                    top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
+                #     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
+                #     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
+                #     top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
 
-                    print("this is top_quote_image_description_part_2")
-                    print(top_quote_image_description_part_2)
+                #     print("this is top_quote_image_description_part_2")
+                #     print(top_quote_image_description_part_2)
 
-                    print("this is third prompt:")
-                    print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
+                #     print("this is third prompt:")
+                #     print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
 
-                    top_quote_image_description_response_part_3 = openai.Completion.create(
-                        model='text-davinci-002',
-                        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
-                        max_tokens=max_tokens_output_image_description,
-                        temperature=0.7,
-                        presence_penalty=pres_penalty,
-                        user=user,
-                        stop='"',
-                    )
+                #     top_quote_image_description_response_part_3 = openai.Completion.create(
+                #         model='text-davinci-002',
+                #         prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
+                #         max_tokens=max_tokens_output_image_description,
+                #         temperature=0.7,
+                #         presence_penalty=pres_penalty,
+                #         user=user,
+                #         stop='"',
+                #     )
 
-                    top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+                #     top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
 
-                    ## first log the classification
-                    top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
+                #     ## first log the classification
+                #     top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
 
-                    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
-                    top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
-                    top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
+                #     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
+                #     top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
+                #     top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
 
-                    print(top_quote_image_description_part_3)                    
-
-
-                    if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
-
-                        style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
-                        image = replicate.predictions.create(
-                            version=replicate_model.versions.list()[0],
-                            input={
-                                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
-                                + top_quote_image_description_part_2 + style_text + ' | 20: ' \
-                                + top_quote_image_description_part_3 + style_text,
-                                "zoom": "0: (1.00)",
-                                "fps": 10,
-                                "color_coherence": "Match Frame 0 HSV",
-                                "sampler": "euler_ancestral",
-                                }
-                        )
-
-                        src=''
-                        i = 0
-                        while ((i < 50) and (src == '')):
-                            time.sleep(10)
-                            image.reload()
-                            if image.status == 'succeeded':
-                                print(image)
-                                print(image.output)
-                                src = image.output
-                            i += 1
+                #     print(top_quote_image_description_part_3)                    
 
 
-                        images.append(src)
-                        image_count += 1
+                #     if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
+
+                #         style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
+                #         image = replicate.predictions.create(
+                #             version=replicate_model.versions.list()[0],
+                #             input={
+                #                 "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
+                #                 + top_quote_image_description_part_2 + style_text + ' | 20: ' \
+                #                 + top_quote_image_description_part_3 + style_text,
+                #                 "zoom": "0: (1.00)",
+                #                 "fps": 10,
+                #                 "color_coherence": "Match Frame 0 HSV",
+                #                 "sampler": "euler_ancestral",
+                #                 }
+                #         )
+
+                #         src=''
+                #         i = 0
+                #         while ((i < 50) and (src == '')):
+                #             time.sleep(10)
+                #             image.reload()
+                #             if image.status == 'succeeded':
+                #                 print(image)
+                #                 print(image.output)
+                #                 src = image.output
+                #             i += 1
 
 
-                        l = get_length(src)
-                        fps_full = l * double * frame_rate
-                        desired_length = get_length(top_quote_audio_filename)
-                        multiplier = desired_length / (l * 2)
-                        loop = math.ceil(multiplier)
+                #         images.append(src)
+                #         image_count += 1
 
-                        ##make looped animation
-                        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
-                        upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
 
-                        ###join looped animation with audio
-                        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                        tmp_image_audio_filename = 'tmp_' + image_audio_filename
-                        os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
+                #         l = get_length(src)
+                #         fps_full = l * double * frame_rate
+                #         desired_length = get_length(top_quote_audio_filename)
+                #         multiplier = desired_length / (l * 2)
+                #         loop = math.ceil(multiplier)
+
+                #         ##make looped animation
+                #         image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                #         os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
+                #         upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+
+                #         ###join looped animation with audio
+                #         image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+                #         tmp_image_audio_filename = 'tmp_' + image_audio_filename
+                #         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
                         
-                        ##trim end of video
-                        os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
+                #         ##trim end of video
+                #         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
-                        image_audio_filenames.append(image_audio_filename)
-                        upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+                #         image_audio_filenames.append(image_audio_filename)
+                #         upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
-                        image_audio_count += 1
+                #         image_audio_count += 1
             except:
-                pass
+                audio_filenames.append(None)
 
 
 
@@ -646,7 +793,8 @@ def convert(
             #     print('number of attempts: ' + str(attempts))
             #     time.sleep(30)
     
-    return summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames
+    # return summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames
+    return summary_chunks, top_quotes, audio_filenames
 
 
 def run_combined(
@@ -688,14 +836,9 @@ def run_combined(
         cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
         time.sleep(60)
 
-    # try:
-    #     audio = AudioSegment.from_mp3(filename)
-    # except:
-    #     audio = None
-    #     print('error with AudioSegment')
-
         
-    summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
+    # summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
+    summary_chunks, top_quotes, audio_filenames = convert(
         user,
         cleaned_sentences,
         sentences_diarized,
@@ -715,13 +858,13 @@ def run_combined(
     present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_top_quotes = '<br><br>'.join(top_quotes)
 
-    present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
+    # present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
     
-    tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]
+    # tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]
     tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in audio_filenames]
 
-    email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+    # email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
     email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
@@ -785,6 +928,26 @@ def run_combined(
 
     article = article_response.choices[0].text
     article = article.replace("\n\n", "<br><br>")
+
+    image_audio_filenames = []
+    num_image_audios = 0
+
+    for top_quote, top_quote_audio_filename in zip(top_quotes, audio_filenames):
+        if (get_length(top_quote_audio_filename) > 20  if top_quote_audio_filename is not None else False) and (num_image_audios < num_image_audios_to_produce):
+            image_audio_filename = create_videos(
+                user,
+                description,
+                top_quote,
+                top_quote_audio_filename,
+                bucket_name
+            )
+            image_audio_filenames.append(image_audio_filename)
+            num_image_audios += 1
+
+
+    present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
+    tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
+    email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
 
     combined_base = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
