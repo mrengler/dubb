@@ -381,6 +381,8 @@ def get_length(filename):
 
 def create_videos(
     user,
+    filename,
+    num_image_audios,
     description,
     top_quote,
     top_quote_audio_filename,
@@ -507,12 +509,12 @@ def create_videos(
         loop = math.ceil(multiplier)
 
         ##make looped animation
-        image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
+        image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_image_audios) + ".mp4"
         os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
         upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
 
         ###join looped animation with audio
-        image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
+        image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + ".mp4"
         tmp_image_audio_filename = 'tmp_' + image_audio_filename
         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
         
@@ -937,6 +939,8 @@ def run_combined(
         if (get_length(top_quote_audio_filename) > 20  if top_quote_audio_filename is not None else False) and (num_image_audios < num_image_audios_to_produce):
             image_audio_filename = create_videos(
                 user,
+                filename,
+                num_image_audios,
                 description,
                 top_quote,
                 top_quote_audio_filename,
