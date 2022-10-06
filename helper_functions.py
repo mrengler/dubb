@@ -379,7 +379,7 @@ def get_length(filename):
         stderr=subprocess.STDOUT)
     return float(result.stdout)
 
-def create_videos(
+def create_video(
     user,
     filename,
     num_image_audios,
@@ -414,6 +414,7 @@ def create_videos(
     ## first log the classification
     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
 
+    top_quote_image_description = top_quote_image_description.replace(':', '')
     top_quote_image_description = top_quote_image_description.lstrip()
     top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
 
@@ -438,6 +439,7 @@ def create_videos(
     ## first log the classification
     top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
 
+    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace(':', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
     top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
@@ -463,6 +465,7 @@ def create_videos(
     ## first log the classification
     top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
 
+    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace(':', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
     top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
@@ -936,7 +939,7 @@ def run_combined(
 
     for top_quote, top_quote_audio_filename in zip(top_quotes, audio_filenames):
         if (get_length(top_quote_audio_filename) > 20  if top_quote_audio_filename is not None else False) and (num_image_audios < num_image_audios_to_produce):
-            image_audio_filename = create_videos(
+            image_audio_filename = create_video(
                 user,
                 filename,
                 num_image_audios,
