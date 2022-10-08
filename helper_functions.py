@@ -566,6 +566,8 @@ def convert(
         attempts = 0
         # while attempts < 5:
         #     try:
+        prompt_chunk_summary = 'The transcript of the article:\n\n' + prompt_chunk \
+        + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
 
         summary_chunk_response = openai.Completion.create(
             model='text-davinci-002',
@@ -592,7 +594,6 @@ def convert(
         summary_chunk = summary_chunk_response.choices[0].text
         top_quote = top_quote_response.choices[0].text
 
-        print('this is summary_chunk')
         print(summary_chunk)
 
         summary_classification = content_filter(summary_chunk, user)
