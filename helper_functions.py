@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 
-max_token_input = 1548
-max_tokens_output = 350
+# max_token_input = 1548
+max_token_input = 3000
+max_tokens_output = 1000
 max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
@@ -565,9 +566,13 @@ def convert(
         attempts = 0
         # while attempts < 5:
         #     try:
+        prompt_chunk_summary = 'The transcript of the article:\n\n' + prompt_chunk \
+        + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
+        print(prompt_chunk_summary)
+
         summary_chunk_response = openai.Completion.create(
-            model=model,
-            prompt=prompt_chunk,
+            model='text-davinci-002',
+            prompt=prompt_chunk_summary,
             max_tokens=max_tokens_output,
             temperature=temp,
             presence_penalty=pres_penalty,
@@ -575,9 +580,11 @@ def convert(
             user=user,
         )
 
+        prompt_chunk_quote = 'The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "'
+
         top_quote_response = openai.Completion.create(
             model='text-davinci-002',
-            prompt='The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "',
+            prompt=prompt_chunk_quote,
             max_tokens=max_tokens_output,
             temperature=0.0,
             presence_penalty=pres_penalty,
@@ -585,19 +592,19 @@ def convert(
             user=user,
         )
 
+        summary_chunk = summary_chunk_response.choices[0].text
         top_quote = top_quote_response.choices[0].text
 
-        summary_classification = content_filter(top_quote, user)
+        summary_classification = content_filter(summary_chunk, user)
+        top_quote_classification = content_filter(top_quote, user)
 
         if summary_classification != '2': ##unsafe
-            summary_chunk = summary_chunk_response.choices[0].text
             summary_chunk = clean_chunk(summary_chunk)
-            summary_chunks.append(summary_chunk)
+            if summary_chunk != '':
+                summary_chunks.append(summary_chunk)
         else:
             print('UNSAFE RESPONSE:')
             print(summary_chunk_response)
-
-        top_quote_classification = content_filter(top_quote_response.choices[0].text, user)
         
         print('This is top quote classification: ' + str(top_quote_classification))
 
