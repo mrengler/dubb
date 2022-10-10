@@ -941,7 +941,11 @@ def run_combined(
     )
 
     article = article_response.choices[0].text
+    article = article.replace("\n\n\n\n", "<br><br>")
     article = article.replace("\n\n", "<br><br>")
+
+    print('this is article:')
+    print('"' + article + '"')
 
     image_audio_filenames = []
     num_image_audios = 0
