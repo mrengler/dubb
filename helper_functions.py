@@ -934,15 +934,21 @@ def run_combined(
 
     description = '<br><br>'.join(description_options)
 
-    article_response = openai.Completion.create(
-        model='text-davinci-002',
-        prompt=article_prompt,
-        max_tokens=max_tokens_output_article_final,
-        temperature=0.7,
-        user=user,
-    )
+    if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
+        print('article short enough for final draft')
+        article_response = openai.Completion.create(
+            model='text-davinci-002',
+            prompt=article_prompt,
+            max_tokens=max_tokens_output_article_final,
+            temperature=0.7,
+            user=user,
+        )
 
-    article = article_response.choices[0].text
+        article = article_response.choices[0].text
+    else:
+        print('article too long for final draft')
+        article = prompt_base
+
     article = article.replace("\n\n\n\n", "<br><br>")
     article = article.replace("\n\n", "<br><br>")
 
