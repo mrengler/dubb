@@ -505,8 +505,9 @@ def create_video(
         # images.append(src)
         # image_count += 1
 
+
         ##slow looped animation
-        slowed_image_filename = 'slowed_' + src
+        slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + ".mp4"
         os.system("""ffmpeg -i """ + src + """ -vf  "setpts=1.25*PTS" """ + slowed_image_filename)
 
         ##get length and multipliers
