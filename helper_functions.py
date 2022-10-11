@@ -505,8 +505,12 @@ def create_video(
         # images.append(src)
         # image_count += 1
 
+        ##slow looped animation
+        slowed_image_filename = 'slowed_' + src
+        os.system("""ffmpeg -i """ + src + """ -vf  "setpts=1.25*PTS" """ + slowed_image_filename)
 
-        l = get_length(src)
+        ##get length and multipliers
+        l = get_length(slowed_image_filename)
         fps_full = l * double * frame_rate
         desired_length = get_length(top_quote_audio_filename)
         multiplier = desired_length / (l * 2)
@@ -514,8 +518,7 @@ def create_video(
 
         ##make looped animation
         image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_image_audios) + ".mp4"
-        os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
-        upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
+        os.system("""ffmpeg -i """ + slowed_image_filename + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
 
         ###join looped animation with audio
         image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + ".mp4"
