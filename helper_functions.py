@@ -397,7 +397,7 @@ def create_video(
     print('this is first prompt:')
 
     prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
-    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe image features'
+    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image features'
 
     print(prompt_text)
 
@@ -951,6 +951,7 @@ def run_combined(
 
     article = article.replace("\n\n\n\n", "<br><br>")
     article = article.replace("\n\n", "<br><br>")
+    article = article.replace("<br><br><br><br>", "<br><br>")
 
     print('this is article:')
     print('"' + article + '"')
