@@ -556,7 +556,7 @@ def convert(
     top_quotes = []
     images = []
     audio_filenames = []
-    image_audio_filenames = [] 
+    audio_durations = [] 
 
     image_count = 0
     image_audio_count = 0
@@ -662,141 +662,13 @@ def convert(
                 print(top_quote_audio_filename)
                 top_quote_audio.export(top_quote_audio_filename, format="mp3")
                 audio_filenames.append(top_quote_audio_filename)
+                audio_durations.append(tq_duration)
                 upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
-                ##generate audio and visuals combined
-                # if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
 
-                #     print('this is first prompt:')
-                #     print('"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of')
-
-                #     top_quote_image_description_response = openai.Completion.create(
-                #         model='text-davinci-002',
-                #         prompt='"' + top_quote + '"\n\nDescribe the image that accompanies this quote:\n\nThe image is of',
-                #         max_tokens=max_tokens_output_image_description,
-                #         temperature=0.7,
-                #         presence_penalty=pres_penalty,
-                #         user=user,
-                #     )
-
-                #     top_quote_image_description = top_quote_image_description_response.choices[0].text
-
-                #     ## first log the classification
-                #     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
-
-                #     top_quote_image_description = top_quote_image_description.lstrip()
-                #     top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
-
-                #     print("top_quote_image_description")
-                #     print(top_quote_image_description)
-
-                #     print("this is second prompt:")
-                #     print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
-
-                #     top_quote_image_description_response_part_2 = openai.Completion.create(
-                #         model='text-davinci-002',
-                #         prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
-                #         max_tokens=max_tokens_output_image_description,
-                #         temperature=0.7,
-                #         presence_penalty=pres_penalty,
-                #         user=user,
-                #         stop='"',
-                #     )
-
-                #     top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
-
-                #     ## first log the classification
-                #     top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
-
-                #     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
-                #     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
-                #     top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
-
-                #     print("this is top_quote_image_description_part_2")
-                #     print(top_quote_image_description_part_2)
-
-                #     print("this is third prompt:")
-                #     print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
-
-                #     top_quote_image_description_response_part_3 = openai.Completion.create(
-                #         model='text-davinci-002',
-                #         prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
-                #         max_tokens=max_tokens_output_image_description,
-                #         temperature=0.7,
-                #         presence_penalty=pres_penalty,
-                #         user=user,
-                #         stop='"',
-                #     )
-
-                #     top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
-
-                #     ## first log the classification
-                #     top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
-
-                #     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
-                #     top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
-                #     top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
-
-                #     print(top_quote_image_description_part_3)                    
-
-
-                #     if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
-
-                #         style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
-                #         image = replicate.predictions.create(
-                #             version=replicate_model.versions.list()[0],
-                #             input={
-                #                 "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
-                #                 + top_quote_image_description_part_2 + style_text + ' | 20: ' \
-                #                 + top_quote_image_description_part_3 + style_text,
-                #                 "zoom": "0: (1.00)",
-                #                 "fps": 10,
-                #                 "color_coherence": "Match Frame 0 HSV",
-                #                 "sampler": "euler_ancestral",
-                #                 }
-                #         )
-
-                #         src=''
-                #         i = 0
-                #         while ((i < 50) and (src == '')):
-                #             time.sleep(10)
-                #             image.reload()
-                #             if image.status == 'succeeded':
-                #                 print(image)
-                #                 print(image.output)
-                #                 src = image.output
-                #             i += 1
-
-
-                #         images.append(src)
-                #         image_count += 1
-
-
-                #         l = get_length(src)
-                #         fps_full = l * double * frame_rate
-                #         desired_length = get_length(top_quote_audio_filename)
-                #         multiplier = desired_length / (l * 2)
-                #         loop = math.ceil(multiplier)
-
-                #         ##make looped animation
-                #         image_looped_filename = "image_looped"  + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                #         os.system("""ffmpeg -i """ + src + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
-                #         upload_to_gs(bucket_name, image_looped_filename, image_looped_filename)
-
-                #         ###join looped animation with audio
-                #         image_audio_filename = "image_audio" + str(tq_start) + "_" + str(tq_end) + ".mp4"
-                #         tmp_image_audio_filename = 'tmp_' + image_audio_filename
-                #         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
-                        
-                #         ##trim end of video
-                #         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
-
-                #         image_audio_filenames.append(image_audio_filename)
-                #         upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
-
-                #         image_audio_count += 1
             except:
                 audio_filenames.append(None)
+                audio_durations.append(0)
 
 
 
@@ -810,8 +682,7 @@ def convert(
             #     print('number of attempts: ' + str(attempts))
             #     time.sleep(30)
     
-    # return summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames
-    return summary_chunks, top_quotes, audio_filenames
+    return summary_chunks, top_quotes, audio_filenames, audio_durations
 
 
 def run_combined(
@@ -855,8 +726,7 @@ def run_combined(
         time.sleep(60)
 
         
-    # summary_chunks, top_quotes, images, audio_filenames, image_audio_filenames = convert(
-    summary_chunks, top_quotes, audio_filenames = convert(
+    summary_chunks, top_quotes, audio_filenames, audio_durations = convert(
         user,
         cleaned_sentences,
         sentences_diarized,
@@ -963,8 +833,11 @@ def run_combined(
     image_audio_filenames = []
     num_image_audios = 0
 
-    for top_quote, top_quote_audio_filename in zip(top_quotes, audio_filenames):
-        if (get_length(top_quote_audio_filename) > 20  if top_quote_audio_filename is not None else False) and (num_image_audios < num_image_audios_to_produce):
+    image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
+    sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
+
+    for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
+        if (num_image_audios < num_image_audios_to_produce):
             image_audio_filename = create_video(
                 user,
                 filename,
