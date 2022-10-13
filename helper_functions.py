@@ -509,7 +509,7 @@ def create_video(
         ##slow looped animation
         slow_multiple = 1.25
         slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + ".mp4"
-        os.system("""ffmpeg -i """ + src + """ -vf  "setpts=""" + slow_multiple + """*PTS" """ + slowed_image_filename)
+        os.system("""ffmpeg -i """ + src + """ -vf  "setpts=""" + str(slow_multiple) + """*PTS" """ + slowed_image_filename)
 
         ##get length and multipliers
         l = get_length(src) * slow_multiple
