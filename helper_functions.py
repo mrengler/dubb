@@ -633,6 +633,7 @@ def create_meme(
             fontsize = int(fontsize / (len(top_quote) / 150))
         print('this is fontsize')
         print(fontsize)
+        top_quote = top_quote.replace("'", "\\\\\'")
         os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
