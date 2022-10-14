@@ -552,7 +552,7 @@ def create_meme(
     replicate_model = replicate.models.get("stability-ai/stable-diffusion")
 
     prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
-    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image features'
+    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image does not feature any people or text. It features'
 
     print(prompt_text)
 
@@ -598,7 +598,7 @@ def create_meme(
             if image.status == 'succeeded':
                 print(image)
                 print(image.output)
-                src = image.output
+                src = image.output[0]
             i += 1
 
         ##download from replicate
