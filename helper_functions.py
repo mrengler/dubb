@@ -505,14 +505,19 @@ def create_video(
         # images.append(src)
         # image_count += 1
 
+        ##download from replicate
+        image_filename = filename.split('.')[0] + '_image_' + str(num_image_audios) + ".mp4"
+        response = requests.get(src)
+        open(image_filename, "wb").write(response.content)
+
 
         ##slow looped animation
         slow_multiple = 1.25
         slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + ".mp4"
-        os.system("""ffmpeg -i """ + src + """ -vf  "setpts=""" + str(slow_multiple) + """*PTS" """ + slowed_image_filename)
+        os.system("""ffmpeg -i """ + image_filename + """ -vf  "setpts=""" + str(slow_multiple) + """*PTS" """ + slowed_image_filename)
 
         ##get length and multipliers
-        l = get_length(src) * slow_multiple
+        l = get_length(image_filename) * slow_multiple
         fps_full = l * double * frame_rate
         desired_length = get_length(top_quote_audio_filename)
         multiplier = desired_length / (l * 2)
