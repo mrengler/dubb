@@ -7,7 +7,7 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
 chars_per_token = 3.70
-num_image_audios_to_produce = 3
+num_image_audios_to_produce = 0
 double = 2
 frame_rate = 10
 min_video_length = 20
@@ -392,8 +392,6 @@ def create_video(
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
 
-    # if (image_audio_count < num_image_audios_to_produce) and (tq_duration >= min_video_length):
-
     print('this is first prompt:')
 
     prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
@@ -541,6 +539,80 @@ def create_video(
 
         return image_audio_filename
 
+
+def create_meme(
+    user,
+    filename,
+    num_images,
+    description,
+    top_quote,
+    pres_penalty,
+    bucket_name):
+
+    replicate_model = replicate.models.get("stability-ai/stable-diffusion")
+
+    prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
+    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image features'
+
+    print(prompt_text)
+
+    top_quote_image_description_response = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=prompt_text,
+        max_tokens=max_tokens_output_image_description,
+        temperature=0.0,
+        presence_penalty=pres_penalty,
+        user=user,
+    )
+
+    top_quote_image_description = top_quote_image_description_response.choices[0].text
+
+    ## first log the classification
+    top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+
+    top_quote_image_description = top_quote_image_description.replace(':', '')
+    top_quote_image_description = top_quote_image_description.lstrip()
+    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+
+    print("top_quote_image_description")
+    print(top_quote_image_description)
+
+    if (top_quote_image_description_classification != '2'):
+
+       style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        image = replicate.predictions.create(
+            version=replicate_model.versions.list()[0],
+            input={
+                "prompt": top_quote_image_description + style_text,
+                "num_outputs": 1,
+                "guidance_scale": 7.5,
+                "num_inference_steps": 100,
+                }
+        )
+
+        src=''
+        i = 0
+        while ((i < 50) and (src == '')):
+            time.sleep(10)
+            image.reload()
+            if image.status == 'succeeded':
+                print(image)
+                print(image.output)
+                src = image.output
+            i += 1
+
+        ##download from replicate
+        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_images) + ".mp4"
+        response = requests.get(src)
+        open(image_filename, "wb").write(response.content)
+
+        ##add text on top
+        meme_filename = filename.split('.')[0] + '_meme_' + str(num_images) + ".mp4"
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + top_quote + """':fontcolor=white:fontsize=75:x=100:y=100:" """ + meme_filename)
+
+        upload_to_gs(bucket_name, meme_filename, meme_filename)
+
+        return meme_filename
 
 
 def convert(
@@ -837,7 +909,9 @@ def run_combined(
     print('"' + article + '"')
 
     image_audio_filenames = []
+    meme_filenames = []
     num_image_audios = 0
+    num_memes = 0
 
     image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
     sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
@@ -857,10 +931,27 @@ def run_combined(
             image_audio_filenames.append(image_audio_filename)
             num_image_audios += 1
 
+        if top_quote is not None:
+            meme_filename = create_meme(
+                user,
+                filename,
+                num_images,
+                description_options[0],
+                top_quote,
+                presence_penalty,
+                bucket_name                
+            )
+            meme_filenames.append(meme_filename)
+            num_memes += 1            
+
 
     present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
     email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+
+    present_memes = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """' type='video/mp4'></video>"""
+    tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
+    email_present_memes = '<br><br>'.join(tmp_email_memes)
 
     combined_base = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
@@ -869,6 +960,7 @@ def run_combined(
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#audio">Audio Clips</a>""" \
     + """<br><a href="#video">Video Clips</a>""" \
+    + """<br><a href="#images">Images</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
@@ -877,10 +969,12 @@ def run_combined(
 
     combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips \
+    + """<br><br><b><a id="images">Images</a></b><br><br>""" + email_present_memes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
     
     combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
+    + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_memes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
 
