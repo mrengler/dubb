@@ -380,6 +380,26 @@ def get_length(filename):
         stderr=subprocess.STDOUT)
     return float(result.stdout)
 
+
+def split_txt_into_multi_lines(input_str, line_length): ##from https://stackoverflow.com/questions/50628267/ffmpeg-creating-video-using-drawtext-along-with-word-wrap-and-padding
+    words = input_str.split(" ")
+    line_count = 0
+    split_input = ""
+    for word in words:
+        line_count += 1
+        line_count += len(word)
+        if line_count > line_length:
+            split_input += "\n"
+            line_count = len(word) + 1
+            split_input += word
+            split_input += " "
+        else:
+            split_input += word
+            split_input += " "
+    
+    return split_input
+
+
 def create_video(
     user,
     filename,
@@ -608,7 +628,7 @@ def create_meme(
 
         ##add text on top
         meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".mp4"
-        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + top_quote + """':fontcolor=white:fontsize=75:x=100:y=100:" """ + meme_filename)
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=75:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
@@ -949,7 +969,7 @@ def run_combined(
     tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
     email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
 
-    present_memes = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """' type='video/mp4'></video>"""
+    present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
     tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
     email_present_memes = '<br><br>'.join(tmp_email_memes)
 
@@ -960,7 +980,7 @@ def run_combined(
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#audio">Audio Clips</a>""" \
     + """<br><a href="#video">Video Clips</a>""" \
-    + """<br><a href="#images">Images</a>""" \
+    + """<br><a href="#images">Quote Memes</a>""" \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
