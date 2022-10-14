@@ -543,7 +543,7 @@ def create_video(
 def create_meme(
     user,
     filename,
-    num_images,
+    num_memes,
     description,
     top_quote,
     pres_penalty,
@@ -602,12 +602,12 @@ def create_meme(
             i += 1
 
         ##download from replicate
-        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_images) + ".mp4"
+        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + ".mp4"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
         ##add text on top
-        meme_filename = filename.split('.')[0] + '_meme_' + str(num_images) + ".mp4"
+        meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".mp4"
         os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + top_quote + """':fontcolor=white:fontsize=75:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
@@ -935,7 +935,7 @@ def run_combined(
             meme_filename = create_meme(
                 user,
                 filename,
-                num_images,
+                num_memes,
                 description_options[0],
                 top_quote,
                 presence_penalty,
