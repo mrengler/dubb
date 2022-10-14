@@ -7,7 +7,7 @@ max_tokens_output_base_model = 4097
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
 chars_per_token = 3.70
-num_image_audios_to_produce = 0
+num_image_audios_to_produce = 3
 double = 2
 frame_rate = 10
 min_video_length = 20
@@ -628,7 +628,7 @@ def create_meme(
 
         ##add text on top
         meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".png"
-        fontsize = 32
+        fontsize = 36
         if len(top_quote) > 150:
             fontsize = int(fontsize / (len(top_quote) / 150))
         print('this is fontsize')
