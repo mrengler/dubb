@@ -628,7 +628,10 @@ def create_meme(
 
         ##add text on top
         meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".png"
-        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=36:x=100:y=100:" """ + meme_filename)
+        fontsize = 32
+        if len(top_quote) > 150:
+            fontsize = int(fontsize / (len(top_quote) / 150))
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
@@ -994,7 +997,7 @@ def run_combined(
     
     combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
     + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
-    + """<br><br><b><a id="images">Images</a></b><br><br>""" + present_memes \
+    + """<br><br><b><a id="images">Quote Memes</a></b><br><br>""" + present_memes \
     + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
 
