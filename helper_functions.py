@@ -579,7 +579,7 @@ def create_meme(
 
     if (top_quote_image_description_classification != '2'):
 
-       style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
