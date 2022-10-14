@@ -629,11 +629,15 @@ def create_meme(
         ##add text on top
         meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".png"
         fontsize = 36
+        line_length = 20
         if len(top_quote) > 150:
-            fontsize = int(fontsize / (len(top_quote) / 150))
+            fontsize = 3.0 * int(fontsize / (len(top_quote) / 150))
+            line_length = ((len(top_quote) / 150) * line_length) / 3.0
         print('this is fontsize')
         print(fontsize)
-        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(re.escape(top_quote), 20) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
+        top_quote = top_quote.replace(',', '\\,')
+        top_quote = re.escape(top_quote)
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
