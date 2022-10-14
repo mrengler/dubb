@@ -843,7 +843,7 @@ def run_combined(
     sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
     for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
-        if (num_image_audios < num_image_audios_to_produce):
+        if (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
             image_audio_filename = create_video(
                 user,
                 filename,
