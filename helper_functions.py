@@ -622,13 +622,13 @@ def create_meme(
             i += 1
 
         ##download from replicate
-        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + ".mp4"
+        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + ".png"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
         ##add text on top
-        meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".mp4"
-        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=75:x=100:y=100:" """ + meme_filename)
+        meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".png"
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, 20) + """':fontcolor=white:fontsize=36:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
