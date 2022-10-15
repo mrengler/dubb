@@ -960,7 +960,7 @@ def run_combined(
             image_audio_filenames.append(image_audio_filename)
             num_image_audios += 1
 
-        if top_quote is not None:
+        elif top_quote is not None:
             meme_filename = create_meme(
                 user,
                 filename,
