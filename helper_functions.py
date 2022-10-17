@@ -963,6 +963,9 @@ def run_combined(
     image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
     sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
+    print('this is sorted image prompts')
+    print(sorted_image_prompts_l)
+
     for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
         if (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
             image_audio_filename = create_video(
