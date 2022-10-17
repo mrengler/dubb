@@ -768,6 +768,8 @@ def convert(
                     off_index_end -= 1
 
             ## find quote audio start time, end time, duration
+            print('top quote split off')
+            print(top_quote_split[off_index_start].casefold())
             find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
             tq_start_i = start_times_unformatted.index(find_top_quote_start)
             tq_start = start_times_unformatted[tq_start_i - off_index_start]
