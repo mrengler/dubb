@@ -414,8 +414,27 @@ def create_video(
 
     print('this is first prompt:')
 
-    prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
+    prompt_text_pre = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
     + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image features'
+
+    print(prompt_text_pre)
+
+    top_quote_image_description_response_pre = openai.Completion.create(
+        model='text-davinci-002',
+        prompt=prompt_text_pre,
+        max_tokens=max_tokens_output_image_description,
+        temperature=0.0,
+        presence_penalty=pres_penalty,
+        user=user,
+    )
+
+    top_quote_image_description_pre = top_quote_image_description_response_pre.choices[0].text
+
+    top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
+    top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
+    top_quote_image_description_pre = top_quote_image_description_pre[0].upper() + top_quote_image_description_pre[1:]
+
+    prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:'
 
     print(prompt_text)
 
@@ -432,10 +451,6 @@ def create_video(
 
     ## first log the classification
     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
-
-    top_quote_image_description = top_quote_image_description.replace(':', '')
-    top_quote_image_description = top_quote_image_description.lstrip()
-    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
 
     print("top_quote_image_description")
     print(top_quote_image_description)
@@ -494,7 +509,7 @@ def create_video(
 
     if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
 
-        style_text = ' By Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        style_text = ' An oil painting by Edward Hopper. Vibrant colors. Trending on ArtStation.'
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
