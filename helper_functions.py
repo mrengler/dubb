@@ -452,6 +452,9 @@ def create_video(
     ## first log the classification
     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
 
+    top_quote_image_description = top_quote_image_description.replace('\n\n', '')
+    top_quote_image_description = top_quote_image_description.lstrip()    
+
     print("top_quote_image_description")
     print(top_quote_image_description)
 
