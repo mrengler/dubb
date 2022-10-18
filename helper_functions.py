@@ -1043,6 +1043,19 @@ def run_combined(
                  "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email
              }
          )
+
+    response = requests.\
+        post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+            auth=("api", MAILGUN_API_KEY),
+            # files=[("attachment", open('media' + ".zip", "rb"))],
+             data={
+                 "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                 "to": user, ## to be updated to email
+                 "subject": "Dubb results",
+                 "text": combined_email,
+                 "html": combined_email
+             }
+         )
     
     return combined_html, audio_filenames, image_audio_filenames, user
     
