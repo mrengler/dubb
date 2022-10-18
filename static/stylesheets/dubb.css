@@ -39,6 +39,12 @@
     padding:0% 3% 0% 3%;
   }
 
+  video {
+    /* override other styles to make responsive */
+    width: 100%    !important;
+    height: auto   !important;
+  }
+
   .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
     margin-left: 0;
     margin-right: 0;
