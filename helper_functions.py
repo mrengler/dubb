@@ -743,6 +743,7 @@ def convert(
             top_quote = top_quote.replace("The full transcript:\n\n", '')
             for speaker in speakers_input:
                 top_quote = top_quote.replace(speaker + ": ", '')
+                top_quote = top_quote.replace("Unknown: ", '')
             top_quotes.append(top_quote)
             
             ## generate audiograms
