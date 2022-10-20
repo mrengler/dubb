@@ -265,6 +265,8 @@ def accelerated_process():
             skip_transcribe=True
         make_videos = request.form.get("make_videos") != None
         make_memes = request.form.get("make_memes") != None
+        print('make_videos: ' + str(make_videos))
+        print('make_memes: ' + str(make_memes))
         # make_audios = request.form.get("make_audios") != None
         # make_blog_post = request.form.get("make_blog_post") != None
         # make_titles = request.form.get("make_titles") != None
