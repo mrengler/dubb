@@ -951,8 +951,11 @@ def run_combined(
         print('this is sorted image prompts')
         print(sorted_image_prompts_l)
 
+        print('this is make_videos')
+        print(make_videos)
+
         for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
-            if make_videos and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
+            if (make_videos) and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
                 image_audio_filename = create_video(
                     user,
                     filename,
