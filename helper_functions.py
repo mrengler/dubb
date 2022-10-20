@@ -184,77 +184,80 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
 
     response = requests.get(endpoint, headers=headers)
     
-    try:
+    # try:
 
-        print('here 1')
-    
-        sentences = response.json()['sentences']
-        sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
-        speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-        unique_speakers = list(dict.fromkeys(speakers_duplicate))
-        if len(unique_speakers) < len(speakers_input):
-            speakers_input = speakers_input[:len(unique_speakers)]
+    print('here 1')
 
-        print('here 2')
+    sentences = response.json()['sentences']
+    print('here 2')
+    sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
+    print('here 3')
+    speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+    print('here 3')
+    unique_speakers = list(dict.fromkeys(speakers_duplicate))
+    if len(unique_speakers) < len(speakers_input):
+        speakers_input = speakers_input[:len(unique_speakers)]
 
-        speaker_hash = {}
-        for i,speaker in enumerate(speakers_input):
-            speaker_hash[unique_speakers[i]] = speaker
-        unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
-        for speaker in unknown_speakers:
-            speaker_hash[speaker] = 'Unknown'
-        speaker_hash['UNK'] = 'Unknown'
+    print('here 2')
 
-        print('here 3')
+    speaker_hash = {}
+    for i,speaker in enumerate(speakers_input):
+        speaker_hash[unique_speakers[i]] = speaker
+    unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
+    for speaker in unknown_speakers:
+        speaker_hash[speaker] = 'Unknown'
+    speaker_hash['UNK'] = 'Unknown'
 
-        current_speaker_sentences_joined = ''
+    print('here 3')
 
-        max_num_sentences = 15
-        num_sentences_used = 0
+    current_speaker_sentences_joined = ''
 
-        print('here 4')
+    max_num_sentences = 15
+    num_sentences_used = 0
 
-        if paragraphs==True:
-            cleaned_paragraphs = []
-            current_speaker = ''
-            current_speaker_sentences = []
-            start_times = []
-            start_times_unformatted = []
-            for speaker, sentence, start_time, start_time_unformatted in sentences_diarized:
-                print('here 5')
-                speaker = speaker_hash[speaker]
-                if (speaker != current_speaker) or (num_sentences_used >= max_num_sentences):
-                    if current_speaker != '':
-                        current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
-                        cleaned_paragraphs.append(current_speaker_sentences_joined)
-                        start_times.append(start_time)
-                        start_times_unformatted.append(start_time_unformatted)
-                    current_speaker = speaker
-                    current_speaker_sentences = [sentence]
-                    num_sentences_used = 1
+    print('here 4')
 
-                else:
-                    current_speaker_sentences.append(sentence)
-                    num_sentences_used += 1
+    if paragraphs==True:
+        cleaned_paragraphs = []
+        current_speaker = ''
+        current_speaker_sentences = []
+        start_times = []
+        start_times_unformatted = []
+        for speaker, sentence, start_time, start_time_unformatted in sentences_diarized:
+            print('here 5')
+            speaker = speaker_hash[speaker]
+            if (speaker != current_speaker) or (num_sentences_used >= max_num_sentences):
+                if current_speaker != '':
+                    current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
+                    cleaned_paragraphs.append(current_speaker_sentences_joined)
+                    start_times.append(start_time)
+                    start_times_unformatted.append(start_time_unformatted)
+                current_speaker = speaker
+                current_speaker_sentences = [sentence]
+                num_sentences_used = 1
 
-            print('here 6')
-            current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
-            cleaned_paragraphs.append(current_speaker_sentences_joined)
-            start_times.append(start_time)
-            start_times_unformatted.append(start_time_unformatted)
+            else:
+                current_speaker_sentences.append(sentence)
+                num_sentences_used += 1
 
-            return cleaned_paragraphs, start_times, start_times_unformatted, sentences_diarized
+        print('here 6')
+        current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
+        cleaned_paragraphs.append(current_speaker_sentences_joined)
+        start_times.append(start_time)
+        start_times_unformatted.append(start_time_unformatted)
 
-        elif paragraphs==False:
+        return cleaned_paragraphs, start_times, start_times_unformatted, sentences_diarized
 
-            cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-            start_times = [start_time for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-            start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+    elif paragraphs==False:
 
-            return cleaned_sentences, start_times, start_times_unformatted, sentences_diarized
+        cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+        start_times = [start_time for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+        start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+
+        return cleaned_sentences, start_times, start_times_unformatted, sentences_diarized
         
-    except:
-        return 'waiting', None, None, None
+    # except:
+    #     return 'waiting', None, None, None
 
 
 def get_max_lines(exchanges, n):
