@@ -243,5 +243,105 @@ def process():
 def index():
     return render_template('index.html', error=None)
 
+@app.route('/accelerated')
+def index_accelerated():
+    return render_template('index_accelerated.html', error=None)
+
+@app.route('/accelerated_process', methods=["GET", "POST"])
+def accelerated_process():
+    if request.method == 'POST':
+
+        print("This is file and url")
+        print(request.files['file'])
+        print(request.form['url'] == '')
+        print("This is transcript_id")
+        print(request.form['transcript_id'])
+        email = request.form['email']
+        transcript_id = request.form['transcript_id']
+        skip_upload = False
+        if transcript_id != '':
+            skip_upload = True
+        make_videos = request.form.get("make_videos") != None
+        make_memes = request.form.get("make_memes") != None
+        # make_audios = request.form.get("make_audios") != None
+        # make_blog_post = request.form.get("make_blog_post") != None
+        # make_titles = request.form.get("make_titles") != None
+        # make_descriptions = request.form.get("make_descriptions") != None
+
+
+        file = request.files['file']
+        print(file.filename)
+
+        if file:
+            if allowed_file(file.filename):
+                print('is allowed file')
+                filename = secure_filename(file.filename)
+                upload_path = os.path.join(uploads_dir, filename)
+                print('This is upload path: ' + upload_path)
+                file.save(upload_path)
+                content = upload_path
+                content_type = 'file'
+                upload_to_gs('writersvoice', upload_path, filename) ##update this to heroku variable
+            else:
+                print('is not allowed file')
+                return render_template('index_accelerated.html')
+        elif not file:
+            content = request.form['url']
+            if content != '':
+                if not (('podcasts.google' in content) or ('youtube' in content)):
+                    error="Sorry, we don't support that podcast player. Please link to your podcast episode from Google Podcasts or Youtube, or upload the file of your episode."
+                    return render_template('index_accelerated.html', error=error)
+
+                content_type = 'url'
+                filename = re.sub(r'\W+', '', content) + '.mp3'
+            else:
+                if transcript_id != '':
+                    content = ''
+                    content_type = ''
+                    filename = 'file_' + transcript_id
+
+                else:
+                    error="Submit a file, url, or transcript_id"
+                    return render_template('index_accelerated.html', error=error)
+
+        speakers = request.form['speakers']
+        speakers_input = [name.strip() for name in speakers.split(',')]
+
+        job = q.enqueue(
+            run_combined,
+            args=(
+                content,
+                content_type,
+                email,
+                speakers_input,
+                filename,
+                openai_model
+            ),
+            kwargs={
+                'paragraphs': True,
+                'transcript_id': transcript_id,
+                'skip_upload': skip_upload,
+                'make_videos': make_videos,
+                'make_memes': make_memes
+            },
+            timeout=600
+        )
+
+        # db.collection("requests").document().set({
+        #     'email': email,
+        #     'content': content,
+        #     'speakers': speakers,
+        #     'time': datetime.now(),
+        # })
+
+
+
+        return redirect(url_for('result', id=job.id))
+        # print('This is results: ' + results)
+
+        # return {'article': converting, 'transcript': cleaned_sentences}
+    else:
+        return render_template('index.html')
+
 if __name__ == '__main__':
   app.run(ssl_context="adhoc")

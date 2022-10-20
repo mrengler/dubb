@@ -270,13 +270,9 @@ def get_max_lines(exchanges, n):
 def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
         
     prompt_chunks = []
-    
     num_chars = max_token_input * chars_per_token
-    
     used_chars = 0
-    
     chunk = []
-    
     chunk_i = 0
     
     for sentence in cleaned_sentences:
@@ -537,10 +533,6 @@ def create_video(
                 src = image.output
             i += 1
 
-
-        # images.append(src)
-        # image_count += 1
-
         ##download from replicate
         image_filename = filename.split('.')[0] + '_image_' + str(num_image_audios) + ".mp4"
         response = requests.get(src)
@@ -572,8 +564,6 @@ def create_video(
         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
         upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
-
-        # image_audio_count += 1
 
         return image_audio_filename
 
@@ -675,8 +665,6 @@ def convert(
     prompt_end_string="\n\n===\n\n",
     complete_end_string=[" +++"]):
 
-    # replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
-
     summary_chunks = []
     top_quotes = []
     images = []
@@ -692,9 +680,6 @@ def convert(
     print(sentences_diarized)
 
     for prompt_chunk in prompt_chunks:
-        attempts = 0
-        # while attempts < 5:
-        #     try:
         prompt_chunk_summary = 'The transcript of the article:\n\n' + prompt_chunk \
         + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
 
@@ -803,12 +788,6 @@ def convert(
         else:
             print('UNSAFE RESPONSE:')
             print(top_quote_response)
-                
-            #         break
-            # except:
-            #     attempts += 1
-            #     print('number of attempts: ' + str(attempts))
-            #     time.sleep(30)
     
     return summary_chunks, top_quotes, audio_filenames, audio_durations
 
@@ -829,7 +808,10 @@ def run_combined(
     skip_upload=False,
     skip_transcribe=False,
     transcript_id='',
-    paragraphs=False):
+    paragraphs=False,
+    make_videos=True,
+    make_memes=True,
+    ):
 
 
     if skip_upload==False:
@@ -876,13 +858,10 @@ def run_combined(
 
     audio_files_nonnull = [audio for audio in audio_filenames if audio is not None]
 
-    # present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
     present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_files_nonnull) + """' type='audio/mpeg'></audio>"""
     
-    # tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]
     tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in audio_files_nonnull]
 
-    # email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
     email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
 
     l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
@@ -958,53 +937,61 @@ def run_combined(
     print('this is article:')
     print('"' + article + '"')
 
-    image_audio_filenames = []
-    meme_filenames = []
-    num_image_audios = 0
-    num_memes = 0
+    if make_memes or make_videos:
 
-    image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
-    sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
+        image_audio_filenames = []
+        meme_filenames = []
+        num_image_audios = 0
+        num_memes = 0
 
-    print('this is sorted image prompts')
-    print(sorted_image_prompts_l)
+        image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
+        sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
-    for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
-        if (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
-            image_audio_filename = create_video(
-                user,
-                filename,
-                num_image_audios,
-                description_options[0],
-                top_quote,
-                top_quote_audio_filename,
-                presence_penalty,
-                bucket_name
-            )
-            image_audio_filenames.append(image_audio_filename)
-            num_image_audios += 1
+        print('this is sorted image prompts')
+        print(sorted_image_prompts_l)
 
-        elif top_quote is not None:
-            meme_filename = create_meme(
-                user,
-                filename,
-                num_memes,
-                description_options[0],
-                top_quote,
-                presence_penalty,
-                bucket_name                
-            )
-            meme_filenames.append(meme_filename)
-            num_memes += 1            
+        for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
+            if make_videos and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
+                image_audio_filename = create_video(
+                    user,
+                    filename,
+                    num_image_audios,
+                    description_options[0],
+                    top_quote,
+                    top_quote_audio_filename,
+                    presence_penalty,
+                    bucket_name
+                )
+                image_audio_filenames.append(image_audio_filename)
+                num_image_audios += 1
 
-    image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
-    present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
-    tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
-    email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+            elif make_memes and (top_quote is not None):
+                meme_filename = create_meme(
+                    user,
+                    filename,
+                    num_memes,
+                    description_options[0],
+                    top_quote,
+                    presence_penalty,
+                    bucket_name                
+                )
+                meme_filenames.append(meme_filename)
+                num_memes += 1            
 
-    present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
-    tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
-    email_present_memes = '<br><br>'.join(tmp_email_memes)
+    video_clips_html = ''
+    if make_videos:
+        image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
+        present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
+        tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
+        email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+        video_clips_html = """<br><a href="#video">Video Clips</a>"""
+
+    memes_html = ''
+    if make_memes:
+        present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
+        tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
+        email_present_memes = '<br><br>'.join(tmp_email_memes)
+        memes_html = """<br><a href="#images">Quote Memes</a>"""
 
     combined_base = """<br><br><b>Result Sections</b>""" \
     + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
@@ -1012,8 +999,8 @@ def run_combined(
     + """<br><a href="#blog_post">Blog Post</a>""" \
     + """<br><a href="#top_quotes">Top Quotes</a>""" \
     + """<br><a href="#audio">Audio Clips</a>""" \
-    + """<br><a href="#video">Video Clips</a>""" \
-    + """<br><a href="#images">Quote Memes</a>""" \
+    + video_clips_html \
+    + memes_html \
     + """<br><a href="#transcript">Transcript</a>""" \
     + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
     + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \

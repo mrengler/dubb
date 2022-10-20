@@ -74,8 +74,7 @@ function signOut() {
   emailform.value = ""
 }
 
-function testingSignIn() {
-
+function testingSignIn(){
   var floatingsignon = document.getElementById("floating-sign-in");
   floatingsignon.style.display = 'none';
   var inputdiv = document.getElementById("input-div");

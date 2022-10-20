@@ -1,0 +1,149 @@
+<html>
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6M98842HLL"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6M98842HLL');
+    </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="/static/js/functions.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- <script src="{{url_for('static', filename='js/functions.js')}}"></script> -->
+    <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/style.css">
+    <link rel="stylesheet" href="/static/stylesheets/dubb.css">
+    <title>Dubb</title>
+  </head>
+  <body>
+    <div class="topnav">
+      <a href="#" id='logo'>Dubb</a>
+      <div id="topnav-right">
+        <a href="#" id="sign-out" onclick="signOut();" style="display: none;";>Sign out</a>
+        <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
+      </div>
+    </div>
+    <h3>Marketing magic for your podcast, using AI</h3>
+    <h6>Dubb listens to your podcast and creates marketing content to help you recruit new listeners</h6>
+    {% if error %}
+      <p class=error><strong>Error:</strong> {{ error }}
+    {% endif %}
+    <div style="position: relative;">
+      <div id="floating-sign-in" class="loader" hidden>
+        <span>Sign in to try Dubb</span>
+      </div>
+      <div id='input-div' class='unblur'>
+        <fieldset id="input-form" disabled=true style="display: block;">
+        <!-- <fieldset id="input-form" style="display: block;"> -->
+          <form action="/accelerated_process" method="POST" id="url-form" enctype = "multipart/form-data">
+            <p id="upload-instruct">Select your audio file (mp3, wav)</p>
+            <label for="file-upload" id="upload-file">
+                Choose File
+            </label>
+            <span id="file-selected"></span>
+            <p>...or enter the url of the podcast episode (Google Podcasts, Youtube)</p>
+            <input type="file" id="file-upload" accept=".wav,.mp3" name="file"/>
+            <input type="text" id="url" name="url" placeholder="https://podcasts.google.com/feed/yourgreatpodcast" size="50"><br><br>
+            <p id="names-instruct">List the speakers in order of appearance, with a comma separating each name. Add any advertisers too.</p>
+            <input type="text" id="speakers" name="speakers" placeholder="Jane Doe, Ad, John Smith" size="50" required><br>
+            <input type="hidden" id="email" name="email" value="">
+            <p>Transcript ID</p>
+            <input type="text" id="transcript_id" name="transcript_id" value="">
+            <br>
+            <br>
+            <p>Make Videos</p>
+            <input type="checkbox" id="make_videos" name="make_videos" checked>
+            <br>
+            <br>
+            <p>Make Memes</p>
+            <input type="checkbox" id="make_memes" name="make_memes" checked>
+            <br>
+            <br>
+            <p>Make Audio Clips</p>
+            <input type="checkbox" id="make_audios" name="make_audios" checked>
+            <br>
+            <br>
+            <p>Make Blog Post</p>
+            <input type="checkbox" id="make_blog_post" name="make_blog_post" checked>
+            <br>
+            <br>
+            <p>Make Titles</p>
+            <input type="checkbox" id="make_titles" name="make_titles" checked>
+            <br>
+            <br>
+            <p>Make Descriptions</p>
+            <input type="checkbox" id="make_descriptions" name="make_descriptions" checked>
+            <br>
+            <br>
+            <input type="submit" id="submit" value="Go">
+          </form>
+        </fieldset>
+      </div>
+    </div>
+    <!-- add an image here -->
+    <h5>Check out what Dubb made for an episode of the <a href='https://www.anthologyofheroespodcast.com/' target="_blank">Anthology of Heroes</a> podcast:</h5>
+      <button class="collapsible">Animated videos of the best episode moments for social media</button>
+      <div class="content">
+        <video controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b178_video_0.mp4" type="video/mp4"></video>
+        <br><br>
+        <video controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b178_video_1.mp4" type="video/mp4"></video>
+        <br><br>
+        <video controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b178_video_2.mp4" type="video/mp4"></video>
+      </div>
+      <br>
+      <button class="collapsible">An engaging article about the episode for a blog or newsletter</button>
+      <div class="content">
+        <p>In May 878, King Alfred and his council stood atop a small hill in western England, known as Expert Stone. They were there to rally the fighting men of Wessex, in preparation for the final battle against the pagans.</p>
+        <p>Alfred's army had been defeated months before, and the pagans had pushed deeper into the heartland than ever before. One by one, each of the other kingdoms - Mercia, East Anglia, and Northumbria - had fallen to the pagans. Wessex was the last kingdom standing.</p>
+        <p>But on this day, Alfred's army had rallied. They were ready to fight for their kingdom and for their lives. The pagans would find no peace in Wessex, not while Alfred still had breath.</p>
+        <p>This is the story of Alfred the Great and the last kingdom.</p>
+        <p>Alfred the Great was not having a great time. His brother had just died, leaving him with a hefty crown and a whole lot of responsibility. To make matters worse, the war with the heathens was now at their doorstep. Winchester was under threat from the Danes, and Alfred knew he had to do something.</p>
+        <p>Alfred knew he was in trouble. The Danish fleet was coming, and he didn't have much of an army to speak of. But he sailed out to meet them anyway, and a mighty storm wrecked the Danish ships on the English coast.</p>
+        <p>Guthrum was not happy. He gathered his men and came for Alfred again. This time, they caught him by surprise in Chippenham and he was forced to flee for his life. Alfred hid in a swamp, with the Danes close on his heels.</p>
+        <p>It looked like the end for Alfred. But this was only the beginning...</p>
+      </div>
+      <br>
+      <button class="collapsible">A full transcript of the episode</button>
+      <div class="content">
+        <p>[0:01:05] Elliot: It s a rainy morning on the 4 May 878. Atop a small hill in western England known as Expert Stone, stands King Alfred with his wife and what's left of his council. The group stand in eerie silence as the royal standard of Wessex ripples in the wind. Alfred's unblinking gaze had not moved from the horizon since their arrival at dawn. Everyone present knew that the next few moments would decide the fate of their kingdom and of Christian England. Over the last few years, the great heathen army had pushed deeper into the heartland than ever before. One by one, each of them kingdoms Mercia, East Anglia and Northumbria had fallen to the pagans. Wessex now stood alone. Alfred had commanded that each of his elder men were to rally at this spot, on this day, with all the fighting men they could muster. But after a crushing defeat only months ago, he wondered how many would stick to their word. His wife, Ailswith, pulled at his hand tentatively. Alfred, perhaps it's time peace could look.</p>
+        <p>...</p>
+      </div>
+      <br>
+      <button class="collapsible">SEO Title Suggestions</button>
+      <div class="content">
+        <p>1. The Last Kingdom</p>
+        <p>2. Alfred the Great and the Last Kingdom</p>
+      </div>
+      <br>
+      <button class="collapsible">Episode descriptions that will hook your audience</button>
+      <div class="content">
+        <p>1. We tell the story of Alfred the Great and the last kingdom. Alfred was a Saxon king who lived in the 9th century. He was the last king standing after the Viking invasions of England. The podcast tells the story of how Alfred fought back against the Vikings and protected his kingdom.</p>
+        <p>2. We tell the story of Alfred the Great and the last kingdom. Wessex was the last kingdom standing after the Viking conquest of England in the 9th century. The pagans were at their doorstep, and Alfred knew he had to do something. He called on his army, but the Danish host was too strong. They holed up in Warham, and Alfred knew he had to negotiate. But as soon as night fell, Guthrum broke his word and slaughtered the hostages. Alfred knew he was in trouble. The Danish fleet was coming, and he didn't have much of an army to speak of. But he sailed out to meet them anyway, and a mighty storm wrecked the Danish ships on the English coast. Guthrum was not happy. He gathered his men and came for Alfred again. This time, they caught him by surprise in Chippenham and he was forced to flee for his life. Alfred hid in a swamp, with the Danes close on his heels. It looked like the end for Alfred. But this was only the beginning...</p>
+        <p>3. We tell the story of Alfred the Great and the last kingdom. Alfred was a Saxon king who fought against the Viking invasions of England in the 9th century. The story begins with the Viking conquest of the kingdoms of Mercia, Northumbria, and East Anglia, and the subsequent battle for Wessex. In the battle, the Wessex brothers are defeated and their brother Athelred is mortally wounded. However, the Saxons score a lucky break and force the Danes into a route. The Danes then turn back and cut down the Saxons, including Alfred's brother Ethelred.</p>
+      </div>
+      <br>
+      <button class="collapsible">The most insightful quotes to share</button>
+      <div class="content">
+        <p>In the year 865, a few Viking chiefs pulled their strengths together in what would be referred to as the Saxons as the Great Heathen Army.</p>
+        <p>The Netflix series The Last Kingdom does a great job at symbolizing the magnitude of this. In its opening credits, it shows a black map of England slowly burning as images of Viking longships and raids flash across the screen. The flames burn through the kingdoms of Mercia, Northumbria and East Anglia, and only at the borders of Wessex do they begin to smoulder. And this is what it must have seemed like. How life had changed for Alfred in only a few short years.</p>
+        <p>The penny finally dropped for Alfred. Guthrin would not settle for plunder. He wanted Alfred's spot. He wanted to rule Wessex. As news reached Alfred of yet another huge Viking fleet heading to reinforce Guthrum at Exeter, it must have seemed like it was all coming to an end.</p>
+      </div>
+      <br>
+      <button class="collapsible">Audio Clips of the top segments</button>
+      <div class="content">
+        <audio controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b178556312_565377.mp3" type="audio/mpeg"></audio>
+        <br><br>
+        <audio controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b178724987_759712.mp3" type="audio/mpeg"></audio>
+        <br><br>
+        <audio controls><source src="https://storage.googleapis.com/writersvoice/967cc9448155bbde027c584e8290b1781481887_1501087.mp3" type="audio/mpeg"></audio>
+      </div>
+      <br>
+  </body>
+</html>
