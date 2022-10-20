@@ -259,8 +259,10 @@ def accelerated_process():
         email = request.form['email']
         transcript_id = request.form['transcript_id']
         skip_upload = False
+        skip_transcribe=False
         if transcript_id != '':
             skip_upload = True
+            skip_transcribe=True
         make_videos = request.form.get("make_videos") != None
         make_memes = request.form.get("make_memes") != None
         # make_audios = request.form.get("make_audios") != None
@@ -321,6 +323,7 @@ def accelerated_process():
                 'paragraphs': True,
                 'transcript_id': transcript_id,
                 'skip_upload': skip_upload,
+                'skip_transcribe': skip_transcribe,
                 'make_videos': make_videos,
                 'make_memes': make_memes
             },
