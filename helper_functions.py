@@ -188,6 +188,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
 
     print('here 1')
 
+    print(response.json())
+
     sentences = response.json()['sentences']
     print('here 2')
     sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
