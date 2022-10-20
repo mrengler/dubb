@@ -185,6 +185,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     response = requests.get(endpoint, headers=headers)
     
     try:
+
+        print('here 1')
     
         sentences = response.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
@@ -192,6 +194,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
         if len(unique_speakers) < len(speakers_input):
             speakers_input = speakers_input[:len(unique_speakers)]
+
+        print('here 2')
 
         speaker_hash = {}
         for i,speaker in enumerate(speakers_input):
@@ -201,10 +205,14 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             speaker_hash[speaker] = 'Unknown'
         speaker_hash['UNK'] = 'Unknown'
 
+        print('here 3')
+
         current_speaker_sentences_joined = ''
 
         max_num_sentences = 15
         num_sentences_used = 0
+
+        print('here 4')
 
         if paragraphs==True:
             cleaned_paragraphs = []
@@ -213,6 +221,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             start_times = []
             start_times_unformatted = []
             for speaker, sentence, start_time, start_time_unformatted in sentences_diarized:
+                print('here 5')
                 speaker = speaker_hash[speaker]
                 if (speaker != current_speaker) or (num_sentences_used >= max_num_sentences):
                     if current_speaker != '':
@@ -228,6 +237,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
                     current_speaker_sentences.append(sentence)
                     num_sentences_used += 1
 
+            print('here 6')
             current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
             cleaned_paragraphs.append(current_speaker_sentences_joined)
             start_times.append(start_time)
