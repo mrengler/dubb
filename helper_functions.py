@@ -987,6 +987,8 @@ def run_combined(
                 meme_filenames.append(meme_filename)
                 num_memes += 1            
 
+    present_image_audio_clips=''
+    email_present_image_audio_clips=''
     video_clips_html = ''
     if make_videos:
         image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
@@ -995,6 +997,8 @@ def run_combined(
         email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
         video_clips_html = """<br><a href="#video">Video Clips</a>"""
 
+    present_memes
+    email_present_memes = ''
     memes_html = ''
     if make_memes:
         present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
