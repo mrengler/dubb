@@ -640,8 +640,8 @@ def create_meme(
         fontsize = 36
         line_length = 20
         if len(top_quote) > 150:
-            fontsize = 3.0 * int(fontsize / (len(top_quote) / 150))
-            line_length = ((len(top_quote) / 150) * line_length) / 3.0
+            fontsize = int(fontsize / math.sqrt(len(top_quote) / 150))
+            line_length = int(math.sqrt(len(top_quote) / 150) * line_length)
         print('this is fontsize')
         print(fontsize)
         print('this is line length')
