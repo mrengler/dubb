@@ -608,11 +608,11 @@ def create_meme(
 
     if (top_quote_image_description_classification != '2'):
 
-        style_text = ' An oil painting by Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        style_text = 'An oil painting by Edward Hopper. Vibrant colors. Trending on ArtStation. '
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "prompt": top_quote_image_description + style_text,
+                "prompt": style_text + top_quote_image_description,
                 "num_outputs": 1,
                 "guidance_scale": 7.5,
                 "num_inference_steps": 100,
