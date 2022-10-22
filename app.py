@@ -253,7 +253,7 @@ def accelerated_process():
 
         if (request.files['file'].filename == '') & (request.form['url'] == ''):
             error="Please upload a file or include a url"
-            return render_template('index.html', error=error)
+            return render_template('index_accelerated.html', error=error)
 
         print("This is file and url")
         print(request.files['file'])

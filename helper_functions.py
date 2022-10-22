@@ -644,6 +644,10 @@ def create_meme(
             line_length = ((len(top_quote) / 150) * line_length) / 3.0
         print('this is fontsize')
         print(fontsize)
+        print('this is line length')
+        print(line_length)
+        print('this is length of top quote')
+        print(len(top_quote))
         top_quote = top_quote.replace(',', '\\,')
         top_quote = re.escape(top_quote)
         os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
