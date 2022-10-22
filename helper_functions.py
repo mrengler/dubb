@@ -650,7 +650,7 @@ def create_meme(
         print(len(top_quote))
         top_quote = top_quote.replace(',', '\\,')
         top_quote = re.escape(top_quote)
-        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
+        os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=5:fontcolor=white:fontsize=""" + str(fontsize) + """:x=100:y=100:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
