@@ -997,7 +997,7 @@ def run_combined(
         email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
         video_clips_html = """<br><a href="#video">Video Clips</a>"""
 
-    present_memes
+    present_memes = ''
     email_present_memes = ''
     memes_html = ''
     if make_memes:
