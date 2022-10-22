@@ -642,7 +642,7 @@ def create_meme(
         padding=100
         if len(top_quote) > 150:
             fontsize = int(fontsize / math.sqrt(len(top_quote) / 150))
-            line_length = int(math.sqrt(len(top_quote) / 150) * line_length)
+            line_length = int((len(top_quote) / 150) * line_length)
             padding = int(padding / math.sqrt(len(top_quote) / 150))
         print('this is fontsize')
         print(fontsize)
