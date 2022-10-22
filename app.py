@@ -251,6 +251,10 @@ def index_accelerated():
 def accelerated_process():
     if request.method == 'POST':
 
+        if (request.files['file'].filename == '') & (request.form['url'] == ''):
+            error="Please upload a file or include a url"
+            return render_template('index.html', error=error)
+
         print("This is file and url")
         print(request.files['file'])
         print(request.form['url'] == '')
@@ -261,7 +265,6 @@ def accelerated_process():
         skip_upload = False
         skip_transcribe=False
         if transcript_id != '':
-            skip_upload = True
             skip_transcribe=True
         make_videos = request.form.get("make_videos") != None
         make_memes = request.form.get("make_memes") != None
@@ -298,15 +301,7 @@ def accelerated_process():
 
                 content_type = 'url'
                 filename = re.sub(r'\W+', '', content) + '.mp3'
-            else:
-                if transcript_id != '':
-                    content = ''
-                    content_type = ''
-                    filename = 'file_' + transcript_id
 
-                else:
-                    error="Submit a file, url, or transcript_id"
-                    return render_template('index_accelerated.html', error=error)
 
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
