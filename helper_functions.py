@@ -702,7 +702,6 @@ def convert(
             max_tokens=max_tokens_output,
             temperature=temp,
             presence_penalty=pres_penalty,
-            stop=complete_end_string,
             user=user,
         )
 
