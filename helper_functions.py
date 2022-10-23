@@ -1069,7 +1069,7 @@ def run_combined(
              }
          )
     
-    return combined_html, audio_filenames, image_audio_filenames, user
+    return combined_html, user
     
 
 def present_article(article):

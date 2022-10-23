@@ -129,20 +129,8 @@ def result(id):
     elif status == 'finished':
         print(job.result)
         print(os.listdir())
-        combined, audio_filenames, image_audio_filenames, user = job.result
-        # for audio_filename in audio_filenames:
-        #     download_from_gs('writersvoice', audio_filename, audio_filename)
-        #     url_for_filename = url_for('send_media', filename=audio_filename)
-        #     print('this is url_for_filename')
-        #     print(url_for_filename)
-        #     os.rename(audio_filename, 'media/' + audio_filename)
-        # for image_audio_filename in image_audio_filenames:
-        #     download_from_gs('writersvoice', image_audio_filename, image_audio_filename)
-        #     os.rename(audio_filename, 'media/' + audio_filename)
-        # print('This is audio_clips_filenames')
+        combined, user = job.result
         print(os.listdir())
-        # present_audio_clips = """<audio controls><source src='""" + """' type='audio/mpeg'></audio><br><br><video autoplay controls><source src='""".join(audio_filenames) + """' type='audio/mpeg'></audio>"""
-        # combined += """<br><br><b><a id="audio_clips">Audio Clips</a></b><br><br>""" + present_audio_clips
         return get_template(combined)
 
 
