@@ -691,6 +691,8 @@ def convert(
     print(sentences_diarized)
 
     for prompt_chunk in prompt_chunks:
+        print('this is prompt_chunk')
+        print(prompt_chunk)
         prompt_chunk_summary = 'The transcript of the article:\n\n' + prompt_chunk \
         + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
 
