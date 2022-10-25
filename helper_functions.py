@@ -185,8 +185,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
     response = requests.get(endpoint, headers=headers)
     
     try:
-        print('this is response paragraphs')
-        print(response.json()['paragraphs'])
         sentences = response.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
         speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
