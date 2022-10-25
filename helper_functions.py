@@ -449,6 +449,8 @@ def create_video(
     ## first log the classification
     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
 
+    top_quote_image_description = top_quote_image_description.replace(':', '')
+    top_quote_image_description = top_quote_image_description.replace('"', '')
     top_quote_image_description = top_quote_image_description.replace('\n\n', '')
     top_quote_image_description = top_quote_image_description.lstrip()    
 
@@ -475,6 +477,7 @@ def create_video(
 
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace(':', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
+    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('\n\n', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
     top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
 
