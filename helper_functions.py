@@ -503,21 +503,28 @@ def create_video(
 
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace(':', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
+    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('\n\n', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
     top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
 
-    print(top_quote_image_description_part_3)                    
+    print(top_quote_image_description_part_3)
+
+    ## 
+    top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
+    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('.', ',').replace('!', ',').replace('?', ',').lower()
+    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('.', ',').replace('!', ',').replace('?', ',').lower()    
 
 
     if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
 
-        style_text = ' An oil painting by Edward Hopper. Vibrant colors. Trending on ArtStation.'
+        object_text = 'An oil painting of '
+        style_text = ' by edward hopper, vibrant colors, trending on artstation'
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "animation_prompts": '0: ' + top_quote_image_description + style_text + ' | 10: '\
-                + top_quote_image_description_part_2 + style_text + ' | 20: ' \
-                + top_quote_image_description_part_3 + style_text,
+                "animation_prompts": '0: ' + object_text + top_quote_image_description + style_text + ' | 10: '\
+                + object_text + top_quote_image_description_part_2 + style_text + ' | 20: ' \
+                + object_text + top_quote_image_description_part_3 + style_text,
                 "zoom": "0: (1.00)",
                 "fps": 10,
                 "color_coherence": "Match Frame 0 HSV",
