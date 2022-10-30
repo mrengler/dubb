@@ -24,6 +24,8 @@ import re
 import math
 import subprocess
 import shutil
+import random
+import string
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -532,9 +534,9 @@ def create_video(
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "animation_prompts": '0: ' + object_text + top_quote_image_description + ', ' + style_text + ' | 10: '\
-                + object_text + top_quote_image_description_part_2 + ', ' + style_text + ' | 20: ' \
-                + object_text + top_quote_image_description_part_3 + ', ' + style_text,
+                "animation_prompts": '0: ' + object_text + top_quote_image_description + ' ' + style_text + ' | 10: '\
+                + object_text + top_quote_image_description_part_2 + ' ' + style_text + ' | 20: ' \
+                + object_text + top_quote_image_description_part_3 + ' ' + style_text,
                 "zoom": "0: (1.00)",
                 "fps": 10,
                 "color_coherence": "Match Frame 0 HSV",
@@ -576,7 +578,8 @@ def create_video(
         os.system("""ffmpeg -i """ + slowed_image_filename + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
 
         ###join looped animation with audio
-        image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + ".mp4"
+        random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
+        image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + random_str + ".mp4"
         tmp_image_audio_filename = 'tmp_' + image_audio_filename
         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
         
@@ -642,7 +645,7 @@ def create_meme(
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "prompt": object_text + top_quote_image_description + ', ' + style_text,
+                "prompt": object_text + top_quote_image_description + ' ' + style_text,
                 "num_outputs": 1,
                 "guidance_scale": 7.5,
                 "num_inference_steps": 100,
@@ -661,7 +664,8 @@ def create_meme(
             i += 1
 
         ##download from replicate
-        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + ".png"
+        random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
+        image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + random_str + ".png"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
