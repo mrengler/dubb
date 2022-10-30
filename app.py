@@ -258,10 +258,7 @@ def accelerated_process():
         make_memes = request.form.get("make_memes") != None
         print('make_videos: ' + str(make_videos))
         print('make_memes: ' + str(make_memes))
-        # make_audios = request.form.get("make_audios") != None
-        # make_blog_post = request.form.get("make_blog_post") != None
-        # make_titles = request.form.get("make_titles") != None
-        # make_descriptions = request.form.get("make_descriptions") != None
+        visual_style=request.form['visual_style']
 
 
         file = request.files['file']
@@ -310,7 +307,8 @@ def accelerated_process():
                 'skip_upload': skip_upload,
                 'skip_transcribe': skip_transcribe,
                 'make_videos': make_videos,
-                'make_memes': make_memes
+                'make_memes': make_memes,
+                'visual_style': visual_style
             },
             timeout=600
         )

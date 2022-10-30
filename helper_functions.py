@@ -404,9 +404,21 @@ def create_video(
     top_quote,
     top_quote_audio_filename,
     pres_penalty,
-    bucket_name):
+    bucket_name,
+    visual_style
+    ):
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
+
+    if visual_style == 'poly':
+        object_text = 'Concept art of '
+        style_text = 'low poly'
+    elif visual_style == 'painting':
+        object_text = 'A digital illustration of '
+        style_text = 'by edward hopper'
+    elif visual_style == 'spooky':
+        object_text = 'A digital illustration of '
+        style_text = 'by zdzisław beksiński, dark surrealism'
 
     print('this is first prompt:')
 
@@ -517,14 +529,12 @@ def create_video(
 
     if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
 
-        object_text = 'An oil painting of '
-        style_text = ' by edward hopper, vibrant colors, trending on artstation'
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "animation_prompts": '0: ' + object_text + top_quote_image_description + style_text + ' | 10: '\
-                + object_text + top_quote_image_description_part_2 + style_text + ' | 20: ' \
-                + object_text + top_quote_image_description_part_3 + style_text,
+                "animation_prompts": '0: ' + object_text + top_quote_image_description + ', ' + style_text + ' | 10: '\
+                + object_text + top_quote_image_description_part_2 + ', ' + style_text + ' | 20: ' \
+                + object_text + top_quote_image_description_part_3 + ', ' + style_text,
                 "zoom": "0: (1.00)",
                 "fps": 10,
                 "color_coherence": "Match Frame 0 HSV",
@@ -585,9 +595,21 @@ def create_meme(
     description,
     top_quote,
     pres_penalty,
-    bucket_name):
+    bucket_name,
+    visual_style
+    ):
 
     replicate_model = replicate.models.get("stability-ai/stable-diffusion")
+
+    if visual_style == 'poly':
+        object_text = 'Concept art of '
+        style_text = 'low poly'
+    elif visual_style == 'painting':
+        object_text = 'A digital illustration of '
+        style_text = 'by edward hopper'
+    elif visual_style == 'spooky':
+        object_text = 'A digital illustration of '
+        style_text = 'by zdzisław beksiński, dark surrealism'
 
     prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
     + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image does not feature any people or text. It features'
@@ -617,11 +639,10 @@ def create_meme(
 
     if (top_quote_image_description_classification != '2'):
 
-        style_text = 'An oil painting by Edward Hopper. Vibrant colors. Trending on ArtStation. '
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "prompt": style_text + top_quote_image_description,
+                "prompt": object_text + top_quote_image_description + ', ' + style_text,
                 "num_outputs": 1,
                 "guidance_scale": 7.5,
                 "num_inference_steps": 100,
@@ -832,6 +853,7 @@ def run_combined(
     paragraphs=False,
     make_videos=True,
     make_memes=True,
+    visual_style='painting'
     ):
 
 
@@ -989,7 +1011,8 @@ def run_combined(
                     top_quote,
                     top_quote_audio_filename,
                     presence_penalty,
-                    bucket_name
+                    bucket_name,
+                    visual_style
                 )
                 image_audio_filenames.append(image_audio_filename)
                 num_image_audios += 1
@@ -1002,7 +1025,8 @@ def run_combined(
                     description_options[0],
                     top_quote,
                     presence_penalty,
-                    bucket_name                
+                    bucket_name,
+                    visual_style                
                 )
                 meme_filenames.append(meme_filename)
                 num_memes += 1            
