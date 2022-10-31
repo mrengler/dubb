@@ -452,9 +452,10 @@ def create_video(
         model='text-davinci-002',
         prompt=prompt_text,
         max_tokens=max_tokens_output_image_description,
-        temperature=0.0,
+        temperature=1.0,
         presence_penalty=pres_penalty,
         user=user,
+        n=3,
     )
 
     top_quote_image_description = top_quote_image_description_response.choices[0].text
@@ -470,20 +471,21 @@ def create_video(
     print("top_quote_image_description")
     print(top_quote_image_description)
 
-    print("this is second prompt:")
-    print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
+    # print("this is second prompt:")
+    # print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
 
-    top_quote_image_description_response_part_2 = openai.Completion.create(
-        model='text-davinci-002',
-        prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
-        max_tokens=max_tokens_output_image_description,
-        temperature=0.7,
-        presence_penalty=pres_penalty,
-        user=user,
-        stop='"',
-    )
+    # top_quote_image_description_response_part_2 = openai.Completion.create(
+    #     model='text-davinci-002',
+    #     prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
+    #     max_tokens=max_tokens_output_image_description,
+    #     temperature=0.7,
+    #     presence_penalty=pres_penalty,
+    #     user=user,
+    #     stop='"',
+    # )
 
-    top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
+    # top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
+    top_quote_image_description_part_2 = top_quote_image_description_response.choices[1].text
 
     ## first log the classification
     top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
@@ -498,19 +500,20 @@ def create_video(
     print(top_quote_image_description_part_2)
 
     print("this is third prompt:")
-    print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
+    # print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
 
-    top_quote_image_description_response_part_3 = openai.Completion.create(
-        model='text-davinci-002',
-        prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
-        max_tokens=max_tokens_output_image_description,
-        temperature=0.7,
-        presence_penalty=pres_penalty,
-        user=user,
-        stop='"',
-    )
+    # top_quote_image_description_response_part_3 = openai.Completion.create(
+    #     model='text-davinci-002',
+    #     prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
+    #     max_tokens=max_tokens_output_image_description,
+    #     temperature=0.7,
+    #     presence_penalty=pres_penalty,
+    #     user=user,
+    #     stop='"',
+    # )
 
-    top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+    # top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+    top_quote_image_description_part_3 = top_quote_image_description_response.choices[2].text
 
     ## first log the classification
     top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
