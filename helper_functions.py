@@ -555,15 +555,17 @@ def create_video(
                 src = image.output
             i += 1
 
+        random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
+
         ##download from replicate
-        image_filename = filename.split('.')[0] + '_image_' + str(num_image_audios) + ".mp4"
+        image_filename = filename.split('.')[0] + '_image_' + str(num_image_audios) + random_str + ".mp4"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
 
         ##slow looped animation
         slow_multiple = 1.25
-        slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + ".mp4"
+        slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + random_str + ".mp4"
         os.system("""ffmpeg -i """ + image_filename + """ -vf  "setpts=""" + str(slow_multiple) + """*PTS" """ + slowed_image_filename)
 
         ##get length and multipliers
@@ -574,11 +576,10 @@ def create_video(
         loop = math.ceil(multiplier)
 
         ##make looped animation
-        image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_image_audios) + ".mp4"
+        image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_image_audios) + random_str + ".mp4"
         os.system("""ffmpeg -i """ + slowed_image_filename + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
 
         ###join looped animation with audio
-        random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
         image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + random_str + ".mp4"
         tmp_image_audio_filename = 'tmp_' + image_audio_filename
         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
