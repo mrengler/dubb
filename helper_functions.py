@@ -798,6 +798,7 @@ def convert(
         if top_quote_classification != '2': ##unsafe
 
             top_quote = top_quote.replace("The full transcript:\n\n", '')
+            top_quote = top_quote.replace("The full transcript: ", '')
             for speaker in speakers_input:
                 top_quote = top_quote.replace(speaker + ": ", '')
                 top_quote = top_quote.replace("Unknown: ", '')
