@@ -747,7 +747,6 @@ def convert(
     user,
     cleaned_sentences,
     sentences_diarized,
-    start_times_unformatted,
     speakers_input,
     filename,
     bucket_name, 
@@ -766,7 +765,7 @@ def convert(
     image_count = 0
     image_audio_count = 0
 
-    # start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
+    start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
     print(sentences_diarized)
@@ -942,7 +941,6 @@ def run_combined(
         user,
         cleaned_paragraphs_no_ads,
         sentences_diarized,
-        start_times_unformatted,
         speakers_input,
         filename,
         bucket_name, 
