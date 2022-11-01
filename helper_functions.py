@@ -711,6 +711,8 @@ def create_meme(
         print(line_length)
         print('this is length of top quote')
         print(len(top_quote))
+        print('this is top quote')
+        print(top_quote)
         top_quote = top_quote.replace(',', '\\,')
         top_quote = re.escape(top_quote)
         print('this is os.system')
