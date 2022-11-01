@@ -222,10 +222,28 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                     if current_speaker != '':
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
-                        start_times.append(start_time)
-                        start_times_unformatted.append(start_time_unformatted)
+
+                        ## filter ads
+                        prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a transcript for an ad or promotion? Respond with either "yes" or "no".'
+                        print(prompt)
+                        is_ad_response = openai.Completion.create(
+                            model='text-davinci-002',
+                            prompt=prompt,
+                            max_tokens=max_tokens_output_is_ad,
+                            temperature=0.0,
+                            user=user,
+                        )
+
+                        is_ad_response = is_ad_response.choices[0].text
+                        print(is_ad_response)
+                        is_ad_response = is_ad_response.lower()
+                        if 'no' in is_ad_response:
+                            cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
+                            
                     current_speaker = speaker
                     current_speaker_sentences = [sentence]
+                    start_times.append(start_time)
+                    start_times_unformatted.append(start_time_unformatted)
                     num_sentences_used = 1
 
                 else:
@@ -233,6 +251,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                     num_sentences_used += 1
 
             current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
+
+            cleaned_paragraphs.append(current_speaker_sentences_joined)
 
             ## filter ads
             prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a transcript for an ad or promotion? Respond with either "yes" or "no".'
@@ -251,9 +271,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             if 'no' in is_ad_response:
                 cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
 
-            cleaned_paragraphs.append(current_speaker_sentences_joined)
-            start_times.append(start_time)
-            start_times_unformatted.append(start_time_unformatted)
+            # start_times.append(start_time)
+            # start_times_unformatted.append(start_time_unformatted)
 
             return cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized
 
