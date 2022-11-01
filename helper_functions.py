@@ -462,7 +462,6 @@ def create_video(
 
     top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
     top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
-    top_quote_image_description_pre = top_quote_image_description_pre[0].upper() + top_quote_image_description_pre[1:]
 
     prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:'
 
@@ -514,7 +513,6 @@ def create_video(
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('\n\n', '')
     top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
-    top_quote_image_description_part_2 = top_quote_image_description_part_2[0].upper() + top_quote_image_description_part_2[1:]
 
     print("this is top_quote_image_description_part_2")
     print(top_quote_image_description_part_2)
@@ -542,11 +540,10 @@ def create_video(
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('\n\n', '')
     top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
-    top_quote_image_description_part_3 = top_quote_image_description_part_3[0].upper() + top_quote_image_description_part_3[1:]
 
     print(top_quote_image_description_part_3)
 
-    ## 
+    ## make once sentence, all lowercase
     top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
     top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('.', ',').replace('!', ',').replace('?', ',').lower()
     top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('.', ',').replace('!', ',').replace('?', ',').lower()    
@@ -659,7 +656,9 @@ def create_meme(
 
     top_quote_image_description = top_quote_image_description.replace(':', '')
     top_quote_image_description = top_quote_image_description.lstrip()
-    top_quote_image_description = top_quote_image_description[0].upper() + top_quote_image_description[1:]
+
+    ## make once sentence, all lowercase
+    top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
 
     print("top_quote_image_description")
     print(top_quote_image_description)
@@ -714,6 +713,8 @@ def create_meme(
         print(len(top_quote))
         top_quote = top_quote.replace(',', '\\,')
         top_quote = re.escape(top_quote)
+        print('this is os.system')
+        print("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=3:fontcolor=white:fontsize=""" + str(fontsize) + """:x=""" + str(w_padding) + """:y=""" + str(h_padding) + """:" """ + meme_filename)
         os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=3:fontcolor=white:fontsize=""" + str(fontsize) + """:x=""" + str(w_padding) + """:y=""" + str(h_padding) + """:" """ + meme_filename)
 
         upload_to_gs(bucket_name, meme_filename, meme_filename)
