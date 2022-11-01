@@ -4,6 +4,7 @@ from __future__ import absolute_import
 max_token_input = 3000
 max_tokens_output = 1000
 max_tokens_output_base_model = 4097
+max_tokens_output_is_ad = 10
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
 chars_per_token = 3.70
@@ -176,7 +177,7 @@ def assembly_start_transcribe(audio_file):
     return transcript_id
 
 
-def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
+def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
     endpoint = "https://api.assemblyai.com/v2/transcript/" + transcript_id + '/sentences'
 
@@ -210,6 +211,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
 
         if paragraphs==True:
             cleaned_paragraphs = []
+            cleaned_paragraphs_no_ads = []
             current_speaker = ''
             current_speaker_sentences = []
             start_times = []
@@ -231,11 +233,29 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
                     num_sentences_used += 1
 
             current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
+
+            ## filter ads
+            prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a transcript for an ad or promotion? Respond with either "yes" or "no".'
+            print(prompt)
+            is_ad_response = openai.Completion.create(
+                model='text-davinci-002',
+                prompt=prompt,
+                max_tokens=max_tokens_output_is_ad,
+                temperature=0.0,
+                user=user,
+            )
+
+            is_ad_response = is_ad_response.choices[0].text
+            print(is_ad_response)
+            is_ad_response = is_ad_response.lower()
+            if 'yes' in is_ad_response:
+                cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
+
             cleaned_paragraphs.append(current_speaker_sentences_joined)
             start_times.append(start_time)
             start_times_unformatted.append(start_time_unformatted)
 
-            return cleaned_paragraphs, start_times, start_times_unformatted, sentences_diarized
+            return cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized
 
         elif paragraphs==False:
 
@@ -243,10 +263,10 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs):
             start_times = [start_time for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
             start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
 
-            return cleaned_sentences, start_times, start_times_unformatted, sentences_diarized
+            return cleaned_sentences, start_times, cleaned_sentences, start_times_unformatted, sentences_diarized
         
     except:
-        return 'waiting', None, None, None
+        return 'waiting', None, None, None, None
 
 
 def get_max_lines(exchanges, n):
@@ -705,6 +725,7 @@ def convert(
     user,
     cleaned_sentences,
     sentences_diarized,
+    start_times_unformatted,
     speakers_input,
     filename,
     bucket_name, 
@@ -712,7 +733,7 @@ def convert(
     pres_penalty, 
     model="davinci:ft-summarize-2022-01-02-20-59-54",
     prompt_end_string="\n\n===\n\n",
-    complete_end_string=[" +++"]):
+    ):
 
     summary_chunks = []
     top_quotes = []
@@ -723,7 +744,7 @@ def convert(
     image_count = 0
     image_audio_count = 0
 
-    start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
+    # start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
 
     print(sentences_diarized)
@@ -852,9 +873,7 @@ def run_combined(
     bucket_name='writersvoice', 
     temperature=1.0, 
     presence_penalty=0.0, 
-    # prompt_end_string="\n\n===\n\n",
     prompt_end_string="",
-    complete_end_string=["+++"],
     skip_upload=False,
     skip_transcribe=False,
     transcript_id='',
@@ -883,22 +902,27 @@ def run_combined(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        cleaned_sentences, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
+            transcript_id, 
+            speakers_input, 
+            paragraphs,
+            user
+        )
         time.sleep(60)
 
         
     summary_chunks, top_quotes, audio_filenames, audio_durations = convert(
         user,
-        cleaned_sentences,
+        cleaned_paragraphs_no_ads,
         sentences_diarized,
+        start_times_unformatted,
         speakers_input,
         filename,
         bucket_name, 
         temperature,
         presence_penalty, 
         model=model,
-        prompt_end_string=prompt_end_string,
-        complete_end_string=complete_end_string
+        prompt_end_string=prompt_end_string
     )
 
     present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
@@ -1120,6 +1144,7 @@ def get_transcript(
     url,
     speakers_input, 
     filename,
+    user,
     bucket_name='writersvoice', 
     skip_upload=False,
     skip_transcribe=False,
@@ -1140,7 +1165,12 @@ def get_transcript(
     cleaned_sentences = 'waiting'
     while cleaned_sentences == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(transcript_id, speakers_input, paragraphs)
+        cleaned_sentences, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
+            transcript_id, 
+            speakers_input, 
+            paragraphs,
+            user
+        )
         time.sleep(10)
         
     prompt_chunks = split_transcript(cleaned_sentences, for_transcript=for_transcript)
