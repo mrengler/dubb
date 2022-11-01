@@ -770,6 +770,8 @@ def convert(
 
     print(sentences_diarized)
 
+    print(prompt_chunks)
+
     for prompt_chunk in prompt_chunks:
         print('this is prompt_chunk')
         print(prompt_chunk)
