@@ -694,7 +694,7 @@ def create_meme(
         open(image_filename, "wb").write(response.content)
 
         ##add text on top
-        meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + ".png"
+        meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + random_str + ".png"
         fontsize = 36
         line_length = 20
         w_padding=100
