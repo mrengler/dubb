@@ -248,7 +248,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             is_ad_response = is_ad_response.choices[0].text
             print(is_ad_response)
             is_ad_response = is_ad_response.lower()
-            if 'yes' in is_ad_response:
+            if 'no' in is_ad_response:
                 cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
 
             cleaned_paragraphs.append(current_speaker_sentences_joined)
