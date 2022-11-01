@@ -239,7 +239,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         is_ad_response = is_ad_response.lower()
                         if 'no' in is_ad_response:
                             cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
-                            
+
                     current_speaker = speaker
                     current_speaker_sentences = [sentence]
                     start_times.append(start_time)
@@ -847,6 +847,9 @@ def convert(
                     break
                 else:
                     off_index_end -= 1
+
+            print('this is start_times_unformatted')
+            print(start_times_unformatted)
 
             ## find quote audio start time, end time, duration
             print('top quote split off')
