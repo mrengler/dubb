@@ -787,7 +787,7 @@ def convert(
             user=user,
         )
 
-        prompt_chunk_quote = 'The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript: "'
+        prompt_chunk_quote = 'The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript, exactly how it is written: "'
 
         top_quote_response = openai.Completion.create(
             model='text-davinci-002',
