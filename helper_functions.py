@@ -733,6 +733,7 @@ def create_meme(
         print('this is top quote')
         print(top_quote)
         top_quote = top_quote.replace(',', '\\,')
+        top_quote = top_quote.replace(':', '\:')
         top_quote = re.escape(top_quote)
         print('this is os.system')
         print("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=3:fontcolor=white:fontsize=""" + str(fontsize) + """:x=""" + str(w_padding) + """:y=""" + str(h_padding) + """:" """ + meme_filename)
