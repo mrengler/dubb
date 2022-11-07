@@ -327,7 +327,7 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
             if for_transcript==True:
                 prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
             elif for_transcript==False:
-                prompt_chunks.append(' ' + "\n".join(chunk) + prompt_end_string)
+                prompt_chunks.append(' ' + "\n\n".join(chunk) + prompt_end_string)
             used_chars = sentence_chars
             chunk = [sentence]
             chunk_i += 1
@@ -335,7 +335,7 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
     if for_transcript==True:        
         prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
     elif for_transcript==False:
-        prompt_chunks.append(' ' + "\n".join(chunk) + prompt_end_string)
+        prompt_chunks.append(' ' + "\n\n".join(chunk) + prompt_end_string)
 
     return prompt_chunks
 
