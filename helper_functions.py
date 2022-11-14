@@ -27,6 +27,7 @@ import subprocess
 import shutil
 import random
 import string
+from fuzzywuzzy import process
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -308,7 +309,7 @@ def get_max_lines(exchanges, n):
     print("Could not get number of summary lines")
 
 
-def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
+def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
         
     prompt_chunks = []
     num_chars = max_token_input * chars_per_token
@@ -316,7 +317,7 @@ def split_transcript(cleaned_sentences, for_transcript, prompt_end_string=''):
     chunk = []
     chunk_i = 0
     
-    for sentence in cleaned_sentences:
+    for sentence in cleaned_paragraphs:
         sentence_chars = len([char for char in sentence])
         
         if used_chars + sentence_chars <= num_chars:
@@ -746,7 +747,7 @@ def create_meme(
 
 def convert(
     user,
-    cleaned_sentences,
+    cleaned_paragraphs,
     sentences_diarized,
     speakers_input,
     filename,
@@ -767,7 +768,8 @@ def convert(
     image_audio_count = 0
 
     start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
-    prompt_chunks = split_transcript(cleaned_sentences, for_transcript=False, prompt_end_string=prompt_end_string)
+    sentences_unformatted = [sentence for (_,sentence,_,_) in sentences_diarized]
+    prompt_chunks = split_transcript(cleaned_paragraphs, for_transcript=False, prompt_end_string=prompt_end_string)
 
     print(sentences_diarized)
 
@@ -831,58 +833,65 @@ def convert(
             ## generate audiograms
             print('this is debug section')
             print("'" + top_quote + "'")
-            try:
+            # try:
 
-                top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)
+            top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)
+            print('this is top_quote_split')
+            print(top_quote_split)
 
-                ## use a different start sentence if the first or last are too short
-                off_index_start = 0
-                for sentence in top_quote_split:
-                    if len(sentence) >= 10:
-                        break
-                    else:
-                        off_index_start += 1
-                        
-                off_index_end = -1
-                for sentence in reversed(top_quote_split):
-                    if len(sentence) >= 10:
-                        break
-                    else:
-                        off_index_end -= 1
+            ## use a different start sentence if the first or last are too short
+            off_index_start = 0
+            for sentence in top_quote_split:
+                if len(sentence) >= 10:
+                    break
+                else:
+                    off_index_start += 1
+                    
+            off_index_end = -1
+            for sentence in reversed(top_quote_split):
+                if len(sentence) >= 10:
+                    break
+                else:
+                    off_index_end -= 1
 
-                print('this is start_times_unformatted')
-                print(start_times_unformatted)
+            print('this is start_times_unformatted')
+            print(start_times_unformatted)
 
-                ## find quote audio start time, end time, duration
-                print('top quote split off')
-                print(top_quote_split[off_index_start].casefold())
-                find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
-                tq_start_i = start_times_unformatted.index(find_top_quote_start)
-                tq_start = start_times_unformatted[tq_start_i - off_index_start]
-                find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
-                tq_end_i = start_times_unformatted.index(find_top_quote_end)
+            ## find quote audio start time, end time, duration
+            print('top quote split off')
+            print(top_quote_split[off_index_start].casefold())
+            find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
+            tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
+            # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
+            # tq_start_i = start_times_unformatted.index(find_top_quote_start)
+            tq_start = start_times_unformatted[tq_start_i - off_index_start]
+            print(top_quote_split[off_index_end].casefold())
+            find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
+            tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
+            # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
+            # tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
-                if tq_end_i < len(sentences_diarized) - 1:
-                    tq_end = start_times_unformatted[tq_end_i - off_index_end]
-                elif tq_end_i == len(sentences_diarized) - 1:
-                    tq_end = 100000000000
+            if tq_end_i < len(sentences_diarized) - 1:
+                tq_end = start_times_unformatted[tq_end_i - off_index_end]
+            elif tq_end_i == len(sentences_diarized) - 1:
+                tq_end = 100000000000
 
-                tq_duration = (tq_end - tq_start) / 1000
+            tq_duration = (tq_end - tq_start) / 1000
 
-                ## generate audio segment of quote
-                top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-                top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                print(top_quote_audio_filename)
-                top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                audio_filenames.append(top_quote_audio_filename)
-                audio_durations.append(tq_duration)
-                upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+            ## generate audio segment of quote
+            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+            top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+            print(top_quote_audio_filename)
+            top_quote_audio.export(top_quote_audio_filename, format="mp3")
+            audio_filenames.append(top_quote_audio_filename)
+            audio_durations.append(tq_duration)
+            upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
 
 
-            except Exception as e:
-                print(e)
-                audio_filenames.append(None)
-                audio_durations.append(0)
+            # except Exception as e:
+            #     print(e)
+            #     audio_filenames.append(None)
+            #     audio_durations.append(0)
 
 
 
@@ -930,10 +939,10 @@ def run_combined(
     if skip_transcribe==False:
         transcript_id = assembly_start_transcribe(audio_file)
     
-    cleaned_sentences = 'waiting'
-    while cleaned_sentences == 'waiting':
+    cleaned_paragraphs = 'waiting'
+    while cleaned_paragraphs == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
+        cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
             transcript_id, 
             speakers_input, 
             paragraphs,
@@ -955,7 +964,7 @@ def run_combined(
         prompt_end_string=prompt_end_string
     )
 
-    present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_sentences, start_times)]
+    present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]
     present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
 
     present_summary_chunks = '<br><br>'.join(summary_chunks)
@@ -1192,10 +1201,10 @@ def get_transcript(
         audio_file = generate_download_signed_url_v4(bucket_name, filename)
         transcript_id = assembly_start_transcribe(audio_file)
     
-    cleaned_sentences = 'waiting'
-    while cleaned_sentences == 'waiting':
+    cleaned_paragraphs = 'waiting'
+    while cleaned_paragraphs == 'waiting':
         print('wait cleaned sentences')
-        cleaned_sentences, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
+        cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
             transcript_id, 
             speakers_input, 
             paragraphs,
@@ -1203,7 +1212,7 @@ def get_transcript(
         )
         time.sleep(10)
         
-    prompt_chunks = split_transcript(cleaned_sentences, for_transcript=for_transcript)
+    prompt_chunks = split_transcript(cleaned_paragraphs, for_transcript=for_transcript)
 
     for prompt in prompt_chunks:
         print(prompt)
