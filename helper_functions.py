@@ -857,6 +857,9 @@ def convert(
             print('this is start_times_unformatted')
             print(start_times_unformatted)
 
+            print('this is sentences_unformatted')
+            print(sentences_unformatted)
+
             ## find quote audio start time, end time, duration
             print('top quote split off')
             print(top_quote_split[off_index_start].casefold())
@@ -864,6 +867,8 @@ def convert(
             print('this is find_top_quote_start_true_text')
             print(find_top_quote_start_true_text)
             tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
+            print('this is tq_start_i')
+            print(tq_start_i)
             # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
             # tq_start_i = start_times_unformatted.index(find_top_quote_start)
             tq_start = start_times_unformatted[tq_start_i - off_index_start]
@@ -872,6 +877,8 @@ def convert(
             print('this is find_top_quote_end_true_text')
             print(find_top_quote_end_true_text)
             tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
+            print('this is tq_end_i')
+            print(tq_end_i)
             # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
             # tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
