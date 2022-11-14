@@ -861,12 +861,16 @@ def convert(
             print('top quote split off')
             print(top_quote_split[off_index_start].casefold())
             find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
+            print('this is find_top_quote_start_true_text')
+            print(find_top_quote_start_true_text)
             tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
             # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
             # tq_start_i = start_times_unformatted.index(find_top_quote_start)
             tq_start = start_times_unformatted[tq_start_i - off_index_start]
             print(top_quote_split[off_index_end].casefold())
             find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
+            print('this is find_top_quote_end_true_text')
+            print(find_top_quote_end_true_text)
             tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
             # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
             # tq_end_i = start_times_unformatted.index(find_top_quote_end)
