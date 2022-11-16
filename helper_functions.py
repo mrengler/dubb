@@ -908,6 +908,12 @@ def convert(
                     audio_filenames.append(top_quote_audio_filename)
                     audio_durations.append(tq_duration)
                     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                else:
+                    print('quote classification == 2')
+                    print(quote)
+            else:
+                print('quote is multiple paragraphs')
+                print(quote)
 
     ## combine top facts    
     fact_text = """"""
