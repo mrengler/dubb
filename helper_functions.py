@@ -754,7 +754,7 @@ def convert(
     filename,
     bucket_name, 
     temp, 
-    ≈, 
+    pres_penalty, 
     model="davinci:ft-summarize-2022-01-02-20-59-54",
     prompt_end_string="\n\n===\n\n",
     ):
