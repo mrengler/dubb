@@ -7,7 +7,7 @@ max_tokens_output_base_model = 4097
 max_tokens_output_is_ad = 10
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
-chars_per_token = 3.70
+chars_per_token = 3.55
 num_image_audios_to_produce = 3
 double = 2
 frame_rate = 10
@@ -778,7 +778,7 @@ def convert(
     for prompt_chunk in prompt_chunks:
         print('this is prompt_chunk')
         print(prompt_chunk)
-        prompt_chunk_summary = 'The transcript of the article:\n\n' + prompt_chunk \
+        prompt_chunk_summary = 'The transcript of the conversation:\n\n' + prompt_chunk \
         + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
 
         summary_chunk_response = openai.Completion.create(
