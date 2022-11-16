@@ -1191,7 +1191,8 @@ def run_combined(
 
     # present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_summary_chunks = article.replace('\n\n', '<br><br>')
-    present_top_quotes = '<br><br>'.join(top_quotes)
+    # present_top_quotes = '<br><br>'.join(top_quotes)
+    present_top_quotes = '<br><br>'.join(quotes)
 
     audio_files_nonnull = [audio for audio in audio_filenames if audio is not None]
 
@@ -1282,7 +1283,8 @@ def run_combined(
         num_image_audios = 0
         num_memes = 0
 
-        image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
+        # image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
+        image_prompts_l = [(a, b, c) for a, b, c in zip(quotes,audio_filenames,audio_durations)]
         sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
         print('this is sorted image prompts')
