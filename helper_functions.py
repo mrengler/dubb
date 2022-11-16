@@ -754,7 +754,7 @@ def convert(
     filename,
     bucket_name, 
     temp, 
-    pres_penalty, 
+    ≈, 
     model="davinci:ft-summarize-2022-01-02-20-59-54",
     prompt_end_string="\n\n===\n\n",
     ):
@@ -802,7 +802,7 @@ def convert(
                 prompt=fact_prompt_chunk,
                 max_tokens=max_tokens_facts_quotes,
                 temperature=0.0,
-                presence_penalty=presence_penalty,
+                presence_penalty=pres_penalty,
                 user=user,
             )
         r_fact_text = r_fact.choices[0].text
@@ -819,7 +819,7 @@ def convert(
                 prompt=quote_prompt_chunk,
                 max_tokens=max_tokens_facts_quotes,
                 temperature=0.8,
-                presence_penalty=presence_penalty,
+                presence_penalty=pres_penalty,
                 user=user,
                 stop='"',
                 n=3,
@@ -933,7 +933,7 @@ def convert(
                 prompt=article_prompt,
                 max_tokens=max_tokens_output,
                 temperature=temperature,
-                presence_penalty=presence_penalty,
+                presence_penalty=pres_penalty,
                 user=user,
                 n=5,
             )
@@ -966,7 +966,7 @@ def convert(
                 prompt=choose_text,
                 max_tokens=20,
                 temperature=0.0,
-                presence_penalty=presence_penalty,
+                presence_penalty=pres_penalty,
                 user=user,
             )
     choice = choose.choices[0].text
