@@ -194,17 +194,48 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
         speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
-        if len(unique_speakers) < len(speakers_input):
-            speakers_input = speakers_input[:len(unique_speakers)]
-
 
         speaker_hash = {}
-        for i,speaker in enumerate(speakers_input):
-            speaker_hash[unique_speakers[i]] = speaker
-        unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
-        for speaker in unknown_speakers:
-            speaker_hash[speaker] = 'Unknown'
-        speaker_hash['UNK'] = 'Unknown'
+        for unique_speaker in unique_speakers:
+            first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
+            window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - 10, 0):min(first_appearance_i + 10, len(sentences_diarized))]]
+            find_speaker_input = '\n\n'.join(window)
+            choose_pre = """The transcript:\n\n"""
+            choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\""""
+            choose_text = choose_pre + find_speaker_input + choose_post
+            choose = openai.Completion.create(
+                        model='text-davinci-002',
+                        prompt=choose_text,
+                        max_tokens=20,
+                        temperature=0.0,
+                        presence_penalty=0.0,
+                        user=user,
+                        stop='"',
+                    )
+            predicted_speaker = choose.choices[0].text
+            speaker = process.extract(predicted_speaker, speakers_input, limit=1)[0][0]
+            speaker_hash[unique_speaker] = speaker
+
+        ## for each unique speaker
+            ##get the first sentence they appear, and the preceding and succeeding 10 sentences
+            ## ask gpt3 what the speakers name is
+            ## append speaker name to predicted speakers
+        ## for each in predicted speakers, get the most similar speaker in input speakers
+
+
+
+
+        # if len(unique_speakers) < len(speakers_input):
+        #     speakers_input = speakers_input[:len(unique_speakers)]
+
+
+        # speaker_hash = {}
+        # for i,speaker in enumerate(speakers_input):
+        #     speaker_hash[unique_speakers[i]] = speaker
+        # unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
+        # for speaker in unknown_speakers:
+        #     speaker_hash[speaker] = 'Unknown'
+        # speaker_hash['UNK'] = 'Unknown'
 
         current_speaker_sentences_joined = ''
 
@@ -782,7 +813,6 @@ def convert(
     ## quote prompt prefix and suffix
     top_quotes_prompt_pre = """The full transcript:\n\n"""
     top_quotes_prompt_post = '\n\nThe most engaging section of the transcript, exactly how it is written: "'
-    
 
     for prompt_chunk in prompt_chunks:
 
