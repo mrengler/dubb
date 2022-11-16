@@ -932,7 +932,7 @@ def convert(
                 model='text-davinci-002',
                 prompt=article_prompt,
                 max_tokens=max_tokens_output,
-                temperature=temperature,
+                temperature=temp,
                 presence_penalty=pres_penalty,
                 user=user,
                 n=5,
