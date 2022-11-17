@@ -484,7 +484,7 @@ def create_video(
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
 
-    if visual_style == 'poly':
+    if visual_style == 'low_poly':
         object_text = 'Concept art of '
         style_text = 'low poly'
     elif visual_style == 'painting':
