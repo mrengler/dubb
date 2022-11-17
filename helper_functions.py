@@ -689,10 +689,10 @@ def create_meme(
         object_text = 'A digital illustration of '
         style_text = 'by zdzisław beksiński, dark surrealism'
 
-    prompt_text_pre = "Here are some facts that were discussed in a podcast episode:\n\n" + fact_text +\
+    prompt_text = "Here are some facts that were discussed in a podcast episode:\n\n" + fact_text +\
     '\n\nHere is the top quote from the podcast episode:\n\n"' + top_quote + '"\n\nUse the top quote and facts to write a description of the image that accompanies the podcast episode:\n\nThe image features'
 
-    print(prompt_text_pre)
+    print(prompt_text)
 
     top_quote_image_description_response = openai.Completion.create(
         model='text-davinci-002',
