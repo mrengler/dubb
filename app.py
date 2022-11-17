@@ -156,6 +156,8 @@ def process():
         print(request.files['file'])
         print(request.form['url'])
         email = request.form['email']
+        visual_style=request.form['visual_style']
+        editorial_style=request.form['editorial_style']
 
         if (request.files['file'].filename == '') & (request.form['url'] == ''):
             error="Please upload a file or include a url"
@@ -200,7 +202,9 @@ def process():
                 openai_model
             ),
             kwargs={
-                'paragraphs': True
+                'paragraphs': True,
+                'visual_style': visual_style,
+                'editorial_style': editorial_style
             },
             timeout=600
         )
