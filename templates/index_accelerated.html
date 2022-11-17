@@ -66,12 +66,26 @@
             <input type="checkbox" id="make_memes" name="make_memes" checked>
             <br>
             <br>
-            <input type="radio" id="html" name="visual_style" value="poly" required>
-            <label for="poly">Low Poly</label><br>
-            <input type="radio" id="css" name="visual_style" value="painting" required>
-            <label for="painting">Painting</label><br>
-            <input type="radio" id="javascript" name="visual_style" value="spooky" required>
-            <label for="spooky">Spooky</label><br>
+            <p>Choose an animation style for the visual content</p>
+            <div class="controls">
+              <input type="radio" id="painting" name="visual_style" value="painting" checked>
+              <label for="painting" class='radio'>Painting</label>
+              <input type="radio" id="low poly" name="visual_style" value="low poly">
+              <label for="low poly" class='radio'>Low Poly</label>
+              <input type="radio" id="spooky" name="visual_style" value="spooky">
+              <label for="spooky" class='radio'>Spooky</label>
+            </div>
+            <br>
+            <p>Choose an editorial style for the written content</p>
+            <div class="controls">
+              <input type="radio" id="serious" name="editorial_style" value="serious" checked>
+              <label for="serious" class='radio'>Serious</label>
+              <input type="radio" id="funny" name="editorial_style" value="funny">
+              <label for="funny" class='radio'>Funny</label>
+              <input type="radio" id="creepy" name="editorial_style" value="creepy">
+              <label for="creepy" class='radio'>Creepy</label>
+            </div>
+            <br>
             <input type="submit" id="submit" value="Go">
           </form>
         </fieldset>
