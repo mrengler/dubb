@@ -479,7 +479,8 @@ def create_video(
     top_quote_audio_filename,
     pres_penalty,
     bucket_name,
-    visual_style
+    visual_style,
+    fact_text
     ):
 
     replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
@@ -496,8 +497,8 @@ def create_video(
 
     print('this is first prompt:')
 
-    prompt_text_pre = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
-    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image features'
+    prompt_text_pre = "Here are some facts that were discussed in a podcast episode:\n\n" + fact_text +\
+    '\n\nHere is the top quote from the podcast episode:\n\n"' + top_quote + '"\n\nUse the top quote and facts to write a description of the image that accompanies the podcast episode:\n\nThe image features'
 
     print(prompt_text_pre)
 
@@ -672,7 +673,8 @@ def create_meme(
     top_quote,
     pres_penalty,
     bucket_name,
-    visual_style
+    visual_style,
+    fact_text
     ):
 
     replicate_model = replicate.models.get("stability-ai/stable-diffusion")
@@ -687,10 +689,10 @@ def create_meme(
         object_text = 'A digital illustration of '
         style_text = 'by zdzisław beksiński, dark surrealism'
 
-    prompt_text = "Create an engaging image to accompany the podcast episode described below.\n\nThe description of the podcast episode:\n\n" \
-    + description + '\n\nThe top quote from the podcast episode:\n\n"' + top_quote + '"\n\nThe detailed description of the image that accompanies the podcast episode:\n\nThe image does not feature any people or text. It features'
+    prompt_text_pre = "Here are some facts that were discussed in a podcast episode:\n\n" + fact_text +\
+    '\n\nHere is the top quote from the podcast episode:\n\n"' + top_quote + '"\n\nUse the top quote and facts to write a description of the image that accompanies the podcast episode:\n\nThe image features'
 
-    print(prompt_text)
+    print(prompt_text_pre)
 
     top_quote_image_description_response = openai.Completion.create(
         model='text-davinci-002',
@@ -1166,7 +1168,8 @@ def convert(
         #     print(top_quote_response)
     
     # return summary_chunks, top_quotes, audio_filenames, audio_durations
-    return article, quotes, audio_filenames, audio_durations
+    return article, quotes, audio_filenames, audio_durations, fact_text
+
 
 def run_combined(
     content,
@@ -1218,7 +1221,7 @@ def run_combined(
 
         
     # summary_chunks, top_quotes, audio_filenames, audio_durations = convert(
-    article, quotes, audio_filenames, audio_durations = convert(
+    article, quotes, audio_filenames, audio_durations, fact_text = convert(
         user,
         cleaned_paragraphs_no_ads,
         sentences_diarized,
@@ -1355,7 +1358,8 @@ def run_combined(
                     top_quote_audio_filename,
                     presence_penalty,
                     bucket_name,
-                    visual_style
+                    visual_style,
+                    fact_text
                 )
                 image_audio_filenames.append(image_audio_filename)
                 num_image_audios += 1
@@ -1369,7 +1373,8 @@ def run_combined(
                     top_quote,
                     presence_penalty,
                     bucket_name,
-                    visual_style                
+                    visual_style,
+                    fact_text                
                 )
                 meme_filenames.append(meme_filename)
                 num_memes += 1            
