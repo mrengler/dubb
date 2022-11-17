@@ -43,15 +43,15 @@
         <fieldset id="input-form" disabled=true style="display: block;">
         <!-- <fieldset id="input-form" style="display: block;"> -->
           <form action="/accelerated_process" method="POST" id="url-form" enctype = "multipart/form-data">
-            <p id="upload-instruct">Select your audio file (mp3, wav)</p>
+            <p class="instruct">Select your audio file (mp3, wav)</p>
             <label for="file-upload" id="upload-file">
                 Choose File
             </label>
             <span id="file-selected"></span>
-            <p>...or enter the url of the podcast episode (Google Podcasts, Youtube)</p>
+            <p class="instruct"> ...or enter the url of the podcast episode (Google Podcasts, Youtube):</p>
             <input type="file" id="file-upload" accept=".wav,.mp3" name="file"/>
             <input type="text" id="url" name="url" placeholder="https://podcasts.google.com/feed/yourgreatpodcast" size="50"><br><br>
-            <p id="names-instruct">List the speakers who appear in the conversation, with a comma separating each name</p>
+            <p class="instruct">List the speakers who appear in the conversation, with a comma separating each name:</p>
             <input type="text" id="speakers" name="speakers" placeholder="Jane Doe, Ad, John Smith" size="50" required><br>
             <input type="hidden" id="email" name="email" value="">
             <p>Transcript ID</p>
@@ -66,17 +66,17 @@
             <input type="checkbox" id="make_memes" name="make_memes" checked>
             <br>
             <br>
-            <p>Choose an animation style for the visual content</p>
+            <p class="instruct">Choose an animation style for the visual content:</p>
             <div class="controls">
               <input type="radio" id="painting" name="visual_style" value="painting" checked>
-              <label for="painting" class='radio'>Painting</label>
+              <label for="painting" class='radio'>Painterly</label>
               <input type="radio" id="low_poly" name="visual_style" value="low_poly">
-              <label for="low_poly" class='radio'>Low Poly</label>
+              <label for="low_poly" class='radio'>Blocky</label>
               <input type="radio" id="spooky" name="visual_style" value="spooky">
               <label for="spooky" class='radio'>Spooky</label>
             </div>
             <br>
-            <p>Choose an editorial style for the written content</p>
+            <p class="instruct">Choose an editorial style for the written content:</p>
             <div class="controls">
               <input type="radio" id="insightful" name="editorial_style" value="insightful" checked>
               <label for="insightful" class='radio'>Insightful</label>

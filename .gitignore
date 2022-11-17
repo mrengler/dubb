@@ -9,3 +9,4 @@ dump.rdb
 env/
 instance/
 __pycache__/app.cpython-39.pyc
+__pycache__/

@@ -90,13 +90,13 @@ function testingSignIn(){
 
 window.onload=function(){
   // UNCOMMENT WHEN DONE WITH TESTING
-  var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
-  if (loggedin === true) {
-    onSignIn();
-  } else if (loggedin === false) {
-    signOut();
-  }
-  // testingSignIn();
+  // var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
+  // if (loggedin === true) {
+  //   onSignIn();
+  // } else if (loggedin === false) {
+  //   signOut();
+  // }
+  testingSignIn();
   // UNCOMMENT WHEN DONE WITH TESTING
 
   var coll = document.getElementsByClassName("collapsible");
