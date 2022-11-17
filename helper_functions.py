@@ -786,8 +786,9 @@ def convert(
     bucket_name, 
     temp, 
     pres_penalty, 
-    model="davinci:ft-summarize-2022-01-02-20-59-54",
-    prompt_end_string="\n\n===\n\n",
+    model,
+    prompt_end_string,
+    editorial_style
     ):
 
     # summary_chunks = []
@@ -954,12 +955,19 @@ def convert(
     quote_text = """"""
     for i, r in enumerate(quotes):
         quote_text += str(i + 1) + ': "' + r + '"\n'
+
+    if editorial_style == 'insightful':
+        style_text = "is serious and insightful in tone"
+    elif editorial_style == 'funny':
+        style_text = "will make the reader laugh"
+    elif editorial_style == 'creepy':
+        style_text = "will make the reader's skin crawl"
         
     article_prompt = """Here are some quotes taken from a podcast conversation:\n\n"""+\
     quote_text +\
     """\n\nHere are some facts that were discussed in the same conversation:\n\n""" +\
     fact_text + \
-    """\n\nUse these quotes and facts to write a playful, engaging, and coherent article:"""
+    """\n\nUse these quotes and facts to write a coherent article that """ + style_text + """:"""
     
     print(article_prompt)
     
@@ -1177,7 +1185,8 @@ def run_combined(
     paragraphs=False,
     make_videos=True,
     make_memes=True,
-    visual_style='painting'
+    visual_style='painting',
+    editorial_style='insightful'
     ):
 
 
@@ -1219,7 +1228,8 @@ def run_combined(
         temperature,
         presence_penalty, 
         model=model,
-        prompt_end_string=prompt_end_string
+        prompt_end_string=prompt_end_string,
+        editorial_style=editorial_style
     )
 
     present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]

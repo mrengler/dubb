@@ -259,6 +259,7 @@ def accelerated_process():
         print('make_videos: ' + str(make_videos))
         print('make_memes: ' + str(make_memes))
         visual_style=request.form['visual_style']
+        editorial_style=request.form['editorial_style']
 
 
         file = request.files['file']
@@ -308,7 +309,8 @@ def accelerated_process():
                 'skip_transcribe': skip_transcribe,
                 'make_videos': make_videos,
                 'make_memes': make_memes,
-                'visual_style': visual_style
+                'visual_style': visual_style,
+                'editorial_style': editorial_style
             },
             timeout=600
         )
