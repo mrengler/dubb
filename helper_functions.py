@@ -679,7 +679,7 @@ def create_meme(
 
     replicate_model = replicate.models.get("stability-ai/stable-diffusion")
 
-    if visual_style == 'poly':
+    if visual_style == 'low_poly':
         object_text = 'Concept art of '
         style_text = 'low poly'
     elif visual_style == 'painting':
@@ -1259,7 +1259,7 @@ def run_combined(
     # joined_l5 = '\n\n'.join(l5)
     # prompt_base = joined_l5[:int(max_tokens_output_base_model * chars_per_token)]
     prompt_base = article[:int(max_tokens_output_base_model * chars_per_token)]
-    title_prompt = prompt_base + '\n\nWrite the title of the article: "'
+    title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
     description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
     article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
 
