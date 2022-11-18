@@ -1118,7 +1118,7 @@ def run_combined(
                          "html": '<b>TRANSCRIPTION ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id
                      }
                  )
-            return 'There was an error. We will fix it as soon as possible!', user
+            return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
 
 
         article, quotes, audio_filenames, audio_durations, fact_text = convert(
@@ -1352,7 +1352,7 @@ def run_combined(
                      "html": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + e
                  }
              )
-        return 'There was an error. Sorry about that. We will fix it as soon as possible!', user
+        return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
     
 
 def present_article(article):
