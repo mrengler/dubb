@@ -226,6 +226,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         user=user,
                         stop='"',
                     )
+            print('this is choose')
+            print(choose)
             predicted_speaker = choose.choices[0].text
             print('This is predicted speaker for Speaker ' + unique_speaker)
             print(predicted_speaker)
