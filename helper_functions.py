@@ -1351,8 +1351,8 @@ def run_combined(
                      "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                      "to": str(MAIL_USERNAME), ## to be updated to email
                      "subject": "Dubb results",
-                     "text": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + e,
-                     "html": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + e
+                     "text": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + str(e),
+                     "html": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + str(e)
                  }
              )
         return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
