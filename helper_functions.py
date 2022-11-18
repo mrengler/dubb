@@ -368,10 +368,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                             presence_penalty=0.0,
                             user=user,
                             stop='"',
-                            n=3
                         )
                 print('this is choose')
-                print(choose)
                 predicted_speaker = choose.choices[0].text
                 print('This is predicted speaker for Speaker ' + unique_speaker)
                 print(predicted_speaker)
@@ -587,81 +585,89 @@ def create_video(
         temperature=0.0,
         presence_penalty=pres_penalty,
         user=user,
+        n=3
     )
 
-    top_quote_image_description_pre = top_quote_image_description_response_pre.choices[0].text
+    top_quote_image_description_pre_one = top_quote_image_description_response_pre.choices[0].text
+    top_quote_image_description_pre_two = top_quote_image_description_response_pre.choices[1].text
+    top_quote_image_description_pre_three = top_quote_image_description_response_pre.choices[2].text
 
-    top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
-    top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
+    top_quote_image_description_classifications = []
+    top_quote_image_descriptions = []
+    for top_quote_image_description_pre in [top_quote_image_description_pre_one, top_quote_image_description_pre_two, top_quote_image_description_pre_three]:
 
-    prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:'
+        top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
+        top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
 
-    print(prompt_text)
+        prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:'
 
-    top_quote_image_description_response = openai.Completion.create(
-        model='text-davinci-002',
-        prompt=prompt_text,
-        max_tokens=max_tokens_output_image_description,
-        temperature=1.0,
-        presence_penalty=pres_penalty,
-        user=user,
-        n=3,
-    )
+        print(prompt_text)
 
-    top_quote_image_description = top_quote_image_description_response.choices[0].text
+        top_quote_image_description_response = openai.Completion.create(
+            model='text-davinci-002',
+            prompt=prompt_text,
+            max_tokens=max_tokens_output_image_description,
+            temperature=1.0,
+            presence_penalty=pres_penalty,
+            user=user,
+        )
 
-    ## first log the classification
-    top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+        top_quote_image_description = top_quote_image_description_response.choices[0].text
 
-    top_quote_image_description = top_quote_image_description.replace(':', '')
-    top_quote_image_description = top_quote_image_description.replace('"', '')
-    top_quote_image_description = top_quote_image_description.replace('\n\n', '')
-    top_quote_image_description = top_quote_image_description.lstrip()    
+        ## first log the classification
+        top_quote_image_description_classification = content_filter(top_quote_image_description, user)
+        top_quote_image_description_classifications.append(top_quote_image_description_classification)
 
-    print("top_quote_image_description")
-    print(top_quote_image_description)
+        top_quote_image_description = top_quote_image_description.replace(':', '')
+        top_quote_image_description = top_quote_image_description.replace('"', '')
+        top_quote_image_description = top_quote_image_description.replace('\n\n', '')
+        top_quote_image_description = top_quote_image_description.lstrip()    
 
-    top_quote_image_description_part_2 = top_quote_image_description_response.choices[1].text
+        print("top_quote_image_description")
+        print(top_quote_image_description)
 
-    ## first log the classification
-    top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
+        # top_quote_image_description_part_2 = top_quote_image_description_response.choices[1].text
 
-    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace(':', '')
-    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
-    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('\n\n', '')
-    top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
+        # ## first log the classification
+        # top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
 
-    print("this is top_quote_image_description_part_2")
-    print(top_quote_image_description_part_2)
+        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace(':', '')
+        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
+        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('\n\n', '')
+        # top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
 
-    print("this is third prompt:")
- 
-    top_quote_image_description_part_3 = top_quote_image_description_response.choices[2].text
+        # print("this is top_quote_image_description_part_2")
+        # print(top_quote_image_description_part_2)
 
-    ## first log the classification
-    top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
+        # print("this is third prompt:")
+     
+        # top_quote_image_description_part_3 = top_quote_image_description_response.choices[2].text
 
-    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace(':', '')
-    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
-    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('\n\n', '')
-    top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
+        # ## first log the classification
+        # top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
 
-    print(top_quote_image_description_part_3)
+        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace(':', '')
+        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
+        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('\n\n', '')
+        # top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
 
-    ## make once sentence, all lowercase
-    top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
-    top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('.', ',').replace('!', ',').replace('?', ',').lower()
-    top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('.', ',').replace('!', ',').replace('?', ',').lower()    
+        # print(top_quote_image_description_part_3)
+
+        ## make once sentence, all lowercase
+        top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
+        top_quote_image_descriptions.append(top_quote_image_description)
+        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('.', ',').replace('!', ',').replace('?', ',').lower()
+        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('.', ',').replace('!', ',').replace('?', ',').lower()    
 
 
-    if (top_quote_image_description_classification != '2') and (top_quote_image_description_classification_part_2 != '2') and (top_quote_image_description_part_3 != '2'): ##unsafe
+    if '2' not in top_quote_image_description_classifications: ##unsafe
 
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
-                "animation_prompts": '0: ' + object_text + top_quote_image_description + ' ' + style_text + ' | 10: '\
-                + object_text + top_quote_image_description_part_2 + ' ' + style_text + ' | 20: ' \
-                + object_text + top_quote_image_description_part_3 + ' ' + style_text,
+                "animation_prompts": '0: ' + object_text + top_quote_image_descriptions[0] + ' ' + style_text + ' | 10: '\
+                + object_text + top_quote_image_descriptions[1] + ' ' + style_text + ' | 20: ' \
+                + object_text + top_quote_image_descriptions[2] + ' ' + style_text,
                 "zoom": "0: (1.00)",
                 "fps": 10,
                 "color_coherence": "Match Frame 0 HSV",
