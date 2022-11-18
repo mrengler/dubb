@@ -237,7 +237,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
 
                         ## filter ads
-                        ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this an ad? Respond with either "yes" or "no".'
+                        ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
                         print(ad_prompt)
                         is_ad_response = openai.Completion.create(
                             model='text-davinci-002',
@@ -252,7 +252,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         is_ad_response = is_ad_response.lower()
 
                         ## filter promos
-                        promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a promotion for another podcast? Respond with either "yes" or "no".'
+                        promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
                         print(promo_prompt)
                         is_promo_response = openai.Completion.create(
                             model='text-davinci-002',
