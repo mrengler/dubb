@@ -187,58 +187,19 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
     }
 
     response = requests.get(endpoint, headers=headers)
+    response_json = response.json()
 
     print('this is response')
     print(response)
-    print(response.json())
+    print(response_json)
+
+    if 'sentences' in response_json:
     
-    try:
+    # try:
         sentences = response.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
         speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
-
-        # speaker_hash = {}
-        # for unique_speaker in unique_speakers:
-        #     window_len = 20
-        #     num_occurences = 100
-        #     speaker_appearances = [i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker]
-        #     speaker_appearances = speaker_appearances[:num_occurences]
-        #     window = []
-        #     for appearance_i in speaker_appearances:
-        #         window_i = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(appearance_i - window_len, 0):min(appearance_i + window_len, len(sentences_diarized))]]
-        #         window += window_i
-        #     window = list(dict.fromkeys(window))
-
-        #     # first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
-        #     # window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - window_len, 0):min(first_appearance_i + window_len, len(sentences_diarized))]]
-        #     find_speaker_input = '\n\n'.join(window)
-        #     ## reduce to fit into model window
-        #     buffer = 250
-        #     find_speaker_input = find_speaker_input[:int((max_tokens_output_base_model - buffer) * chars_per_token)]
-
-        #     choose_pre = """The transcript:\n\n"""
-        #     choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\n\nSpeaker """ + unique_speaker + ' is "'
-        #     choose_text = choose_pre + find_speaker_input + choose_post
-        #     print('This is choose_text for Speaker ' + unique_speaker)
-        #     print(choose_text)
-        #     choose = openai.Completion.create(
-        #                 model='text-davinci-002',
-        #                 prompt=choose_text,
-        #                 max_tokens=20,
-        #                 temperature=0.9,
-        #                 presence_penalty=0.0,
-        #                 user=user,
-        #                 stop='"',
-        #                 n=3
-        #             )
-        #     print('this is choose')
-        #     print(choose)
-        #     predicted_speaker = choose.choices[0].text
-        #     print('This is predicted speaker for Speaker ' + unique_speaker)
-        #     print(predicted_speaker)
-        #     speaker = process.extract(predicted_speaker, speakers_input, limit=1)[0][0]
-        #     speaker_hash[unique_speaker] = speaker
 
         current_speaker_sentences_joined = ''
 
@@ -253,7 +214,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             start_times = []
             start_times_unformatted = []
             for speaker, sentence, start_time, start_time_unformatted in sentences_diarized:
-                # speaker = speaker_hash[speaker]
                 if (speaker != current_speaker) or (num_sentences_used >= max_num_sentences):
                     if current_speaker != '':
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
@@ -352,8 +312,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                     window += window_i
                 window = list(dict.fromkeys(window))
 
-                # first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
-                # window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - window_len, 0):min(first_appearance_i + window_len, len(sentences_diarized))]]
                 find_speaker_input = '\n\n'.join(window)
                 ## reduce to fit into model window
                 buffer = 250
@@ -396,9 +354,15 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
 
             return cleaned_sentences, start_times, cleaned_sentences, start_times_unformatted, sentences_diarized
-        
-    except:
-        return 'waiting', None, None, None, None
+
+    elif 'error' in response_json:
+        ## processing
+        if response_json['error'] == "This transcript has a status of 'processing'. Transcripts must have a status of 'completed' before requesting captions.":
+            return 'waiting', None, None, None, None
+        elif response_json['error'] == 'error': "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
+            return 'error', None, None, None, None   
+    else:
+        return 'error', None, None, None, None
 
 
 def get_max_lines(exchanges, n):
@@ -1114,250 +1078,281 @@ def run_combined(
     editorial_style='insightful'
     ):
 
+    try:
+        if skip_upload==False:
+            if content_type=='url':
+                status = download_yt(content, filename)
+                if status == 'failed':
+                    return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
+                elif status == 'passed':
+                    upload_to_gs(bucket_name, filename, filename)
+            elif content_type=='file':
+                download_from_gs(bucket_name, filename, filename)
 
-    if skip_upload==False:
-        if content_type=='url':
-            status = download_yt(content, filename)
-            if status == 'failed':
-                return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
-            elif status == 'passed':
-                upload_to_gs(bucket_name, filename, filename)
-        elif content_type=='file':
-            download_from_gs(bucket_name, filename, filename)
+        audio_file = generate_download_signed_url_v4(bucket_name, filename)
+        
+        if skip_transcribe==False:
+            transcript_id = assembly_start_transcribe(audio_file)
+        
+        cleaned_paragraphs = 'waiting'
+        while cleaned_paragraphs == 'waiting':
+            print('wait cleaned sentences')
+            cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
+                transcript_id, 
+                speakers_input, 
+                paragraphs,
+                user
+            )
+            time.sleep(60)
 
-    audio_file = generate_download_signed_url_v4(bucket_name, filename)
-    
-    if skip_transcribe==False:
-        transcript_id = assembly_start_transcribe(audio_file)
-    
-    cleaned_paragraphs = 'waiting'
-    while cleaned_paragraphs == 'waiting':
-        print('wait cleaned sentences')
-        cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized = assembly_finish_transcribe(
-            transcript_id, 
-            speakers_input, 
-            paragraphs,
-            user
+        ## transcription error
+        if cleaned_paragraphs == 'error':
+            response = requests.\
+                post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+                    auth=("api", MAILGUN_API_KEY),
+                     data={
+                         "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                         "to": str(MAIL_USERNAME), ## to be updated to email
+                         "subject": "Dubb results",
+                         "text": '<b>TRANSCRIPTION ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id,
+                         "html": '<b>TRANSCRIPTION ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id
+                     }
+                 )
+            return 'There was an error. We will fix it as soon as possible!', user
+
+
+        article, quotes, audio_filenames, audio_durations, fact_text = convert(
+            user,
+            cleaned_paragraphs_no_ads,
+            sentences_diarized,
+            speakers_input,
+            filename,
+            bucket_name, 
+            temperature,
+            presence_penalty, 
+            model=model,
+            prompt_end_string=prompt_end_string,
+            editorial_style=editorial_style
         )
-        time.sleep(60)
 
-    article, quotes, audio_filenames, audio_durations, fact_text = convert(
-        user,
-        cleaned_paragraphs_no_ads,
-        sentences_diarized,
-        speakers_input,
-        filename,
-        bucket_name, 
-        temperature,
-        presence_penalty, 
-        model=model,
-        prompt_end_string=prompt_end_string,
-        editorial_style=editorial_style
-    )
+        present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]
+        present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
 
-    present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]
-    present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
+        present_summary_chunks = article.replace('\n\n', '<br><br>')
+        present_top_quotes = '<br><br>'.join(quotes)
 
-    present_summary_chunks = article.replace('\n\n', '<br><br>')
-    present_top_quotes = '<br><br>'.join(quotes)
+        audio_files_nonnull = [audio for audio in audio_filenames if audio is not None]
 
-    audio_files_nonnull = [audio for audio in audio_filenames if audio is not None]
+        present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_files_nonnull) + """' type='audio/mpeg'></audio>"""
+        
+        tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in audio_files_nonnull]
 
-    present_audio_clips = """<audio controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='audio/mpeg'></audio><br><br><audio controls><source src='https://storage.googleapis.com/writersvoice/""".join(audio_files_nonnull) + """' type='audio/mpeg'></audio>"""
-    
-    tmp_email_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in audio_files_nonnull]
+        email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
 
-    email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
+        prompt_base = article[:int(max_tokens_output_base_model * chars_per_token)]
+        title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
+        description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
+        article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
 
-    prompt_base = article[:int(max_tokens_output_base_model * chars_per_token)]
-    title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
-    description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
-    article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
-
-    title_response = openai.Completion.create(
-        model='text-davinci-002',
-        prompt=title_prompt,
-        max_tokens=50,
-        temperature=0.9,
-        user=user,
-        stop='"',
-        n=3,
-    )
-
-    title_options = [
-        title_response.choices[0].text,
-        title_response.choices[1].text,
-        title_response.choices[2].text
-    ]
-    title_options = list(set(title_options))
-
-    title = '<br><br>'.join(title_options)
-
-    description_response = openai.Completion.create(
-        model='text-davinci-002',
-        prompt=description_prompt,
-        max_tokens=max_tokens_output,
-        temperature=0.9,
-        user=user,
-        stop='\n',
-        n=3,
-    )
-
-    description_options = [
-        description_response.choices[0].text,
-        description_response.choices[1].text,
-        description_response.choices[2].text        
-    ]
-
-    description_options = [d.lstrip() for d in description_options]
-    description_options = [d[0].upper() + d[1:] for d in description_options]
-
-    description = '<br><br>'.join(description_options)
-
-    if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
-        print('article short enough for final draft')
-        article_response = openai.Completion.create(
+        title_response = openai.Completion.create(
             model='text-davinci-002',
-            prompt=article_prompt,
-            max_tokens=max_tokens_output_article_final,
-            temperature=temperature,
+            prompt=title_prompt,
+            max_tokens=50,
+            temperature=0.9,
             user=user,
+            stop='"',
+            n=3,
         )
 
-        article = article_response.choices[0].text
-    else:
-        print('article too long for final draft')
-        article = prompt_base
+        title_options = [
+            title_response.choices[0].text,
+            title_response.choices[1].text,
+            title_response.choices[2].text
+        ]
+        title_options = list(set(title_options))
 
-    article = article.replace("\n\n\n\n", "<br><br>")
-    article = article.replace("\n\n", "<br><br>")
-    article = article.replace("<br><br><br><br>", "<br><br>")
+        title = '<br><br>'.join(title_options)
 
-    print('this is article:')
-    print('"' + article + '"')
+        description_response = openai.Completion.create(
+            model='text-davinci-002',
+            prompt=description_prompt,
+            max_tokens=max_tokens_output,
+            temperature=0.9,
+            user=user,
+            stop='\n',
+            n=3,
+        )
 
-    if make_memes or make_videos:
+        description_options = [
+            description_response.choices[0].text,
+            description_response.choices[1].text,
+            description_response.choices[2].text        
+        ]
 
-        image_audio_filenames = []
-        meme_filenames = []
-        num_image_audios = 0
-        num_memes = 0
+        description_options = [d.lstrip() for d in description_options]
+        description_options = [d[0].upper() + d[1:] for d in description_options]
 
-        image_prompts_l = [(a, b, c) for a, b, c in zip(quotes,audio_filenames,audio_durations)]
-        sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
+        description = '<br><br>'.join(description_options)
 
-        print('this is sorted image prompts')
-        print(sorted_image_prompts_l)
+        if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
+            print('article short enough for final draft')
+            article_response = openai.Completion.create(
+                model='text-davinci-002',
+                prompt=article_prompt,
+                max_tokens=max_tokens_output_article_final,
+                temperature=temperature,
+                user=user,
+            )
 
-        print('this is make_videos')
-        print(make_videos)
+            article = article_response.choices[0].text
+        else:
+            print('article too long for final draft')
+            article = prompt_base
 
-        for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
-            print('make video filters:')
+        article = article.replace("\n\n\n\n", "<br><br>")
+        article = article.replace("\n\n", "<br><br>")
+        article = article.replace("<br><br><br><br>", "<br><br>")
+
+        print('this is article:')
+        print('"' + article + '"')
+
+        if make_memes or make_videos:
+
+            image_audio_filenames = []
+            meme_filenames = []
+            num_image_audios = 0
+            num_memes = 0
+
+            image_prompts_l = [(a, b, c) for a, b, c in zip(quotes,audio_filenames,audio_durations)]
+            sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
+
+            print('this is sorted image prompts')
+            print(sorted_image_prompts_l)
+
+            print('this is make_videos')
             print(make_videos)
-            print(num_image_audios < num_image_audios_to_produce)
-            print(top_quote_audio_filename is not None)
 
-            if (make_videos) and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
-                image_audio_filename = create_video(
-                    user,
-                    filename,
-                    num_image_audios,
-                    description_options[0],
-                    top_quote,
-                    top_quote_audio_filename,
-                    presence_penalty,
-                    bucket_name,
-                    visual_style,
-                    fact_text
-                )
-                image_audio_filenames.append(image_audio_filename)
-                num_image_audios += 1
+            for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
+                print('make video filters:')
+                print(make_videos)
+                print(num_image_audios < num_image_audios_to_produce)
+                print(top_quote_audio_filename is not None)
 
-            elif make_memes and (top_quote is not None):
-                meme_filename = create_meme(
-                    user,
-                    filename,
-                    num_memes,
-                    description_options[0],
-                    top_quote,
-                    presence_penalty,
-                    bucket_name,
-                    visual_style,
-                    fact_text                
-                )
-                meme_filenames.append(meme_filename)
-                num_memes += 1            
+                if (make_videos) and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
+                    image_audio_filename = create_video(
+                        user,
+                        filename,
+                        num_image_audios,
+                        description_options[0],
+                        top_quote,
+                        top_quote_audio_filename,
+                        presence_penalty,
+                        bucket_name,
+                        visual_style,
+                        fact_text
+                    )
+                    image_audio_filenames.append(image_audio_filename)
+                    num_image_audios += 1
 
-    present_image_audio_clips=''
-    email_present_image_audio_clips=''
-    video_clips_html = ''
-    if make_videos:
-        image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
-        present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
-        tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
-        email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
-        video_clips_html = """<br><a href="#video">Video Clips</a>"""
+                elif make_memes and (top_quote is not None):
+                    meme_filename = create_meme(
+                        user,
+                        filename,
+                        num_memes,
+                        description_options[0],
+                        top_quote,
+                        presence_penalty,
+                        bucket_name,
+                        visual_style,
+                        fact_text                
+                    )
+                    meme_filenames.append(meme_filename)
+                    num_memes += 1            
 
-    present_memes = ''
-    email_present_memes = ''
-    memes_html = ''
-    if make_memes:
-        present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
-        tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
-        email_present_memes = '<br><br>'.join(tmp_email_memes)
-        memes_html = """<br><a href="#images">Quote Memes</a>"""
+        present_image_audio_clips=''
+        email_present_image_audio_clips=''
+        video_clips_html = ''
+        if make_videos:
+            image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
+            present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
+            tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
+            email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+            video_clips_html = """<br><a href="#video">Video Clips</a>"""
 
-    combined_base = """<br><br><b>Result Sections</b>""" \
-    + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
-    + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
-    + """<br><a href="#blog_post">Blog Post</a>""" \
-    + """<br><a href="#top_quotes">Top Quotes</a>""" \
-    + """<br><a href="#audio">Audio Clips</a>""" \
-    + video_clips_html \
-    + memes_html \
-    + """<br><a href="#transcript">Transcript</a>""" \
-    + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
-    + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
-    + """<br><br><b><a id="blog_post">Blog Post</a></b>""" + article \
-    + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
+        present_memes = ''
+        email_present_memes = ''
+        memes_html = ''
+        if make_memes:
+            present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
+            tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
+            email_present_memes = '<br><br>'.join(tmp_email_memes)
+            memes_html = """<br><a href="#images">Quote Memes</a>"""
 
-    combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
-    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips \
-    + """<br><br><b><a id="images">Images</a></b><br><br>""" + email_present_memes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
-    
-    combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
-    + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
-    + """<br><br><b><a id="images">Quote Memes</a></b><br><br>""" + present_memes \
-    + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+        combined_base = """<br><br><b>Result Sections</b>""" \
+        + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
+        + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
+        + """<br><a href="#blog_post">Blog Post</a>""" \
+        + """<br><a href="#top_quotes">Top Quotes</a>""" \
+        + """<br><a href="#audio">Audio Clips</a>""" \
+        + video_clips_html \
+        + memes_html \
+        + """<br><a href="#transcript">Transcript</a>""" \
+        + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
+        + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
+        + """<br><br><b><a id="blog_post">Blog Post</a></b>""" + article \
+        + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
+
+        combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
+        + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips \
+        + """<br><br><b><a id="images">Images</a></b><br><br>""" + email_present_memes \
+        + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
+        
+        combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
+        + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
+        + """<br><br><b><a id="images">Quote Memes</a></b><br><br>""" + present_memes \
+        + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
 
-    response = requests.\
-        post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
-            auth=("api", MAILGUN_API_KEY),
-             data={
-                 "from": 'dubb@'+ str(MAILGUN_DOMAIN),
-                 "to": str(MAIL_USERNAME), ## to be updated to email
-                 "subject": "Dubb results",
-                 "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email,
-                 "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email
-             }
-         )
+        response = requests.\
+            post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+                auth=("api", MAILGUN_API_KEY),
+                 data={
+                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "to": str(MAIL_USERNAME), ## to be updated to email
+                     "subject": "Dubb results",
+                     "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email,
+                     "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email
+                 }
+             )
 
-    response = requests.\
-        post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
-            auth=("api", MAILGUN_API_KEY),
-             data={
-                 "from": 'dubb@'+ str(MAILGUN_DOMAIN),
-                 "to": user, ## to be updated to email
-                 "subject": "Dubb results",
-                 "text": combined_email,
-                 "html": combined_email
-             }
-         )
-    
-    return combined_html, user
+        response = requests.\
+            post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+                auth=("api", MAILGUN_API_KEY),
+                 data={
+                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "to": user, ## to be updated to email
+                     "subject": "Dubb results",
+                     "text": combined_email,
+                     "html": combined_email
+                 }
+             )
+        
+        return combined_html, user
+        
+    except Exception, e:
+        print(e)
+        response = requests.\
+            post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+                auth=("api", MAILGUN_API_KEY),
+                 data={
+                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "to": str(MAIL_USERNAME), ## to be updated to email
+                     "subject": "Dubb results",
+                     "text": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + e,
+                     "html": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + e
+                 }
+             )
+        return 'There was an error. Sorry about that. We will fix it as soon as possible!', user
     
 
 def present_article(article):
