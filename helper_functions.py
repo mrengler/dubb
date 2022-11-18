@@ -214,7 +214,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             find_speaker_input = find_speaker_input[:int((max_tokens_output_base_model - buffer) * chars_per_token)]
 
             choose_pre = """The transcript:\n\n"""
-            choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\""""
+            choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\n\nSpeaker """ + unique_speaker + ' is "'
             choose_text = choose_pre + find_speaker_input + choose_post
             print('This is choose_text for Speaker ' + unique_speaker)
             print(choose_text)
