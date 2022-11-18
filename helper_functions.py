@@ -197,7 +197,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
         speaker_hash = {}
         for unique_speaker in unique_speakers:
             window_len = 10
-            num_occurences = 3
+            num_occurences = 10
             speaker_appearances = [i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker]
             speaker_appearances = speaker_appearances[:num_occurences]
             window = []
@@ -209,6 +209,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             # first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
             # window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - window_len, 0):min(first_appearance_i + window_len, len(sentences_diarized))]]
             find_speaker_input = '\n\n'.join(window)
+            ## reduce to fit into model window
+            find_speaker_input = find_speaker_input[:int(max_tokens_output_base_model * chars_per_token)]
 
             choose_pre = """The transcript:\n\n"""
             choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\""""
