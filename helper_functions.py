@@ -222,7 +222,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         model='text-davinci-002',
                         prompt=choose_text,
                         max_tokens=20,
-                        temperature=0.0,
+                        temperature=0.9,
                         presence_penalty=0.0,
                         user=user,
                         stop='"',
