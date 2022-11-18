@@ -212,6 +212,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         stop='"',
                     )
             predicted_speaker = choose.choices[0].text
+            print('This is predicted speaker for Speaker ' + unique_speaker)
+            print(predicted_speaker)
             speaker = process.extract(predicted_speaker, speakers_input, limit=1)[0][0]
             speaker_hash[unique_speaker] = speaker
 
@@ -235,11 +237,11 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
 
                         ## filter ads
-                        prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a transcript for an ad or promotion? Respond with either "yes" or "no".'
-                        print(prompt)
+                        ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this an ad? Respond with either "yes" or "no".'
+                        print(ad_prompt)
                         is_ad_response = openai.Completion.create(
                             model='text-davinci-002',
-                            prompt=prompt,
+                            prompt=ad_prompt,
                             max_tokens=max_tokens_output_is_ad,
                             temperature=0.0,
                             user=user,
@@ -248,7 +250,23 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         is_ad_response = is_ad_response.choices[0].text
                         print(is_ad_response)
                         is_ad_response = is_ad_response.lower()
-                        if 'no' in is_ad_response:
+
+                        ## filter promos
+                        promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this a promotion for another podcast? Respond with either "yes" or "no".'
+                        print(promo_prompt)
+                        is_promo_response = openai.Completion.create(
+                            model='text-davinci-002',
+                            prompt=promo_prompt,
+                            max_tokens=max_tokens_output_is_ad,
+                            temperature=0.0,
+                            user=user,
+                        )
+
+                        is_promo_response = is_promo_response.choices[0].text
+                        print(is_promo_response)
+                        is_promo_response = is_promo_response.lower()
+
+                        if ('no' in is_ad_response) and ('no' in is_promo_response):
                             cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
 
                     current_speaker = speaker
