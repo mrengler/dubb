@@ -1120,6 +1120,9 @@ def run_combined(
                  )
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
 
+        ##REMOVE
+        heresanerror
+        ##REMOVE
 
         article, quotes, audio_filenames, audio_durations, fact_text = convert(
             user,
