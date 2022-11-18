@@ -196,8 +196,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
         speaker_hash = {}
         for unique_speaker in unique_speakers:
-            window_len = 10
-            num_occurences = 10
+            window_len = 20
+            num_occurences = 100
             speaker_appearances = [i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker]
             speaker_appearances = speaker_appearances[:num_occurences]
             window = []
