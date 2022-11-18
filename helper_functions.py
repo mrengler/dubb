@@ -213,6 +213,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             choose_pre = """The transcript:\n\n"""
             choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\""""
             choose_text = choose_pre + find_speaker_input + choose_post
+            print('This is choose_text for Speaker ' + unique_speaker)
+            print(choose_text)
             choose = openai.Completion.create(
                         model='text-davinci-002',
                         prompt=choose_text,
