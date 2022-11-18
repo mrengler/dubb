@@ -1339,7 +1339,7 @@ def run_combined(
         
         return combined_html, user
 
-    except Exception, e:
+    except Exception as e:
         print(e)
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
