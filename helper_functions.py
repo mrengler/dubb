@@ -359,7 +359,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
         ## processing
         if response_json['error'] == "This transcript has a status of 'processing'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'waiting', None, None, None, None
-        elif response_json['error'] == 'error': "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
+        elif response_json['error'] == "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'error', None, None, None, None   
     else:
         return 'error', None, None, None, None
@@ -1338,7 +1338,7 @@ def run_combined(
              )
         
         return combined_html, user
-        
+
     except Exception, e:
         print(e)
         response = requests.\
