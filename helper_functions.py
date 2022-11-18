@@ -196,9 +196,20 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
         speaker_hash = {}
         for unique_speaker in unique_speakers:
-            first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
-            window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - 10, 0):min(first_appearance_i + 10, len(sentences_diarized))]]
+            window_len = 10
+            num_occurences = 3
+            speaker_appearances = [i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker]
+            speaker_appearances = speaker_appearances[:num_occurences]
+            window = []
+            for appearance_i in speaker_appearances:
+                window_i = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(appearance_i - window_len, 0):min(appearance_i + window_len, len(sentences_diarized))]]
+                window += window_i
+            window = list(dict.fromkeys(window))
+
+            # first_appearance_i = next(i for i, (speaker, text, timestamp_formatted, timestamp_unformatted) in enumerate(sentences_diarized) if speaker == unique_speaker)
+            # window = ['Speaker ' + speaker + ": " + text for (speaker, text, _, _) in sentences_diarized[max(first_appearance_i - window_len, 0):min(first_appearance_i + window_len, len(sentences_diarized))]]
             find_speaker_input = '\n\n'.join(window)
+
             choose_pre = """The transcript:\n\n"""
             choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\""""
             choose_text = choose_pre + find_speaker_input + choose_post
