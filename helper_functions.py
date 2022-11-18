@@ -870,79 +870,83 @@ def convert(
                 quote = quote.replace(speaker + ": ", '')
                 quote = quote.replace("Unknown: ", '')
             if len(quote.split('\n\n')) == 1:
-                quote_classification = content_filter(quote, user)
-                if quote_classification  != '2':
-                    quotes.append(quote)
+                if quote in prompt_chunk:
+                    quote_classification = content_filter(quote, user)
+                    if quote_classification  != '2':
+                        quotes.append(quote)
 
-                    ## generate audiograms
-                    print('this is debug section')
-                    print("'" + quote + "'")
-                    # try:
+                        ## generate audiograms
+                        print('this is debug section')
+                        print("'" + quote + "'")
+                        # try:
 
-                    top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
-                    print('this is top_quote_split')
-                    print(top_quote_split)
+                        top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
+                        print('this is top_quote_split')
+                        print(top_quote_split)
 
-                    ## use a different start sentence if the first or last are too short
-                    off_index_start = 0
-                    for sentence in top_quote_split:
-                        if len(sentence) >= 10:
-                            break
-                        else:
-                            off_index_start += 1
-                            
-                    off_index_end = -1
-                    for sentence in reversed(top_quote_split):
-                        if len(sentence) >= 10:
-                            break
-                        else:
-                            off_index_end -= 1
+                        ## use a different start sentence if the first or last are too short
+                        off_index_start = 0
+                        for sentence in top_quote_split:
+                            if len(sentence) >= 10:
+                                break
+                            else:
+                                off_index_start += 1
+                                
+                        off_index_end = -1
+                        for sentence in reversed(top_quote_split):
+                            if len(sentence) >= 10:
+                                break
+                            else:
+                                off_index_end -= 1
 
-                    print('this is start_times_unformatted')
-                    print(start_times_unformatted)
+                        print('this is start_times_unformatted')
+                        print(start_times_unformatted)
 
-                    print('this is sentences_unformatted')
-                    print(sentences_unformatted)
+                        print('this is sentences_unformatted')
+                        print(sentences_unformatted)
 
-                    ## find quote audio start time, end time, duration
-                    print('top quote split off')
-                    print(top_quote_split[off_index_start].casefold())
-                    find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
-                    print('this is find_top_quote_start_true_text')
-                    print(find_top_quote_start_true_text)
-                    tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
-                    print('this is tq_start_i')
-                    print(tq_start_i)
-                    # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
-                    # tq_start_i = start_times_unformatted.index(find_top_quote_start)
-                    tq_start = start_times_unformatted[tq_start_i - off_index_start]
-                    print(top_quote_split[off_index_end].casefold())
-                    find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
-                    print('this is find_top_quote_end_true_text')
-                    print(find_top_quote_end_true_text)
-                    tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
-                    print('this is tq_end_i')
-                    print(tq_end_i)
-                    # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
-                    # tq_end_i = start_times_unformatted.index(find_top_quote_end)
+                        ## find quote audio start time, end time, duration
+                        print('top quote split off')
+                        print(top_quote_split[off_index_start].casefold())
+                        find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
+                        print('this is find_top_quote_start_true_text')
+                        print(find_top_quote_start_true_text)
+                        tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
+                        print('this is tq_start_i')
+                        print(tq_start_i)
+                        # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
+                        # tq_start_i = start_times_unformatted.index(find_top_quote_start)
+                        tq_start = start_times_unformatted[tq_start_i - off_index_start]
+                        print(top_quote_split[off_index_end].casefold())
+                        find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
+                        print('this is find_top_quote_end_true_text')
+                        print(find_top_quote_end_true_text)
+                        tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
+                        print('this is tq_end_i')
+                        print(tq_end_i)
+                        # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
+                        # tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
-                    if tq_end_i < len(sentences_diarized) - 1:
-                        tq_end = start_times_unformatted[tq_end_i - off_index_end]
-                    elif tq_end_i == len(sentences_diarized) - 1:
-                        tq_end = 100000000000
+                        if tq_end_i < len(sentences_diarized) - 1:
+                            tq_end = start_times_unformatted[tq_end_i - off_index_end]
+                        elif tq_end_i == len(sentences_diarized) - 1:
+                            tq_end = 100000000000
 
-                    tq_duration = (tq_end - tq_start) / 1000
+                        tq_duration = (tq_end - tq_start) / 1000
 
-                    ## generate audio segment of quote
-                    top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-                    top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                    print(top_quote_audio_filename)
-                    top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                    audio_filenames.append(top_quote_audio_filename)
-                    audio_durations.append(tq_duration)
-                    upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                        ## generate audio segment of quote
+                        top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                        top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                        print(top_quote_audio_filename)
+                        top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                        audio_filenames.append(top_quote_audio_filename)
+                        audio_durations.append(tq_duration)
+                        upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                    else:
+                        print('quote classification == 2')
+                        print(quote)
                 else:
-                    print('quote classification == 2')
+                    print('quote is not verbatim from the text')
                     print(quote)
             else:
                 print('quote is multiple paragraphs')
