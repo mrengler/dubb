@@ -582,7 +582,7 @@ def create_video(
         model='text-davinci-002',
         prompt=prompt_text_pre,
         max_tokens=max_tokens_output_image_description,
-        temperature=0.0,
+        temperature=0.8,
         presence_penalty=pres_penalty,
         user=user,
         n=3
@@ -599,7 +599,7 @@ def create_video(
         top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
         top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
 
-        prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:'
+        prompt_text = 'The description of the image:\n\n' + top_quote_image_description_pre + '\n\nEdit the description of the image so that it only contains physical details:\n\nThe image features'
 
         print(prompt_text)
 
