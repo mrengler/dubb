@@ -226,6 +226,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         presence_penalty=0.0,
                         user=user,
                         stop='"',
+                        n=3
                     )
             print('this is choose')
             print(choose)
