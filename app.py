@@ -29,10 +29,6 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-# app.config['MAILGUN_API_KEY'] = os.environ["MAILGUN_API_KEY"]
-# app.config['MAILGUN_DOMAIN'] = os.environ["MAILGUN_DOMAIN"]
-# app.config['MAIL_USERNAME'] = os.environ["MAIL_USERNAME"]
-
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
 
@@ -127,10 +123,7 @@ def result(id):
     if status in ['queued', 'started', 'deferred', 'failed']:
         return get_template(refresh=True)
     elif status == 'finished':
-        print(job.result)
-        print(os.listdir())
         combined, user = job.result
-        print(os.listdir())
         return get_template(combined)
 
 
@@ -219,17 +212,8 @@ def process():
 
 
         return redirect(url_for('result', id=job.id))
-        # print('This is results: ' + results)
-
-        # return {'article': converting, 'transcript': cleaned_sentences}
     else:
         return render_template('index.html')
-
-
-# @app.route('/media/<filename>')
-# def send_media(filename):
-#     return send_from_directory('media', filename)
-
 
 @app.route('/')
 def index():
@@ -319,19 +303,8 @@ def accelerated_process():
             timeout=600
         )
 
-        # db.collection("requests").document().set({
-        #     'email': email,
-        #     'content': content,
-        #     'speakers': speakers,
-        #     'time': datetime.now(),
-        # })
-
-
 
         return redirect(url_for('result', id=job.id))
-        # print('This is results: ' + results)
-
-        # return {'article': converting, 'transcript': cleaned_sentences}
     else:
         return render_template('index.html')
 

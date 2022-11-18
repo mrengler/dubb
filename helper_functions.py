@@ -1,6 +1,5 @@
 from __future__ import absolute_import
 
-# max_token_input = 1548
 max_token_input = 3000
 max_tokens_output = 1000
 max_tokens_facts_quotes = 500
@@ -216,27 +215,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             speaker = process.extract(predicted_speaker, speakers_input, limit=1)[0][0]
             speaker_hash[unique_speaker] = speaker
 
-        ## for each unique speaker
-            ##get the first sentence they appear, and the preceding and succeeding 10 sentences
-            ## ask gpt3 what the speakers name is
-            ## append speaker name to predicted speakers
-        ## for each in predicted speakers, get the most similar speaker in input speakers
-
-
-
-
-        # if len(unique_speakers) < len(speakers_input):
-        #     speakers_input = speakers_input[:len(unique_speakers)]
-
-
-        # speaker_hash = {}
-        # for i,speaker in enumerate(speakers_input):
-        #     speaker_hash[unique_speakers[i]] = speaker
-        # unknown_speakers = list(set(unique_speakers) - set(speaker_hash.keys()))
-        # for speaker in unknown_speakers:
-        #     speaker_hash[speaker] = 'Unknown'
-        # speaker_hash['UNK'] = 'Unknown'
-
         current_speaker_sentences_joined = ''
 
         max_num_sentences = 15
@@ -303,9 +281,6 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             is_ad_response = is_ad_response.lower()
             if 'no' in is_ad_response:
                 cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
-
-            # start_times.append(start_time)
-            # start_times_unformatted.append(start_time_unformatted)
 
             return cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized
 
@@ -543,20 +518,6 @@ def create_video(
     print("top_quote_image_description")
     print(top_quote_image_description)
 
-    # print("this is second prompt:")
-    # print('The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:')
-
-    # top_quote_image_description_response_part_2 = openai.Completion.create(
-    #     model='text-davinci-002',
-    #     prompt='The first scene of the animation:\n\n"' + top_quote_image_description + '"\n\nThe second scene of the animation:\n\n"',
-    #     max_tokens=max_tokens_output_image_description,
-    #     temperature=0.7,
-    #     presence_penalty=pres_penalty,
-    #     user=user,
-    #     stop='"',
-    # )
-
-    # top_quote_image_description_part_2 = top_quote_image_description_response_part_2.choices[0].text
     top_quote_image_description_part_2 = top_quote_image_description_response.choices[1].text
 
     ## first log the classification
@@ -571,19 +532,7 @@ def create_video(
     print(top_quote_image_description_part_2)
 
     print("this is third prompt:")
-    # print('The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:')
-
-    # top_quote_image_description_response_part_3 = openai.Completion.create(
-    #     model='text-davinci-002',
-    #     prompt='The first scene of the animation:\n\n"' + top_quote_image_description_part_2 + '"\n\nThe second scene of the animation:\n\n"',
-    #     max_tokens=max_tokens_output_image_description,
-    #     temperature=0.7,
-    #     presence_penalty=pres_penalty,
-    #     user=user,
-    #     stop='"',
-    # )
-
-    # top_quote_image_description_part_3 = top_quote_image_description_response_part_3.choices[0].text
+ 
     top_quote_image_description_part_3 = top_quote_image_description_response.choices[2].text
 
     ## first log the classification
@@ -793,9 +742,6 @@ def convert(
     editorial_style
     ):
 
-    # summary_chunks = []
-    # top_quotes = []
-
     audio_filenames = []
     audio_durations = [] 
     facts = []
@@ -914,8 +860,6 @@ def convert(
                         tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
                         print('this is tq_start_i')
                         print(tq_start_i)
-                        # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
-                        # tq_start_i = start_times_unformatted.index(find_top_quote_start)
                         tq_start = start_times_unformatted[tq_start_i - off_index_start]
                         print(top_quote_split[off_index_end].casefold())
                         find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
@@ -924,8 +868,6 @@ def convert(
                         tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
                         print('this is tq_end_i')
                         print(tq_end_i)
-                        # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
-                        # tq_end_i = start_times_unformatted.index(find_top_quote_end)
 
                         if tq_end_i < len(sentences_diarized) - 1:
                             tq_end = start_times_unformatted[tq_end_i - off_index_end]
@@ -1035,143 +977,6 @@ def convert(
     else:
         article = article_one
 
-
-
-
-        # prompt_chunk_summary = 'The transcript of the conversation:\n\n' + prompt_chunk \
-        # + '\n\nWrite a few paragraphs summarizing the transcript, in a playful and engaging style:'
-
-        # summary_chunk_response = openai.Completion.create(
-        #     model='text-davinci-002',
-        #     prompt=prompt_chunk_summary,
-        #     max_tokens=max_tokens_output,
-        #     temperature=temp,
-        #     presence_penalty=pres_penalty,
-        #     user=user,
-        # )
-
-        # prompt_chunk_quote = 'The full transcript:\n\n' + prompt_chunk + '\n\nThe most engaging section of the transcript, exactly how it is written: "'
-
-        # top_quote_response = openai.Completion.create(
-        #     model='text-davinci-002',
-        #     prompt=prompt_chunk_quote,
-        #     max_tokens=max_tokens_output,
-        #     temperature=0.0,
-        #     presence_penalty=pres_penalty,
-        #     stop='"',
-        #     user=user,
-        # )
-
-        # summary_chunk = summary_chunk_response.choices[0].text
-        # top_quote = top_quote_response.choices[0].text
-
-        # print(summary_chunk)
-
-        # summary_classification = content_filter(summary_chunk, user)
-        # top_quote_classification = content_filter(top_quote, user)
-
-        # if summary_classification != '2': ##unsafe
-        #     summary_chunk = clean_chunk(summary_chunk)
-        #     if summary_chunk != '':
-        #         summary_chunks.append(summary_chunk)
-        # else:
-        #     print('UNSAFE RESPONSE:')
-        #     print(summary_chunk_response)
-        
-        # print('This is top quote classification: ' + str(top_quote_classification))
-
-        # if top_quote_classification != '2': ##unsafe
-
-        #     top_quote = top_quote.replace("The full transcript:\n\n", '')
-        #     top_quote = top_quote.replace("The full transcript: ", '')
-        #     top_quote = top_quote.replace("The full transcript:", '')
-        #     for speaker in speakers_input:
-        #         top_quote = top_quote.replace(speaker + ": ", '')
-        #         top_quote = top_quote.replace("Unknown: ", '')
-        #     top_quotes.append(top_quote)
-            
-        #     ## generate audiograms
-        #     print('this is debug section')
-        #     print("'" + top_quote + "'")
-        #     # try:
-
-        #     top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', top_quote)
-        #     print('this is top_quote_split')
-        #     print(top_quote_split)
-
-        #     ## use a different start sentence if the first or last are too short
-        #     off_index_start = 0
-        #     for sentence in top_quote_split:
-        #         if len(sentence) >= 10:
-        #             break
-        #         else:
-        #             off_index_start += 1
-                    
-        #     off_index_end = -1
-        #     for sentence in reversed(top_quote_split):
-        #         if len(sentence) >= 10:
-        #             break
-        #         else:
-        #             off_index_end -= 1
-
-        #     print('this is start_times_unformatted')
-        #     print(start_times_unformatted)
-
-        #     print('this is sentences_unformatted')
-        #     print(sentences_unformatted)
-
-        #     ## find quote audio start time, end time, duration
-        #     print('top quote split off')
-        #     print(top_quote_split[off_index_start].casefold())
-        #     find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
-        #     print('this is find_top_quote_start_true_text')
-        #     print(find_top_quote_start_true_text)
-        #     tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
-        #     print('this is tq_start_i')
-        #     print(tq_start_i)
-        #     # find_top_quote_start = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_start].casefold() in sentence.casefold()][0]
-        #     # tq_start_i = start_times_unformatted.index(find_top_quote_start)
-        #     tq_start = start_times_unformatted[tq_start_i - off_index_start]
-        #     print(top_quote_split[off_index_end].casefold())
-        #     find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
-        #     print('this is find_top_quote_end_true_text')
-        #     print(find_top_quote_end_true_text)
-        #     tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
-        #     print('this is tq_end_i')
-        #     print(tq_end_i)
-        #     # find_top_quote_end = [timestamp for (_, sentence, _, timestamp) in sentences_diarized if top_quote_split[off_index_end].casefold() in sentence.casefold()][0]
-        #     # tq_end_i = start_times_unformatted.index(find_top_quote_end)
-
-        #     if tq_end_i < len(sentences_diarized) - 1:
-        #         tq_end = start_times_unformatted[tq_end_i - off_index_end]
-        #     elif tq_end_i == len(sentences_diarized) - 1:
-        #         tq_end = 100000000000
-
-        #     tq_duration = (tq_end - tq_start) / 1000
-
-        #     ## generate audio segment of quote
-        #     top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-        #     top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-        #     print(top_quote_audio_filename)
-        #     top_quote_audio.export(top_quote_audio_filename, format="mp3")
-        #     audio_filenames.append(top_quote_audio_filename)
-        #     audio_durations.append(tq_duration)
-        #     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
-
-
-            # except Exception as e:
-            #     print(e)
-            #     audio_filenames.append(None)
-            #     audio_durations.append(0)
-
-
-
-
-        # else:
-        #     print('UNSAFE RESPONSE:')
-        #     print(top_quote_response)
-    
-    # return summary_chunks, top_quotes, audio_filenames, audio_durations
     return article, quotes, audio_filenames, audio_durations, fact_text
 
 
@@ -1223,8 +1028,6 @@ def run_combined(
         )
         time.sleep(60)
 
-        
-    # summary_chunks, top_quotes, audio_filenames, audio_durations = convert(
     article, quotes, audio_filenames, audio_durations, fact_text = convert(
         user,
         cleaned_paragraphs_no_ads,
@@ -1242,9 +1045,7 @@ def run_combined(
     present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]
     present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
 
-    # present_summary_chunks = '<br><br>'.join(summary_chunks)
     present_summary_chunks = article.replace('\n\n', '<br><br>')
-    # present_top_quotes = '<br><br>'.join(top_quotes)
     present_top_quotes = '<br><br>'.join(quotes)
 
     audio_files_nonnull = [audio for audio in audio_filenames if audio is not None]
@@ -1255,13 +1056,6 @@ def run_combined(
 
     email_present_audio_clips = '<br><br>'.join(tmp_email_audio_clips)
 
-    # l1 = [chunk.replace('\n', '\n\n') for chunk in summary_chunks]
-    # l2 = [chunk.replace('\n\n\n\n', '\n\n') for chunk in l1]
-    # l3 = [chunk for chunk in filter(lambda chunk: chunk != '', l2)]
-    # l4 = [chunk[1:] if chunk[0] == ' ' else chunk for chunk in l3]
-    # l5 = filter(lambda chunk: chunk != '', l4)
-    # joined_l5 = '\n\n'.join(l5)
-    # prompt_base = joined_l5[:int(max_tokens_output_base_model * chars_per_token)]
     prompt_base = article[:int(max_tokens_output_base_model * chars_per_token)]
     title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
     description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
@@ -1336,7 +1130,6 @@ def run_combined(
         num_image_audios = 0
         num_memes = 0
 
-        # image_prompts_l = [(a, b, c) for a, b, c in zip(top_quotes,audio_filenames,audio_durations)]
         image_prompts_l = [(a, b, c) for a, b, c in zip(quotes,audio_filenames,audio_durations)]
         sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
@@ -1430,7 +1223,6 @@ def run_combined(
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            # files=[("attachment", open('media' + ".zip", "rb"))],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": str(MAIL_USERNAME), ## to be updated to email
@@ -1443,7 +1235,6 @@ def run_combined(
     response = requests.\
         post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
             auth=("api", MAILGUN_API_KEY),
-            # files=[("attachment", open('media' + ".zip", "rb"))],
              data={
                  "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                  "to": user, ## to be updated to email
@@ -1499,7 +1290,7 @@ def get_transcript(
         print(prompt)
     
     if write == True:
-        ## TODO: the below should be updates
+        ## TODO: the below should be updated
         file1 = open('transcript_2022_02_07/' + write_title + ".txt","w")
         file1.writelines(prompt_chunks)
         file1.close()
