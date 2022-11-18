@@ -344,7 +344,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             speaker_appearances = speaker_appearances[:num_occurences]
             window = []
             for appearance_i in speaker_appearances:
-                window_i = [line in cleaned_paragraphs_no_ads[max(appearance_i - window_len, 0):min(appearance_i + window_len, len(cleaned_paragraphs_no_ads))]]
+                window_i = [line for line in cleaned_paragraphs_no_ads[max(appearance_i - window_len, 0):min(appearance_i + window_len, len(cleaned_paragraphs_no_ads))]]
                 window += window_i
             window = list(dict.fromkeys(window))
 
