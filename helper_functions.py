@@ -190,6 +190,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
     print('this is response')
     print(response)
+    print(response.json())
     
     try:
         sentences = response.json()['sentences']
