@@ -187,6 +187,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
     }
 
     response = requests.get(endpoint, headers=headers)
+
+    print(response)
     
     try:
         sentences = response.json()['sentences']
