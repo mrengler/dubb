@@ -542,7 +542,7 @@ def create_video(
     print('this is first prompt:')
 
     prompt_text_pre = "Here are some facts that were discussed in a podcast episode:\n\n" + fact_text +\
-    '\n\nHere is the top quote from the podcast episode:\n\n"' + top_quote + '"\n\nUse the top quote and facts to write a description of the image that accompanies the podcast episode:\n\nThe image features'
+    '\n\nHere is the top quote from the podcast episode:\n\n"' + top_quote + '"\n\nUse the top quote and facts to write a description of the image that accompanies the podcast episode:\n\nThe image does not contain any words, quotes, dates, or logos. The image features'
 
     print(prompt_text_pre)
 
