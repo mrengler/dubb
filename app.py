@@ -179,8 +179,8 @@ def process():
                 return render_template('index.html', error=error)
 
             content_type = 'url'
-            filename = filename.split('/')[-1]
-            filename = re.sub(r'\W+', '', content) + '.mp3'
+            filename = content.split('/')[-1]
+            filename = re.sub(r'\W+', '', filename) + '.mp3'
 
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
@@ -275,8 +275,8 @@ def accelerated_process():
                     return render_template('index_accelerated.html', error=error)
 
                 content_type = 'url'
-                filename = filename.split('/')[-1]
-                filename = re.sub(r'\W+', '', content) + '.mp3'
+                filename = content.split('/')[-1]
+                filename = re.sub(r'\W+', '', filename) + '.mp3'
 
 
         speakers = request.form['speakers']
