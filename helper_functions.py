@@ -1073,7 +1073,7 @@ def run_combined(
     transcript_id='',
     paragraphs=False,
     make_videos=True,
-    make_memes=True,
+    make_memes=False,
     visual_style='painting',
     editorial_style='insightful'
     ):
@@ -1285,21 +1285,21 @@ def run_combined(
         video_clips_html = ''
         if make_videos:
             image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
-            present_image_audio_clips = """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
+            present_image_audio_clips = """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
             tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
-            email_present_image_audio_clips = '<br><br>'.join(tmp_email_image_audio_clips)
+            email_present_image_audio_clips = """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + '<br><br>'.join(tmp_email_image_audio_clips)
             video_clips_html = """<br><a href="#video">Video Clips</a>"""
 
         present_memes = ''
         email_present_memes = ''
         memes_html = ''
         if make_memes:
-            present_memes = """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
+            present_memes = """<br><br><b><a id="images">Quote Memes</a></b><br><br>""" + """<img src='https://storage.googleapis.com/writersvoice/""" + """'><br><br><img src='https://storage.googleapis.com/writersvoice/""".join(meme_filenames) + """'>"""
             tmp_email_memes = ['<a href="https://storage.googleapis.com/writersvoice/' + meme + '">' + meme + '</a>' for meme in meme_filenames]    
-            email_present_memes = '<br><br>'.join(tmp_email_memes)
+            email_present_memes = """<br><br><b><a id="images">Images</a></b><br><br>""" + '<br><br>'.join(tmp_email_memes)
             memes_html = """<br><a href="#images">Quote Memes</a>"""
 
-        combined_base = """File: """ + content\
+        combined_base = """<br><br>File: """ + content\
         + """<br><br><b>Result Sections</b>""" \
         + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
         + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
@@ -1315,13 +1315,13 @@ def run_combined(
         + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
 
         combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
-        + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + email_present_image_audio_clips \
-        + """<br><br><b><a id="images">Images</a></b><br><br>""" + email_present_memes \
+        + email_present_image_audio_clips \
+        + email_present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
         
         combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
-        + """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + present_image_audio_clips \
-        + """<br><br><b><a id="images">Quote Memes</a></b><br><br>""" + present_memes \
+        + present_image_audio_clips \
+        + present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
 
