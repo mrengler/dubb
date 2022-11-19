@@ -1299,7 +1299,8 @@ def run_combined(
             email_present_memes = '<br><br>'.join(tmp_email_memes)
             memes_html = """<br><a href="#images">Quote Memes</a>"""
 
-        combined_base = """<br><br><b>Result Sections</b>""" \
+        combined_base = """File: """ + content\
+        + """<br><br><b>Result Sections</b>""" \
         + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
         + """<br><a href="#description_suggestions">Description Suggestions</a>""" \
         + """<br><a href="#blog_post">Blog Post</a>""" \
