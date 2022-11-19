@@ -1083,6 +1083,18 @@ def run_combined(
             if content_type=='url':
                 status = download_yt(content, filename)
                 if status == 'failed':
+                    print('return failed')
+                    response = requests.\
+                    post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
+                        auth=("api", MAILGUN_API_KEY),
+                         data={
+                             "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                             "to": str(MAIL_USERNAME), ## to be updated to email
+                             "subject": "Dubb results",
+                             "text": '<b>YOUTUBEDL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id,
+                             "html": '<b>YOUTUBEDL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id
+                         }
+                     )
                     return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL.", user
                 elif status == 'passed':
                     upload_to_gs(bucket_name, filename, filename)
