@@ -1091,11 +1091,11 @@ def run_combined(
                              "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                              "to": str(MAIL_USERNAME), ## to be updated to email
                              "subject": "Dubb results",
-                             "text": '<b>YOUTUBEDL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id,
-                             "html": '<b>YOUTUBEDL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id
+                             "text": '<b>YOUTUBEDL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id,
+                             "html": '<b>YOUTUBEDL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id
                          }
                      )
-                    return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL.", user
+                    return ">There was an error. Sorry about that. We will fix it as soon as possible!", user
                 elif status == 'passed':
                     upload_to_gs(bucket_name, filename, filename)
             elif content_type=='file':
@@ -1126,8 +1126,8 @@ def run_combined(
                          "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                          "to": str(MAIL_USERNAME), ## to be updated to email
                          "subject": "Dubb results",
-                         "text": '<b>TRANSCRIPTION ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id,
-                         "html": '<b>TRANSCRIPTION ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id
+                         "text": '<b>TRANSCRIPTION ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id,
+                         "html": '<b>TRANSCRIPTION ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id
                      }
                  )
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
@@ -1359,8 +1359,8 @@ def run_combined(
                      "from": 'dubb@'+ str(MAILGUN_DOMAIN),
                      "to": str(MAIL_USERNAME), ## to be updated to email
                      "subject": "Dubb results",
-                     "text": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + str(e),
-                     "html": '<b>GENERAL ERROR: </b>' + user + 'Details: ' + filename + ' ' + transcript_id + ' ' + str(e)
+                     "text": '<b>GENERAL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id + ' ' + str(e),
+                     "html": '<b>GENERAL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id + ' ' + str(e)
                  }
              )
         return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
