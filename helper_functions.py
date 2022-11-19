@@ -1083,7 +1083,7 @@ def run_combined(
             if content_type=='url':
                 status = download_yt(content, filename)
                 if status == 'failed':
-                    return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL."
+                    return "There was an error accessing that URL. Please try again in a couple of minutes. If that doesn't work, we may not be able to access that URL.", user
                 elif status == 'passed':
                     upload_to_gs(bucket_name, filename, filename)
             elif content_type=='file':
