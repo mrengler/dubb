@@ -37,7 +37,7 @@ function onSignIn(googleUser) {
   const emailDoc = db.collection("users").where("email", "==", email);
   emailDoc.get().then(function(doc) {
       if (doc.empty) {
-        var d = new Date(Date.now()).toString();
+        var d = new Date(Date.now());
         db.collection("users").add({
             email: email,
             time: d
@@ -75,29 +75,34 @@ function signOut() {
 }
 
 function testingSignIn(){
-  var floatingsignon = document.getElementById("floating-sign-in");
-  floatingsignon.style.display = 'none';
-  var inputdiv = document.getElementById("input-div");
-  inputdiv.className = 'unblur';
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = false;
+  try {
+    var floatingsignon = document.getElementById("floating-sign-in");
+    floatingsignon.style.display = 'none';
+    var inputdiv = document.getElementById("input-div");
+    inputdiv.className = 'unblur';
+    var inputform = document.getElementById("input-form");
+    inputform.disabled = false;
 
-  var signout = document.getElementById("sign-out");
-  signout.style.display = "block";
-  var signin = document.getElementById("sign-in");
-  signin.style.display = "none";
+    var signout = document.getElementById("sign-out");
+    signout.style.display = "block";
+    var signin = document.getElementById("sign-in");
+    signin.style.display = "none";
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-window.onload=function(){
-  // UNCOMMENT WHEN DONE WITH TESTING
-  var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
-  if (loggedin === true) {
-    onSignIn();
-  } else if (loggedin === false) {
-    signOut();
+document.addEventListener('DOMContentLoaded', async () => {
+  let searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has('session_id')) {
+    const session_id = searchParams.get('session_id');
+    console.log('This is session id');
+    console.log(session_id);
+    document.getElementById('session-id').setAttribute('value', session_id);
   }
-  // testingSignIn();
-  // UNCOMMENT WHEN DONE WITH TESTING
+});
+
+window.onload=function(){
 
   var coll = document.getElementsByClassName("collapsible");
   var i;
@@ -124,5 +129,15 @@ window.onload=function(){
     var fileinput = document.getElementById("file-upload");
     fileinput.required=false;
   })
+
+  // UNCOMMENT WHEN DONE WITH TESTING
+  // var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
+  // if (loggedin === true) {
+  //   onSignIn();
+  // } else if (loggedin === false) {
+  //   signOut();
+  // }
+  testingSignIn();
+  // UNCOMMENT WHEN DONE WITH TESTING
 
 }

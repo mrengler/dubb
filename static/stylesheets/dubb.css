@@ -175,6 +175,15 @@ input[type="file"] {
 #logo {
   color: #4a4cc7;
 }
+#checkout {
+  color: white;
+  background: #4a4cc7;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 10px;;
+}
 
 #url {
   display: inline-block;

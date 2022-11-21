@@ -1,8 +1,7 @@
-import json
 import requests
 import smtplib
 from email.mime.text import MIMEText
-from flask import request, Flask, url_for, render_template, render_template_string, redirect, send_from_directory
+from flask import request, Flask, url_for, render_template, render_template_string, redirect, jsonify, json, current_app
 from flask_mail import Mail, Message
 from helper_functions import *
 from allow_list import allow_list
@@ -22,12 +21,20 @@ import replicate
 import os
 from dotenv import load_dotenv
 
+import stripe
+# This is a public sample test API key.
+# Don’t submit any personally identifiable information in requests made with this key.
+# Sign in to see your own test API key embedded in code samples.
+stripe.api_key = 'sk_test_51M6bsEKrwOUYZ8FDIbAmDjDb7mBWLH3Le08SvVPp6FT3As4SVzH7ohCAZBp0DUirZZ6RJvE4OtV68SPR011j7IYa00UWl7b4XX'
+
 load_dotenv()
 
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
+
+YOUR_DOMAIN = 'https://127.0.0.1:5000'
 
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
@@ -115,7 +122,6 @@ def get_template(result=None, refresh=False, failed=False):
 
     return render_template_string(template_str, refresh=refresh)
 
-
 @app.route('/result/<string:id>')
 def result(id):
     job = Job.fetch(id, connection=conn)
@@ -125,7 +131,6 @@ def result(id):
     elif status == 'finished':
         combined, user = job.result
         return get_template(combined)
-
 
 @app.route('/waitlist', methods=["GET", "POST"])
 def enqueue():
@@ -139,7 +144,6 @@ def enqueue():
             })
 
     return render_template('index.html')
-
 
 @app.route('/process', methods=["GET", "POST"])
 def process():
@@ -310,5 +314,113 @@ def accelerated_process():
     else:
         return render_template('index.html')
 
+# @app.route('/create-checkout-session', methods=["POST"])
+# def create_checkout_session():
+#     try:
+#         # The price ID passed from the front end.
+#         price_id = request.form.get('priceId')
+#         # price_id = '{{PRICE_ID}}'
+
+#         session = stripe.checkout.Session.create(
+#           success_url=YOUR_DOMAIN + '/success?session_id={CHECKOUT_SESSION_ID}',
+#           cancel_url=YOUR_DOMAIN + '/canceled',
+#           mode='subscription',
+#           line_items=[{
+#             'price': price_id,
+#             # For metered billing, do not pass quantity
+#             'quantity': 1
+#           }],
+#         )
+#         # Redirect to the URL returned on the session
+#         return redirect(session.url, code=303)
+
+#     except Exception as e:
+#         print(e)
+#         return "Server error", 500
+
+@app.route('/checkout', methods=['GET'])
+def checkout():
+
+  return render_template('checkout.html')
+
+# @app.route('/success', methods=['GET'])
+# def success():
+#   session = stripe.checkout.Session.retrieve(request.args.get('session_id'))
+#   customer = stripe.Customer.retrieve(session.customer)
+
+#   return render_template('success.html', customer=customer)
+
+
+# @app.route('/canceled', methods=['GET'])
+# def canceled():
+
+#   return render_template_string('<html><body><h1>Your subscription has been canceled</h1></body></html>')
+
+
+# @app.route('/customer-portal', methods=['POST'])
+# def customer_portal():
+#     # For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+#     # Typically this is stored alongside the authenticated user in your database.
+#     checkout_session_id = request.form.get('session_id')
+#     print('this is checkout_session_id')
+#     print(checkout_session_id)
+#     checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
+
+#     # This is the URL to which the customer will be redirected after they are
+#     # done managing their billing with the portal.
+#     return_url = YOUR_DOMAIN
+
+#     portalSession = stripe.billing_portal.Session.create(
+#         customer=checkout_session.customer,
+#         return_url=return_url,
+#     )
+#     return redirect(portalSession.url, code=303)
+
+# redirect to the URL for the session
+#   return redirect(session.url, code=303)
+
+@app.route('/webhook', methods=['POST'])
+def webhook_received():
+    webhook_secret = {{'STRIPE_WEBHOOK_SECRET'}}
+    request_data = json.loads(request.data)
+
+    if webhook_secret:
+        # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
+        signature = request.headers.get('stripe-signature')
+        try:
+            event = stripe.Webhook.construct_event(
+                payload=request.data, sig_header=signature, secret=webhook_secret)
+            data = event['data']
+        except Exception as e:
+            return e
+        # Get the type of webhook event sent - used to check the status of PaymentIntents.
+        event_type = event['type']
+    else:
+        data = request_data['data']
+        event_type = request_data['type']
+    data_object = data['object']
+
+    if event_type == 'checkout.session.completed':
+    # Payment is successful and the subscription is created.
+    # You should provision the subscription and save the customer ID to your database.
+      print(data)
+    elif event_type == 'invoice.paid':
+    # Continue to provision the subscription as payments continue to be made.
+    # Store the status in your database and check when a user accesses your service.
+    # This approach helps you avoid hitting rate limits.
+      print(data)
+    elif event_type == 'invoice.payment_failed':
+    # The payment failed or the customer does not have a valid payment method.
+    # The subscription becomes past_due. Notify your customer and send them to the
+    # customer portal to update their payment information.
+      print(data)
+    else:
+      print('Unhandled event type {}'.format(event_type))
+
+    return jsonify({'status': 'success'})
+
 if __name__ == '__main__':
   app.run(ssl_context="adhoc")
+
+# if __name__ == '__main__':
+#     app.run(port=4242)
