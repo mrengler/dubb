@@ -16,6 +16,9 @@ var db = firebase.firestore();
 var email;
 
 function onSignIn(googleUser) {
+  console.log('This is credential');
+  console.log(googleUser.credential);
+
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
   var emailform = document.getElementById("email");
