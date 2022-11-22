@@ -103,6 +103,10 @@ function onSignIn(googleUser) {
           submissions: 0
       })
     }  
+    else {
+      console.log('doc is not empty');
+      console.log(doc);
+    }
   }).catch(function(error) {
       console.log("Error getting document:", error);
   });
