@@ -18,33 +18,6 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var email;
 
-// // Initialize Firebase Authentication and get a reference to the service
-// const auth = firebase.auth();
-// var provider = new firebase.auth.GoogleAuthProvider();
-
-// function signIn(){
-//   firebase.auth()
-//     .signInWithPopup(provider)
-//     .then((result) => {
-//       /** @type {firebase.auth.OAuthCredential} */
-//       var credential = result.credential;
-//       // This gives you a Google Access Token. You can use it to access the Google API.
-//       var token = credential.accessToken;
-//       // The signed-in user info.
-//       var user = result.user;
-//       // The email of the user's account used.
-//       var email = result.email;
-//     }).catch((error) => {
-//       // Handle Errors here.
-//       var errorCode = error.code;
-//       var errorMessage = error.message;
-//       // The email of the user's account used.
-//       var email = error.email;
-//       // The firebase.auth.AuthCredential type that was used.
-//       var credential = error.credential;
-//       // ...
-//     });
-// }
 
 function isUserEqual(googleUser, firebaseUser) {
   if (firebaseUser) {
@@ -117,16 +90,17 @@ function onSignIn(googleUser) {
   upgrade.style.display = "block";
 
   const emailRecord = ""
-  const emailDoc = db.collection("users").where("email", "==", email);
+  const emailDoc = db.collection("users").doc(email);
   emailDoc.get().then(function(doc) {
     if (doc.empty) {
       var d = new Date(Date.now());
-      db.collection("users").add({
-          email: email,
-          time: d
-      }) 
-    }
-      
+      db.collection("users").doc(email).set({
+          time: d,
+          status: 'trial',
+          free_credits: 1,
+          submissions: 0
+      })
+    }  
   }).catch(function(error) {
       console.log("Error getting document:", error);
   });

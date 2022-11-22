@@ -1098,7 +1098,7 @@ def run_combined(
                              "html": '<b>YOUTUBEDL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id
                          }
                      )
-                    return ">There was an error. Sorry about that. We will fix it as soon as possible!", user
+                    return ">There was an error. Sorry about that. We will fix it as soon as possible!", user, True
                 elif status == 'passed':
                     upload_to_gs(bucket_name, filename, filename)
             elif content_type=='file':
@@ -1133,7 +1133,7 @@ def run_combined(
                          "html": '<b>TRANSCRIPTION ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id
                      }
                  )
-            return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
+            return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
 
         article, quotes, audio_filenames, audio_durations, fact_text = convert(
             user,
@@ -1353,7 +1353,7 @@ def run_combined(
                  }
              )
         
-        return combined_html, user
+        return combined_html, user, False
 
     except Exception as e:
         print(e)
@@ -1368,7 +1368,7 @@ def run_combined(
                      "html": '<b>GENERAL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id + ' ' + str(e)
                  }
              )
-        return '>There was an error. Sorry about that. We will fix it as soon as possible!', user
+        return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
     
 
 def present_article(article):
