@@ -10,6 +10,8 @@ const firebaseConfig = {
   measurementId: "G-55CFDNV8T4"
 };
 
+import "firebase/auth";
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
