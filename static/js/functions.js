@@ -15,55 +15,83 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var email;
 
-function onSignIn(googleUser) {
-  console.log('This is googleUser');
-  console.log(googleUser);
+function onSignIn(){
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+         // This gives you a Google Access Token. You can use it to access the Google API.
+          var token = result.credential.accessToken;
+         // The signed-in user info.
+         var user = result.user;
+         // The email of the user's account used.
+         var email = result.email;
+         var emailform = document.getElementById("email");
 
-  var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).then(function(result) {
-    var token = result.credential.accessToken;
-    var user = result.user;
-    console.log(user.displayName)
-  })
+         var floatingsignon = document.getElementById("floating-sign-in");
+         floatingsignon.style.display = 'none';
+         var inputdiv = document.getElementById("input-div");
+          inputdiv.className = 'unblur';
+          var inputform = document.getElementById("input-form");
+          inputform.disabled = false;
 
-  var profile = googleUser.getBasicProfile();
-  email = profile.getEmail();
-  var emailform = document.getElementById("email");
-  emailform.value = email;
-
-  var floatingsignon = document.getElementById("floating-sign-in");
-  floatingsignon.style.display = 'none';
-  var inputdiv = document.getElementById("input-div");
-  inputdiv.className = 'unblur';
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = false;
-
-  var signout = document.getElementById("sign-out");
-  signout.style.display = "block";
-  var signin = document.getElementById("sign-in");
-  signin.style.display = "none";
-
-  const emailRecord = ""
-  const emailDoc = db.collection("users").where("email", "==", email);
-  console.log('This is emailDoc');
-  console.log(emailDoc);
-  console.log(emailDoc.get())
-  emailDoc.get().then(function(doc) {
-    if (doc.empty) {
-      var d = new Date(Date.now());
-      db.collection("users").add({
-          email: email,
-          time: d
-      }) 
-    }
-      
-  }).catch(function(error) {
-      console.log("Error getting document:", error);
-  });
-
-  var signout = document.getElementById("sign-out");
-  var signin = document.getElementById("sign-in");
+          var signout = document.getElementById("sign-out");
+          signout.style.display = "block";
+          var signin = document.getElementById("sign-in");
+          signin.style.display = "none";
+          emailform.value = email;
+   }).catch(function(error) {
+       // Handle Errors here.
+         var errorCode = error.code;
+         var errorMessage = error.message;
+         // The email of the user's account used.
+         var email = error.email;
+         // The firebase.auth.AuthCredential type that was used.
+         var credential = error.credential;
+      // ...
+   });
 }
+
+// function onSignIn(googleUser) {
+//   console.log('This is googleUser');
+//   console.log(googleUser);
+
+//   var profile = googleUser.getBasicProfile();
+//   email = profile.getEmail();
+//   var emailform = document.getElementById("email");
+//   emailform.value = email;
+
+//   var floatingsignon = document.getElementById("floating-sign-in");
+//   floatingsignon.style.display = 'none';
+//   var inputdiv = document.getElementById("input-div");
+//   inputdiv.className = 'unblur';
+//   var inputform = document.getElementById("input-form");
+//   inputform.disabled = false;
+
+//   var signout = document.getElementById("sign-out");
+//   signout.style.display = "block";
+//   var signin = document.getElementById("sign-in");
+//   signin.style.display = "none";
+
+//   const emailRecord = ""
+//   const emailDoc = db.collection("users").where("email", "==", email);
+//   console.log('This is emailDoc');
+//   console.log(emailDoc);
+//   console.log(emailDoc.get())
+//   emailDoc.get().then(function(doc) {
+//     if (doc.empty) {
+//       var d = new Date(Date.now());
+//       db.collection("users").add({
+//           email: email,
+//           time: d
+//       }) 
+//     }
+      
+//   }).catch(function(error) {
+//       console.log("Error getting document:", error);
+//   });
+
+//   var signout = document.getElementById("sign-out");
+//   var signin = document.getElementById("sign-in");
+// }
 
 function signOut() {
   console.log('sign out called')
