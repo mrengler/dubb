@@ -71,12 +71,10 @@ function onSignIn(googleUser) {
       // Build Firebase credential with the Google ID token.
       var credential = firebase.auth.GoogleAuthProvider.credential(
           googleUser.getAuthResponse().id_token);
-
-      console.log('after credential');
   
       // Sign in with credential from the Google user.
       // [START auth_google_signin_credential]
-      firebase.auth().signInWithCredential(null, credential).catch((error) => {
+      firebase.auth().signInWithCredential(credential).catch((error) => {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
