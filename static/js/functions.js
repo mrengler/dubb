@@ -60,24 +60,6 @@ function isUserEqual(googleUser, firebaseUser) {
   return false;
 }
 
-function handleCredentialResponse(response) {
-  // Build Firebase credential with the Google ID token.
-  const idToken = response.credential;
-  const credential = GoogleAuthProvider.credential(idToken);
-
-  // Sign in with credential from the Google user.
-  signInWithCredential(auth, credential).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.email;
-    // The credential that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
-}
-
 function onSignIn(googleUser) {
 
   console.log('Google Auth Response', googleUser);
@@ -89,6 +71,8 @@ function onSignIn(googleUser) {
       // Build Firebase credential with the Google ID token.
       var credential = firebase.auth.GoogleAuthProvider.credential(
           googleUser.getAuthResponse().id_token);
+
+      console.log('after credential');
   
       // Sign in with credential from the Google user.
       // [START auth_google_signin_credential]
@@ -107,9 +91,6 @@ function onSignIn(googleUser) {
       console.log('User already signed-in Firebase.');
     }
   });
-
-  var response = googleUser.getAuthResponse();
-  handleCredentialResponse(response);
 
   console.log('This is googleUser');
   console.log(googleUser);
