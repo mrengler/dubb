@@ -1210,6 +1210,7 @@ def run_combined(
 
         if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
             print('article short enough for final draft')
+            print(article_prompt)
             article_response = openai.Completion.create(
                 model='text-davinci-002',
                 prompt=article_prompt,
