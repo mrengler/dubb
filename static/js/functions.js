@@ -19,6 +19,13 @@ function onSignIn(googleUser) {
   console.log('This is googleUser');
   console.log(googleUser);
 
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).then(function(result) {
+    var token = result.credential.accessToken;
+    var user = result.user;
+    console.log(user.displayName)
+  }
+
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
   var emailform = document.getElementById("email");
