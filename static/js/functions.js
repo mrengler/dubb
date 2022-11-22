@@ -24,7 +24,7 @@ function onSignIn(googleUser) {
     var token = result.credential.accessToken;
     var user = result.user;
     console.log(user.displayName)
-  }
+  })
 
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
