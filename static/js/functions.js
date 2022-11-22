@@ -50,7 +50,7 @@ function onSignIn(googleUser) {
   const response = googleUser.getAuthResponse()
   // Build Firebase credential with the Google ID token.
   const idToken = response.credential;
-  const credential = GoogleAuthProvider.credential(idToken);
+  const credential = provider.credential(idToken);
 
   // Sign in with credential from the Google user.
   signInWithCredential(auth, credential).catch((error) => {
@@ -60,7 +60,7 @@ function onSignIn(googleUser) {
     // The email of the user's account used.
     const email = error.email;
     // The credential that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
+    const credential = provider.credentialFromError(error);
     // ...
   });
 
