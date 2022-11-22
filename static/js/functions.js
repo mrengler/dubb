@@ -90,13 +90,13 @@ function onSignIn(googleUser) {
   upgrade.style.display = "block";
 
   const emailRecord = ""
-  const emailDoc = db.collection("users").doc(email);
+  const emailDoc = db.collection("users_info").doc(email);
   emailDoc.get().then(function(doc) {
     if (doc.empty) {
       console.log('doc not empty');
       console.log(email);
       var d = new Date(Date.now());
-      db.collection("users").doc(email).set({
+      db.collection("users_info").doc(email).set({
           time: d,
           status: 'trial',
           free_credits: 1,
