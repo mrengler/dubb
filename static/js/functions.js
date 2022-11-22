@@ -15,8 +15,6 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var email;
 
-var provider = new firebase.auth.GoogleAuthProvider();
-
 // // Initialize Firebase Authentication and get a reference to the service
 // const auth = firebase.auth();
 // var provider = new firebase.auth.GoogleAuthProvider();
@@ -47,21 +45,32 @@ var provider = new firebase.auth.GoogleAuthProvider();
 
 function onSignIn(googleUser) {
 
-  const response = googleUser.getAuthResponse()
-  // Build Firebase credential with the Google ID token.
-  const idToken = response.credential;
-  const credential = provider.credential(idToken);
-
-  // Sign in with credential from the Google user.
-  signInWithCredential(auth, credential).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.email;
-    // The credential that was used.
-    const credential = provider.credentialFromError(error);
-    // ...
+  console.log('Google Auth Response', googleUser);
+  // We need to register an Observer on Firebase Auth to make sure auth is initialized.
+  var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
+    unsubscribe();
+    // Check if we are already signed-in Firebase with the correct user.
+    if (!isUserEqual(googleUser, firebaseUser)) {
+      // Build Firebase credential with the Google ID token.
+      var credential = firebase.auth.GoogleAuthProvider.credential(
+          googleUser.getAuthResponse().id_token);
+  
+      // Sign in with credential from the Google user.
+      // [START auth_google_signin_credential]
+      firebase.auth().signInWithCredential(credential).catch((error) => {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      });
+      // [END auth_google_signin_credential]
+    } else {
+      console.log('User already signed-in Firebase.');
+    }
   });
 
   console.log('This is googleUser');
