@@ -35,6 +35,7 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users").where("email", "==", email);
+  console.log('This is emailDoc');
   console.log(emailDoc);
   emailDoc.get().then(function(doc) {
     if (doc.empty) {
