@@ -15,35 +15,53 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var email;
 
-// Initialize Firebase Authentication and get a reference to the service
-const auth = firebase.auth();
-var provider = new firebase.auth.GoogleAuthProvider();
+// // Initialize Firebase Authentication and get a reference to the service
+// const auth = firebase.auth();
+// var provider = new firebase.auth.GoogleAuthProvider();
 
-function signIn(){
-  firebase.auth()
-    .signInWithPopup(provider)
-    .then((result) => {
-      /** @type {firebase.auth.OAuthCredential} */
-      var credential = result.credential;
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = credential.accessToken;
-      // The signed-in user info.
-      var user = result.user;
-      // The email of the user's account used.
-      var email = result.email;
-    }).catch((error) => {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-    });
-}
+// function signIn(){
+//   firebase.auth()
+//     .signInWithPopup(provider)
+//     .then((result) => {
+//       /** @type {firebase.auth.OAuthCredential} */
+//       var credential = result.credential;
+//       // This gives you a Google Access Token. You can use it to access the Google API.
+//       var token = credential.accessToken;
+//       // The signed-in user info.
+//       var user = result.user;
+//       // The email of the user's account used.
+//       var email = result.email;
+//     }).catch((error) => {
+//       // Handle Errors here.
+//       var errorCode = error.code;
+//       var errorMessage = error.message;
+//       // The email of the user's account used.
+//       var email = error.email;
+//       // The firebase.auth.AuthCredential type that was used.
+//       var credential = error.credential;
+//       // ...
+//     });
+// }
 
 function onSignIn(googleUser) {
+
+  const response = googleUser.getAuthResponse()
+  // Build Firebase credential with the Google ID token.
+  const idToken = response.credential;
+  const credential = GoogleAuthProvider.credential(idToken);
+
+  // Sign in with credential from the Google user.
+  signInWithCredential(auth, credential).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.email;
+    // The credential that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+
   console.log('This is googleUser');
   console.log(googleUser);
 
