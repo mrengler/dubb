@@ -105,9 +105,7 @@ function onSignIn(googleUser) {
     }  
     else {
       console.log('doc is not empty');
-      emailDoc.on('value', snapshot => {
-        console.log(snapshot.val());
-      });
+      console.log(doc.data());
     }
   }).catch(function(error) {
       console.log("Error getting document:", error);
