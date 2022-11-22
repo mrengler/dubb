@@ -105,6 +105,7 @@ function onSignIn(googleUser) {
     }  
     else {
       console.log('doc is not empty');
+      console.log(doc.id);
       console.log(doc.data());
     }
   }).catch(function(error) {
