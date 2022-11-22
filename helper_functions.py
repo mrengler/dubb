@@ -954,7 +954,10 @@ def convert(
                         tq_duration = (tq_end - tq_start) / 1000
 
                         ## generate audio segment of quote
-                        top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                        try:
+                            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                        except:
+                            top_quote_audio = AudioSegment.from_file(filename, start_second=tq_start / 1000, duration=tq_duration)
                         top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
                         print(top_quote_audio_filename)
                         top_quote_audio.export(top_quote_audio_filename, format="mp3")

@@ -96,9 +96,6 @@ function onSignIn(googleUser) {
     }
   });
 
-  console.log('This is googleUser');
-  console.log(googleUser);
-
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
   var emailform = document.getElementById("email");
@@ -118,9 +115,6 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users").where("email", "==", email);
-  console.log('This is emailDoc');
-  console.log(emailDoc);
-  console.log(emailDoc.get())
   emailDoc.get().then(function(doc) {
     if (doc.empty) {
       var d = new Date(Date.now());
