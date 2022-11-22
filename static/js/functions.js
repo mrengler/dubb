@@ -105,7 +105,7 @@ function onSignIn(googleUser) {
     }  
     else {
       console.log('doc is not empty');
-      console.log(doc);
+      console.log(doc.val();
     }
   }).catch(function(error) {
       console.log("Error getting document:", error);
