@@ -15,6 +15,8 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var email;
 
+var provider = new firebase.auth.GoogleAuthProvider();
+
 // // Initialize Firebase Authentication and get a reference to the service
 // const auth = firebase.auth();
 // var provider = new firebase.auth.GoogleAuthProvider();
