@@ -113,6 +113,9 @@ function onSignIn(googleUser) {
   var signin = document.getElementById("sign-in");
   signin.style.display = "none";
 
+  var upgrade = document.getElementById("checkout");
+  upgrade.style.display = "block";
+
   const emailRecord = ""
   const emailDoc = db.collection("users").where("email", "==", email);
   emailDoc.get().then(function(doc) {
@@ -150,6 +153,8 @@ function signOut() {
   signout.style.display = "none";
   var signin = document.getElementById("sign-in");
   signin.style.display = "block";
+  var upgrade = document.getElementById("checkout");
+  upgrade.style.display = "none";
   var emailform = document.getElementById("email");
   emailform.value = ""
 }

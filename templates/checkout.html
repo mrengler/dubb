@@ -1,0 +1,38 @@
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6M98842HLL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-6M98842HLL');
+  </script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="/static/js/functions.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <!-- <script src="{{url_for('static', filename='js/functions.js')}}"></script> -->
+  <meta name="google-signin-client_id" content="868937796982-6c0s1omvnnj9vuq6uqvhjq83jgvhfigg.apps.googleusercontent.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/style.css">
+  <link rel="stylesheet" href="/static/stylesheets/dubb.css">
+  <title>Dubb</title>
+</head>
+<body>
+  <div class="topnav">
+    <a href="#" id='logo'>Dubb</a>
+    <div id="topnav-right">
+      <a href="#" id="sign-out" onclick="signOut();" style="display: none;";>Sign out</a>
+      <div class="g-signin2" id="sign-in" data-onsuccess="onSignIn" style="display: block;"></div>
+    </div>
+  </div>
+  <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+    <stripe-pricing-table pricing-table-id="prctbl_1M6gS9KrwOUYZ8FDRs7iXoYc"
+    publishable-key="pk_test_51M6bsEKrwOUYZ8FDjqMjl2VP5GPRTUyAQa1sCaCsKUm3KHn1OYJZkwBM7Z59f6tSZR1VghzDFgb5hDfrkKvDarCA0058YsNhwl">
+  </stripe-pricing-table>
+</body>  
