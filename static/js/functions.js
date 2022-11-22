@@ -76,7 +76,7 @@ function onSignIn(googleUser) {
   
       // Sign in with credential from the Google user.
       // [START auth_google_signin_credential]
-      firebase.auth().signInWithCredential(credential).catch((error) => {
+      firebase.auth().signInWithCredential(null, credential).catch((error) => {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
