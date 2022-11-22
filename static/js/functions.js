@@ -105,7 +105,7 @@ function onSignIn(googleUser) {
     }  
     else {
       console.log('doc is not empty');
-      doc.on('value', snapshot => {
+      emailDoc.on('value', snapshot => {
         console.log(snapshot.val());
       });
     }
