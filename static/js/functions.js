@@ -97,6 +97,7 @@ function onSignIn(googleUser) {
       } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
+          var d = new Date(Date.now());
           db.collection("users_info").doc(email).set({
               time: d,
               status: 'trial',
