@@ -314,7 +314,7 @@ def checkout():
   return render_template('checkout.html')
 
 @main.route('/check_current_email', methods=['GET','POST'])
-def check_current_email):
+def check_current_email()):
     global current_email
     current_email = request.args.get('current_email')
     return current_email
