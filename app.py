@@ -317,6 +317,8 @@ def checkout():
 def check_current_email():
     global current_email
     current_email = request.args.get('current_email')
+    print('this is current_email from check_current_email')
+    print(current_email)
     return current_email
 
 @app.route('/webhook', methods=['POST'])
