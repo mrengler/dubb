@@ -313,6 +313,12 @@ def checkout():
 
   return render_template('checkout.html')
 
+@main.route('/check_current_email', methods=['GET','POST'])
+def check_current_email):
+    global current_email
+    current_email = request.args.get('current_email')
+    return current_email
+
 @app.route('/webhook', methods=['POST'])
 def webhook_received():
     request_data = json.loads(request.data)
@@ -336,8 +342,8 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        print('this is current user')
-        print(auth.current_user['localId'])
+        print('this is current email')
+        print(current_email)
 
         print('this is webhook data')
         print(data)

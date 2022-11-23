@@ -186,6 +186,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
+function passEmail(email) {
+  $.getJSON('/check_current_email', {
+  post: email
+  }, function(data) {
+      var response = data.result;
+      console.log(response);
+  });
+}
+
 window.onload=function(){
 
   var coll = document.getElementsByClassName("collapsible");
