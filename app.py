@@ -38,6 +38,7 @@ YOUR_DOMAIN = 'https://127.0.0.1:5000'
 
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
+webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
 
 q = Queue(connection=conn, default_timeout=3600)
 
@@ -314,7 +315,6 @@ def checkout():
 
 @app.route('/webhook', methods=['POST'])
 def webhook_received():
-    webhook_secret = {{'STRIPE_WEBHOOK_SECRET'}}
     request_data = json.loads(request.data)
 
     if webhook_secret:
