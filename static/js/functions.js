@@ -91,17 +91,20 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users_info").doc(email);
-  // emailDoc.get()
-  //   .then((docSnapshot) => {
-  //     if (docSnapshot.exists) {
-  //       usersRef.onSnapshot((doc) => {
-  //       console.log()
-  //       });
-  //     }
-  // });
-  emailDoc.ref.get().then(function(doc) {
+  docRef.get().then((doc) => {
+      if (doc.exists) {
+          console.log("Document data:", doc.data());
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+      }
+  }).catch((error) => {
+      console.log("Error getting document:", error);
+  });
+
+  emailDoc.get().then(function(doc) {
     if (doc.empty) {
-      console.log('doc not empty');
+      console.log('doc empty');
       console.log(email);
       var d = new Date(Date.now());
       db.collection("users_info").doc(email).set({
