@@ -91,7 +91,7 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users_info").doc(email);
-  emailDoc.once("value",snapshot => {
+  db.child("users").orderByChild("email").equalTo(email).once("value",snapshot => {
       if (snapshot.exists()){
         const userData = snapshot.val();
         console.log("exists!", userData);
