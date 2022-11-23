@@ -91,7 +91,7 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users_info").doc(email);
-  docRef.get().then((doc) => {
+  emailDoc.get().then((doc) => {
       if (doc.exists) {
           console.log("Document data:", doc.data());
       } else {
