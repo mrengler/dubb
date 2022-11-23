@@ -97,31 +97,37 @@ function onSignIn(googleUser) {
       } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
+          db.collection("users_info").doc(email).set({
+              time: d,
+              status: 'trial',
+              free_credits: 1,
+              submissions: 0
+          })
       }
   }).catch((error) => {
       console.log("Error getting document:", error);
   });
 
-  emailDoc.get().then(function(doc) {
-    if (doc.empty) {
-      console.log('doc empty');
-      console.log(email);
-      var d = new Date(Date.now());
-      db.collection("users_info").doc(email).set({
-          time: d,
-          status: 'trial',
-          free_credits: 1,
-          submissions: 0
-      })
-    }  
-    else {
-      console.log('doc is not empty');
-      console.log(doc.id);
-      console.log(doc.data());
-    }
-  }).catch(function(error) {
-      console.log("Error getting document:", error);
-  });
+  // emailDoc.get().then(function(doc) {
+  //   if (doc.empty) {
+  //     console.log('doc empty');
+  //     console.log(email);
+  //     var d = new Date(Date.now());
+  //     db.collection("users_info").doc(email).set({
+  //         time: d,
+  //         status: 'trial',
+  //         free_credits: 1,
+  //         submissions: 0
+  //     })
+  //   }  
+  //   else {
+  //     console.log('doc is not empty');
+  //     console.log(doc.id);
+  //     console.log(doc.data());
+  //   }
+  // }).catch(function(error) {
+  //     console.log("Error getting document:", error);
+  // });
 
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
