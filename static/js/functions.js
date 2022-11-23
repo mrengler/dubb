@@ -91,13 +91,15 @@ function onSignIn(googleUser) {
 
   const emailRecord = ""
   const emailDoc = db.collection("users_info").doc(email);
-  db.child("users").orderByChild("email").equalTo(email).once("value",snapshot => {
-      if (snapshot.exists()){
-        const userData = snapshot.val();
-        console.log("exists!", userData);
-      }
-  });
-  emailDoc.get().then(function(doc) {
+  // emailDoc.get()
+  //   .then((docSnapshot) => {
+  //     if (docSnapshot.exists) {
+  //       usersRef.onSnapshot((doc) => {
+  //       console.log()
+  //       });
+  //     }
+  // });
+  emailDoc.ref.get().then(function(doc) {
     if (doc.empty) {
       console.log('doc not empty');
       console.log(email);
