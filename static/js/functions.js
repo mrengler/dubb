@@ -68,18 +68,60 @@ function onSignIn(googleUser) {
       console.log('User already signed-in Firebase.');
     }
   });
-
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
   var emailform = document.getElementById("email");
   emailform.value = email;
 
+  var userstatus;
+  var userfreecredits;
+
+  const emailDoc = db.collection("users_info").doc(email);
+  emailDoc.get().then((doc) => {
+      if (doc.exists) {
+          console.log("Document data:", doc.data());
+          data = doc.data();
+          userstatus = data.status;
+          userfreecredits = data.free_credits;
+      } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+          var d = new Date(Date.now());
+          userstatus = 'trial';
+          userfreecredits = 1;
+          var usersubmissions = 0
+          db.collection("users_info").doc(email).set({
+              time: d,
+              status: userstatus,
+              free_credits: userfreecredits,
+              submissions: usersubmissions
+          })
+      }
+  }).catch((error) => {
+      console.log("Error getting document:", error);
+  });
+
+  // if (trial and credits > 0) or (premium)
   var floatingsignon = document.getElementById("floating-sign-in");
   floatingsignon.style.display = 'none';
+  var floatingupgrade = document.getElementById("floating-upgrade");
+  floatingupgrade.style.display = 'none';
   var inputdiv = document.getElementById("input-div");
   inputdiv.className = 'unblur';
   var inputform = document.getElementById("input-form");
   inputform.disabled = false;
+
+  // else
+  var floatingsignon = document.getElementById("floating-sign-in");
+  floatingsignon.style.display = 'none';
+  var floatingupgrade = document.getElementById("floating-upgrade");
+  floatingupgrade.style.display = 'block';
+  var inputdiv = document.getElementById("input-div");
+  inputdiv.className = 'blur';
+  var inputform = document.getElementById("input-form");
+  inputform.disabled = true;
+
+  //applies to all
 
   var signout = document.getElementById("sign-out");
   signout.style.display = "block";
@@ -88,29 +130,6 @@ function onSignIn(googleUser) {
 
   var upgrade = document.getElementById("checkout");
   upgrade.style.display = "block";
-
-  const emailRecord = ""
-  const emailDoc = db.collection("users_info").doc(email);
-  emailDoc.get().then((doc) => {
-      if (doc.exists) {
-          console.log("Document data:", doc.data());
-      } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-          var d = new Date(Date.now());
-          db.collection("users_info").doc(email).set({
-              time: d,
-              status: 'trial',
-              free_credits: 1,
-              submissions: 0
-          })
-      }
-  }).catch((error) => {
-      console.log("Error getting document:", error);
-  });
-
-  var signout = document.getElementById("sign-out");
-  var signin = document.getElementById("sign-in");
 
   $.ajax({
       type: "POST",
