@@ -120,7 +120,7 @@ function onSignIn(googleUser) {
           console.log("No such document!");
           var d = new Date(Date.now());
           userstatus = 'trial';
-          userfreecredits = 1;
+          userfreecredits = 5;
           var usersubmissions = 0
           db.collection("users_info").doc(email).set({
               time: d,
@@ -192,7 +192,7 @@ function signOut() {
 
   var floatingsignon = document.getElementById("floating-sign-in");
   floatingsignon.style.display = 'block';
-  var floatingupgrade = document.getElementById("floating-sign-in");
+  var floatingupgrade = document.getElementById("floating-upgrade");
   floatingupgrade.style.display = 'none';
   var inputdiv = document.getElementById("input-div");
   inputdiv.className = 'blur';
