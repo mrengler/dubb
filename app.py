@@ -324,9 +324,9 @@ def checkout():
 @app.route('/_get_post_json/', methods=['POST'])
 def get_post_json():    
     data = request.get_json()
-    print('this is get_post_json')
-    print(data)
-    print(data.user)
+    # print('this is get_post_json')
+    # print(data)
+    # print(data.user)
 
     return jsonify(status="success", data=data)
 
