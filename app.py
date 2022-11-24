@@ -319,7 +319,8 @@ def checkout():
 def log_email():    
     data = request.get_json()
     user_email = data['user']
-    # print(data.user)
+    print('logged user_email')
+    print(user_email)
 
     return jsonify(status="success", data=data)
 
