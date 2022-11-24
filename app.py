@@ -325,7 +325,7 @@ def checkout():
 def get_post_json():    
     data = request.get_json()
     print('this is get_post_json')
-    print(data)
+    print(data['user'])
     # print(data.user)
 
     return jsonify(status="success", data=data)
