@@ -101,25 +101,30 @@ function onSignIn(googleUser) {
       console.log("Error getting document:", error);
   });
 
-  // if (trial and credits > 0) or (premium)
-  var floatingsignon = document.getElementById("floating-sign-in");
-  floatingsignon.style.display = 'none';
-  var floatingupgrade = document.getElementById("floating-upgrade");
-  floatingupgrade.style.display = 'none';
-  var inputdiv = document.getElementById("input-div");
-  inputdiv.className = 'unblur';
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = false;
+  console.log(userstatus);
+  console.log(userfreecredits);
 
-  // else
-  var floatingsignon = document.getElementById("floating-sign-in");
-  floatingsignon.style.display = 'none';
-  var floatingupgrade = document.getElementById("floating-upgrade");
-  floatingupgrade.style.display = 'block';
-  var inputdiv = document.getElementById("input-div");
-  inputdiv.className = 'blur';
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = true;
+  // if (trial and credits > 0) or (premium)
+  if ((userstatus == 'trial') && (userfreecredits > 0)) {
+    var floatingsignon = document.getElementById("floating-sign-in");
+    floatingsignon.style.display = 'none';
+    var floatingupgrade = document.getElementById("floating-upgrade");
+    floatingupgrade.style.display = 'none';
+    var inputdiv = document.getElementById("input-div");
+    inputdiv.className = 'unblur';
+    var inputform = document.getElementById("input-form");
+    inputform.disabled = false;
+  } else {
+    // else
+    var floatingsignon = document.getElementById("floating-sign-in");
+    floatingsignon.style.display = 'none';
+    var floatingupgrade = document.getElementById("floating-upgrade");
+    floatingupgrade.style.display = 'block';
+    var inputdiv = document.getElementById("input-div");
+    inputdiv.className = 'blur';
+    var inputform = document.getElementById("input-form");
+    inputform.disabled = true;
+  }
 
   //applies to all
 
