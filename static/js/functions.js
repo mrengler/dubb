@@ -73,6 +73,14 @@ function onSignIn(googleUser) {
   var emailform = document.getElementById("email");
   emailform.value = email;
 
+  var floatingsignon = document.getElementById("floating-sign-in");
+  var floatingupgrade = document.getElementById("floating-upgrade");
+  var inputdiv = document.getElementById("input-div");
+  var inputform = document.getElementById("input-form");
+  var signout = document.getElementById("sign-out");
+  var signin = document.getElementById("sign-in");
+  var upgrade = document.getElementById("checkout");
+
   var userstatus;
   var userfreecredits;
 
@@ -83,16 +91,28 @@ function onSignIn(googleUser) {
           data = doc.data();
           userstatus = data.status;
           userfreecredits = data.free_credits;
-          console.log(userstatus);
-          console.log(userfreecredits);
+
+          // if (trial and credits > 0) or (premium)
+          if ((userstatus == 'trial') && (userfreecredits > 0)) {
+            floatingsignon.style.display = 'none';
+            floatingupgrade.style.display = 'none';
+            inputdiv.className = 'unblur';
+            inputform.disabled = false;
+          } else {
+            // else
+            floatingsignon.style.display = 'none';
+            floatingupgrade.style.display = 'block';
+            inputdiv.className = 'blur';
+            inputform.disabled = true;
+          }
+
+
       } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
           var d = new Date(Date.now());
           userstatus = 'trial';
           userfreecredits = 1;
-          console.log(userstatus);
-          console.log(userfreecredits);
           var usersubmissions = 0
           db.collection("users_info").doc(email).set({
               time: d,
@@ -100,44 +120,44 @@ function onSignIn(googleUser) {
               free_credits: userfreecredits,
               submissions: usersubmissions
           })
+          floatingsignon.style.display = 'none';
+          floatingupgrade.style.display = 'none';
+          inputdiv.className = 'unblur';
+          inputform.disabled = false;
       }
   }).catch((error) => {
       console.log("Error getting document:", error);
   });
 
-  console.log(userstatus);
-  console.log(userfreecredits);
+  // console.log(userstatus);
+  // console.log(userfreecredits);
 
-  // if (trial and credits > 0) or (premium)
-  if ((userstatus == 'trial') && (userfreecredits > 0)) {
-    var floatingsignon = document.getElementById("floating-sign-in");
-    floatingsignon.style.display = 'none';
-    var floatingupgrade = document.getElementById("floating-upgrade");
-    floatingupgrade.style.display = 'none';
-    var inputdiv = document.getElementById("input-div");
-    inputdiv.className = 'unblur';
-    var inputform = document.getElementById("input-form");
-    inputform.disabled = false;
-  } else {
-    // else
-    var floatingsignon = document.getElementById("floating-sign-in");
-    floatingsignon.style.display = 'none';
-    var floatingupgrade = document.getElementById("floating-upgrade");
-    floatingupgrade.style.display = 'block';
-    var inputdiv = document.getElementById("input-div");
-    inputdiv.className = 'blur';
-    var inputform = document.getElementById("input-form");
-    inputform.disabled = true;
-  }
+  // // if (trial and credits > 0) or (premium)
+  // if ((userstatus == 'trial') && (userfreecredits > 0)) {
+  //   var floatingsignon = document.getElementById("floating-sign-in");
+  //   floatingsignon.style.display = 'none';
+  //   var floatingupgrade = document.getElementById("floating-upgrade");
+  //   floatingupgrade.style.display = 'none';
+  //   var inputdiv = document.getElementById("input-div");
+  //   inputdiv.className = 'unblur';
+  //   var inputform = document.getElementById("input-form");
+  //   inputform.disabled = false;
+  // } else {
+  //   // else
+  //   var floatingsignon = document.getElementById("floating-sign-in");
+  //   floatingsignon.style.display = 'none';
+  //   var floatingupgrade = document.getElementById("floating-upgrade");
+  //   floatingupgrade.style.display = 'block';
+  //   var inputdiv = document.getElementById("input-div");
+  //   inputdiv.className = 'blur';
+  //   var inputform = document.getElementById("input-form");
+  //   inputform.disabled = true;
+  // }
 
   //applies to all
 
-  var signout = document.getElementById("sign-out");
   signout.style.display = "block";
-  var signin = document.getElementById("sign-in");
   signin.style.display = "none";
-
-  var upgrade = document.getElementById("checkout");
   upgrade.style.display = "block";
 
   $.ajax({
