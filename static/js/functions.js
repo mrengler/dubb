@@ -81,12 +81,16 @@ function onSignIn(googleUser) {
       if (doc.exists) {
           console.log("Document data:", doc.data());
           data = doc.data();
+          global userstatus;
+          global userfreecredits;
           userstatus = data.status;
           userfreecredits = data.free_credits;
       } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
           var d = new Date(Date.now());
+          global userstatus;
+          global userfreecredits;
           userstatus = 'trial';
           userfreecredits = 1;
           var usersubmissions = 0
