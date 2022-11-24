@@ -353,6 +353,8 @@ def webhook_received():
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
+        print('this is user_email')
+        print(user_email)
         user_ref = db.collection('users_info').document(user_email)
         user_ref.update({'status': 'premium'})
 
@@ -366,7 +368,7 @@ def webhook_received():
     elif event_type == 'customer.subscription.deleted':
         user_ref = db.collection('users_info').document(user_email)
         user_ref.update({'status': 'trial'})
-         
+
     else:
       print('Unhandled event type {}'.format(event_type))
 
