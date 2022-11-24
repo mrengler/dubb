@@ -93,7 +93,7 @@ function onSignIn(googleUser) {
           userfreecredits = data.free_credits;
 
           // if (trial and credits > 0) or (premium)
-          if ((userstatus == 'trial') && (userfreecredits > 0)) {
+          if (((userstatus == 'trial') && (userfreecredits > 0))) || (userstatus == 'premium') {
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'none';
             inputdiv.className = 'unblur';
