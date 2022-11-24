@@ -313,13 +313,22 @@ def checkout():
 
   return render_template('checkout.html')
 
-@app.route('/check_current_email', methods=['GET','POST'])
-def check_current_email():
-    global current_email
-    current_email = request.args.get('current_email')
-    print('this is current_email from check_current_email')
-    print(current_email)
-    return current_email
+# @app.route('/check_current_email', methods=['GET','POST'])
+# def check_current_email():
+#     global current_email
+#     current_email = request.args.get('current_email')
+#     print('this is current_email from check_current_email')
+#     print(current_email)
+#     return current_email
+
+@app.route('/_get_post_json/', methods=['POST'])
+def get_post_json():    
+    data = request.get_json()
+    print('this is get_post_json')
+    print(data)
+    print(data.user)
+
+    return jsonify(status="success", data=data)
 
 @app.route('/webhook', methods=['POST'])
 def webhook_received():

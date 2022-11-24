@@ -112,7 +112,20 @@ function onSignIn(googleUser) {
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
 
-  passEmail(email);
+  // passEmail(email);
+  $.ajax({
+      type: "POST",
+      url: "{{ url_for("get_post_json") }}",
+      contentType: "application/json",
+      data: JSON.stringify({user: email}),
+      dataType: "json",
+      success: function(response) {
+          console.log(response);
+      },
+      error: function(err) {
+          console.log(err);
+      }
+  });
 }
 
 function signOut() {
