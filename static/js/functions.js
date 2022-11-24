@@ -115,7 +115,7 @@ function onSignIn(googleUser) {
   // passEmail(email);
   $.ajax({
       type: "POST",
-      url: "'/_get_post_json/",
+      url: "/_get_post_json/",
       contentType: "application/json",
       data: JSON.stringify({user: email}),
       dataType: "json",
