@@ -318,6 +318,7 @@ def checkout():
 
 @app.route('/log_email', methods=['POST'])
 def log_email():    
+    global user_email
     data = request.get_json()
     user_email = data['user']
     print('logged user_email')
