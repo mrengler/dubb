@@ -109,29 +109,10 @@ function onSignIn(googleUser) {
       console.log("Error getting document:", error);
   });
 
-  // emailDoc.get().then(function(doc) {
-  //   if (doc.empty) {
-  //     console.log('doc empty');
-  //     console.log(email);
-  //     var d = new Date(Date.now());
-  //     db.collection("users_info").doc(email).set({
-  //         time: d,
-  //         status: 'trial',
-  //         free_credits: 1,
-  //         submissions: 0
-  //     })
-  //   }  
-  //   else {
-  //     console.log('doc is not empty');
-  //     console.log(doc.id);
-  //     console.log(doc.data());
-  //   }
-  // }).catch(function(error) {
-  //     console.log("Error getting document:", error);
-  // });
-
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
+
+  passEmail(email);
 }
 
 function signOut() {
