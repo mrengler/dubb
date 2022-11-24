@@ -112,10 +112,9 @@ function onSignIn(googleUser) {
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
 
-  // passEmail(email);
   $.ajax({
       type: "POST",
-      url: "/_get_post_json/",
+      url: "/log_email",
       contentType: "application/json",
       data: JSON.stringify({user: email}),
       dataType: "json",
@@ -150,6 +149,20 @@ function signOut() {
   upgrade.style.display = "none";
   var emailform = document.getElementById("email");
   emailform.value = ""
+
+  $.ajax({
+      type: "POST",
+      url: "/log_email",
+      contentType: "application/json",
+      data: JSON.stringify({user: ''}),
+      dataType: "json",
+      success: function(response) {
+          console.log(response);
+      },
+      error: function(err) {
+          console.log(err);
+      }
+  });
 }
 
 function testingSignIn(){
@@ -179,15 +192,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('session-id').setAttribute('value', session_id);
   }
 });
-
-function passEmail(email) {
-  $.getJSON('/check_current_email', {
-  post: email
-  }, function(data) {
-      var response = data.result;
-      console.log(response);
-  });
-}
 
 window.onload=function(){
 

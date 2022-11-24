@@ -69,6 +69,8 @@ os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
+user_email = ''
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -313,19 +315,10 @@ def checkout():
 
   return render_template('checkout.html')
 
-# @app.route('/check_current_email', methods=['GET','POST'])
-# def check_current_email():
-#     global current_email
-#     current_email = request.args.get('current_email')
-#     print('this is current_email from check_current_email')
-#     print(current_email)
-#     return current_email
-
-@app.route('/_get_post_json/', methods=['POST'])
-def get_post_json():    
+@app.route('/log_email', methods=['POST'])
+def log_email():    
     data = request.get_json()
-    print('this is get_post_json')
-    print(data['user'])
+    user_email = data['user']
     # print(data.user)
 
     return jsonify(status="success", data=data)
@@ -353,21 +346,27 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        print('this is current email')
-        print(current_email)
+        user_ref = db.collection('users_info').document(user_email)
+        user_ref.update({'status': 'premium'})
 
-        print('this is webhook data')
-        print(data)
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
-      print(data)
+        user_ref = db.collection('users_info').document(user_email)
+        user_ref.update({'status': 'premium'})
+
     elif event_type == 'invoice.payment_failed':
     # The payment failed or the customer does not have a valid payment method.
     # The subscription becomes past_due. Notify your customer and send them to the
     # customer portal to update their payment information.
-      print(data)
+        user_ref = db.collection('users_info').document(user_email)
+        user_ref.update({'status': 'past_due'})
+
+    elif event_type == 'customer.subscription.deleted':
+        user_ref = db.collection('users_info').document(user_email)
+        user_ref.update({'status': 'trial'})
+         
     else:
       print('Unhandled event type {}'.format(event_type))
 
