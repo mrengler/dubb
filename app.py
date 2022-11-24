@@ -69,6 +69,7 @@ os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
+print('set user email')
 user_email = ''
 
 

@@ -216,7 +216,7 @@ window.onload=function(){
     urlinput.required=false;
   })
 
-    $('#url').bind('change', function() { 
+  $('#url').bind('change', function() { 
     var fileinput = document.getElementById("file-upload");
     fileinput.required=false;
   })
