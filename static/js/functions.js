@@ -201,15 +201,18 @@ function signOut() {
   auth2.signOut().then(function () {
     console.log('User signed out.');
   });
-
-  var floatingsignon = document.getElementById("floating-sign-in");
-  floatingsignon.style.display = 'block';
-  var floatingupgrade = document.getElementById("floating-upgrade");
-  floatingupgrade.style.display = 'none';
-  var inputdiv = document.getElementById("input-div");
-  inputdiv.className = 'blur';
-  var inputform = document.getElementById("input-form");
-  inputform.disabled = true;
+  try {
+    var floatingsignon = document.getElementById("floating-sign-in");
+    floatingsignon.style.display = 'block';
+    var floatingupgrade = document.getElementById("floating-upgrade");
+    floatingupgrade.style.display = 'none';
+    var inputdiv = document.getElementById("input-div");
+    inputdiv.className = 'blur';
+    var inputform = document.getElementById("input-form");
+    inputform.disabled = true;
+  } catch (error) {
+    console.error(error);
+  }
 
   var signout = document.getElementById("sign-out");
   signout.style.display = "none";
