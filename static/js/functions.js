@@ -97,12 +97,14 @@ function onSignIn(googleUser) {
 
           // if (trial and credits > 0) or (premium)
           if ((userstatus == 'trial') && (userfreecredits > 0)) {
+            console.log('hit one');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'none';
             inputdiv.className = 'unblur';
             inputform.disabled = false;
             upgrade.style.display = 'block';
           } else if (userstatus == 'premium') {
+            console.log('hit two');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'none';
             inputdiv.className = 'unblur';
@@ -110,6 +112,7 @@ function onSignIn(googleUser) {
             upgrade.style.display = 'none';
           } else {
             // else
+            console.log('hit three');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'block';
             inputdiv.className = 'blur';
