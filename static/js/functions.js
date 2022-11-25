@@ -70,8 +70,13 @@ function onSignIn(googleUser) {
   });
   var profile = googleUser.getBasicProfile();
   email = profile.getEmail();
-  var emailform = document.getElementById("email");
-  emailform.value = email;
+  try {
+    var emailform = document.getElementById("email");
+    emailform.value = email;
+  } catch (error) {
+    console.error(error);
+  }
+
 
   var floatingsignon = document.getElementById("floating-sign-in");
   var floatingupgrade = document.getElementById("floating-upgrade");
