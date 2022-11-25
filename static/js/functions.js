@@ -91,6 +91,9 @@ function onSignIn(googleUser) {
           data = doc.data();
           userstatus = data.status;
           userfreecredits = data.free_credits;
+          console.log('these are userstatus and freecredits');
+          console.log(userstatus);
+          console.log(userfreecredits);
 
           // if (trial and credits > 0) or (premium)
           if ((userstatus == 'trial') && (userfreecredits > 0)) {
