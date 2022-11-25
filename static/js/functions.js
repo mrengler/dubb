@@ -132,6 +132,7 @@ function onSignIn(googleUser) {
           floatingupgrade.style.display = 'none';
           inputdiv.className = 'unblur';
           inputform.disabled = false;
+          upgrade.style.display = 'block';
       }
   }).catch((error) => {
       console.log("Error getting document:", error);
