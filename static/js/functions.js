@@ -85,6 +85,7 @@ function onSignIn(googleUser) {
   var signout = document.getElementById("sign-out");
   var signin = document.getElementById("sign-in");
   var upgrade = document.getElementById("checkout");
+  var manage = document.getElementById("manage");
 
   var userstatus;
   var userfreecredits;
@@ -108,6 +109,7 @@ function onSignIn(googleUser) {
             inputdiv.className = 'unblur';
             inputform.disabled = false;
             upgrade.style.display = 'block';
+            manage.style.display = 'none';
           } else if (userstatus == 'premium') {
             console.log('hit two');
             floatingsignon.style.display = 'none';
@@ -115,6 +117,7 @@ function onSignIn(googleUser) {
             inputdiv.className = 'unblur';
             inputform.disabled = false;
             upgrade.style.display = 'none';
+            manage.style.display = 'block';
           } else {
             // else
             console.log('hit three');
@@ -123,6 +126,7 @@ function onSignIn(googleUser) {
             inputdiv.className = 'blur';
             inputform.disabled = true;
             upgrade.style.display = 'block';
+            manage.style.display = 'none';
           }
 
 
