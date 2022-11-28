@@ -86,6 +86,7 @@ function onSignIn(googleUser) {
   var signin = document.getElementById("sign-in");
   var upgrade = document.getElementById("checkout");
   var manage = document.getElementById("manage");
+  var contact = document.getElementById("contact");
 
   var userstatus;
   var userfreecredits;
@@ -102,29 +103,29 @@ function onSignIn(googleUser) {
           console.log(userfreecredits);
 
           if ((userstatus == 'trial') && (userfreecredits > 0)) {
-            console.log('hit one');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'none';
             inputdiv.className = 'unblur';
             inputform.disabled = false;
             upgrade.style.display = 'block';
             manage.style.display = 'none';
+            contact.style.display = 'none';
           } else if (userstatus == 'premium') {
-            console.log('hit two');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'none';
             inputdiv.className = 'unblur';
             inputform.disabled = false;
             upgrade.style.display = 'none';
             manage.style.display = 'block';
+            contact.style.display = 'block';
           } else {
-            console.log('hit three');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'block';
             inputdiv.className = 'blur';
             inputform.disabled = true;
             upgrade.style.display = 'block';
             manage.style.display = 'none';
+            contact.style.display = 'none';
           }
 
 
@@ -146,35 +147,12 @@ function onSignIn(googleUser) {
           inputdiv.className = 'unblur';
           inputform.disabled = false;
           upgrade.style.display = 'block';
+          manage.style.display = 'none';
+          contact.style.display = 'none';
       }
   }).catch((error) => {
       console.log("Error getting document:", error);
   });
-
-  // console.log(userstatus);
-  // console.log(userfreecredits);
-
-  // // if (trial and credits > 0) or (premium)
-  // if ((userstatus == 'trial') && (userfreecredits > 0)) {
-  //   var floatingsignon = document.getElementById("floating-sign-in");
-  //   floatingsignon.style.display = 'none';
-  //   var floatingupgrade = document.getElementById("floating-upgrade");
-  //   floatingupgrade.style.display = 'none';
-  //   var inputdiv = document.getElementById("input-div");
-  //   inputdiv.className = 'unblur';
-  //   var inputform = document.getElementById("input-form");
-  //   inputform.disabled = false;
-  // } else {
-  //   // else
-  //   var floatingsignon = document.getElementById("floating-sign-in");
-  //   floatingsignon.style.display = 'none';
-  //   var floatingupgrade = document.getElementById("floating-upgrade");
-  //   floatingupgrade.style.display = 'block';
-  //   var inputdiv = document.getElementById("input-div");
-  //   inputdiv.className = 'blur';
-  //   var inputform = document.getElementById("input-form");
-  //   inputform.disabled = true;
-  // }
 
   //applies to all
 
@@ -212,6 +190,10 @@ function signOut() {
     inputdiv.className = 'blur';
     var inputform = document.getElementById("input-form");
     inputform.disabled = true;
+    var manage = document.getElementById("manage");
+    manage.style.display = 'none';
+    var contact = document.getElementById("contact");
+    contact.style.display = 'none';
   } catch (error) {
     console.error(error);
   }
