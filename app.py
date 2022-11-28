@@ -25,7 +25,6 @@ import stripe
 # This is a public sample test API key.
 # Don’t submit any personally identifiable information in requests made with this key.
 # Sign in to see your own test API key embedded in code samples.
-stripe.api_key = 'sk_test_51M6bsEKrwOUYZ8FDIbAmDjDb7mBWLH3Le08SvVPp6FT3As4SVzH7ohCAZBp0DUirZZ6RJvE4OtV68SPR011j7IYa00UWl7b4XX'
 
 load_dotenv()
 
@@ -38,6 +37,7 @@ YOUR_DOMAIN = 'https://127.0.0.1:5000'
 
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
+stripe.api_key os.environ['STRIPE_API_KEY']
 webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
 
 q = Queue(connection=conn, default_timeout=3600)
@@ -328,8 +328,10 @@ def log_email():
 
 @app.route('/webhook', methods=['POST'])
 def webhook_received():
+    console.log('webhook')
     # request_data = json.loads(request.data)
     request_data = request.data
+    console.log(request_data)
 
     if webhook_secret:
         # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
