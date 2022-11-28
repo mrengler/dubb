@@ -101,7 +101,6 @@ function onSignIn(googleUser) {
           console.log(userstatus);
           console.log(userfreecredits);
 
-          // if (trial and credits > 0) or (premium)
           if ((userstatus == 'trial') && (userfreecredits > 0)) {
             console.log('hit one');
             floatingsignon.style.display = 'none';
@@ -119,7 +118,6 @@ function onSignIn(googleUser) {
             upgrade.style.display = 'none';
             manage.style.display = 'block';
           } else {
-            // else
             console.log('hit three');
             floatingsignon.style.display = 'none';
             floatingupgrade.style.display = 'block';
