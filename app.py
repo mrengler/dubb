@@ -349,6 +349,9 @@ def webhook_received():
         event_type = request_data['type']
     data_object = data['object']
 
+    print('this is event type')
+    print(event_type)
+
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
