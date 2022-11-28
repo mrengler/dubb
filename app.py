@@ -328,10 +328,10 @@ def log_email():
 
 @app.route('/webhook', methods=['POST'])
 def webhook_received():
-    console.log('webhook')
+    print('webhook')
     # request_data = json.loads(request.data)
     request_data = request.data
-    console.log(request_data)
+    print(request_data)
 
     if webhook_secret:
         # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
