@@ -259,3 +259,11 @@ input[type="file"] {
   text-align: left;
   outline: none;  
 }
+
+#contact {
+  font-size: 16px;
+  margin: 18px;
+  padding: 10px;
+  text-align: left;
+  outline: none;  
+}
