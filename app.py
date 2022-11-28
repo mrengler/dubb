@@ -69,8 +69,11 @@ os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
-print('set user email')
-user_email = ''
+var_exists = 'user_email' in locals() or 'user_email' in globals()
+if not var_exists:
+    print('set user email')
+    user_email = ''
+
 
 
 def allowed_file(filename):
