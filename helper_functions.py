@@ -223,7 +223,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
                         print(ad_prompt)
                         is_ad_response = openai.Completion.create(
-                            model='text-davinci-002',
+                            model='text-davinci-003',
                             prompt=ad_prompt,
                             max_tokens=max_tokens_output_is_ad,
                             temperature=0.0,
@@ -238,7 +238,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
                         print(promo_prompt)
                         is_promo_response = openai.Completion.create(
-                            model='text-davinci-002',
+                            model='text-davinci-003',
                             prompt=promo_prompt,
                             max_tokens=max_tokens_output_is_ad,
                             temperature=0.0,
@@ -270,7 +270,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
             print(ad_prompt)
             is_ad_response = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=ad_prompt,
                 max_tokens=max_tokens_output_is_ad,
                 temperature=0.0,
@@ -285,7 +285,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
             print(promo_prompt)
             is_promo_response = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=promo_prompt,
                 max_tokens=max_tokens_output_is_ad,
                 temperature=0.0,
@@ -323,7 +323,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                 print('This is choose_text for Speaker ' + unique_speaker)
                 print(choose_text)
                 choose = openai.Completion.create(
-                            model='text-davinci-002',
+                            model='text-davinci-003',
                             prompt=choose_text,
                             max_tokens=20,
                             temperature=0.9,
@@ -547,7 +547,7 @@ def create_video(
     print(prompt_text_pre)
 
     top_quote_image_description_response_pre = openai.Completion.create(
-        model='text-davinci-002',
+        model='text-davinci-003',
         prompt=prompt_text_pre,
         max_tokens=max_tokens_output_image_description,
         temperature=0.8,
@@ -572,7 +572,7 @@ def create_video(
         print(prompt_text)
 
         top_quote_image_description_response = openai.Completion.create(
-            model='text-davinci-002',
+            model='text-davinci-003',
             prompt=prompt_text,
             max_tokens=max_tokens_output_image_description,
             temperature=1.0,
@@ -721,7 +721,7 @@ def create_meme(
     print(prompt_text)
 
     top_quote_image_description_response = openai.Completion.create(
-        model='text-davinci-002',
+        model='text-davinci-003',
         prompt=prompt_text,
         max_tokens=max_tokens_output_image_description,
         temperature=0.0,
@@ -854,7 +854,7 @@ def convert(
 
         ## get top facts
         r_fact = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=fact_prompt_chunk,
                 max_tokens=max_tokens_facts_quotes,
                 temperature=0.0,
@@ -871,7 +871,7 @@ def convert(
         
         ## get top quote
         r_quote = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=quote_prompt_chunk,
                 max_tokens=max_tokens_facts_quotes,
                 temperature=0.8,
@@ -1001,7 +1001,7 @@ def convert(
     
     ## generate article
     r = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=article_prompt,
                 max_tokens=max_tokens_output,
                 temperature=temp,
@@ -1034,7 +1034,7 @@ def convert(
     '\n\n\nVersion Five:' + article_five + choose_post
     print(choose_text)
     choose = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=choose_text,
                 max_tokens=20,
                 temperature=0.0,
@@ -1169,7 +1169,7 @@ def run_combined(
         article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
 
         title_response = openai.Completion.create(
-            model='text-davinci-002',
+            model='text-davinci-003',
             prompt=title_prompt,
             max_tokens=50,
             temperature=0.9,
@@ -1188,7 +1188,7 @@ def run_combined(
         title = '<br><br>'.join(title_options)
 
         description_response = openai.Completion.create(
-            model='text-davinci-002',
+            model='text-davinci-003',
             prompt=description_prompt,
             max_tokens=max_tokens_output,
             temperature=0.9,
@@ -1212,7 +1212,7 @@ def run_combined(
             print('article short enough for final draft')
             print(article_prompt)
             article_response = openai.Completion.create(
-                model='text-davinci-002',
+                model='text-davinci-003',
                 prompt=article_prompt,
                 max_tokens=max_tokens_output_article_final,
                 temperature=temperature,
