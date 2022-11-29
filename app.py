@@ -316,8 +316,11 @@ def accelerated_process():
 
 @app.route('/checkout', methods=['GET'])
 def checkout():
-
   return render_template('checkout.html')
+
+@app.route('/privacy', methods=['GET', 'POST'])
+def privacy():
+    return render_template('privacy.html')
 
 @app.route('/log_email', methods=['POST'])
 def log_email():    
