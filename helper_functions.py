@@ -1328,7 +1328,7 @@ def run_combined(
         + present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
-
+        print('email to dubb results')
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
@@ -1340,7 +1340,7 @@ def run_combined(
                      "html": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email
                  }
              )
-
+        print('email to user')
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
