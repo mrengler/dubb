@@ -8,7 +8,8 @@ max_tokens_output_is_ad = 10
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
 chars_per_token = 3.55
-num_image_audios_to_produce = 3
+num_audios_to_produce = 5
+num_videos_to_produce = 3
 double = 2
 frame_rate = 10
 min_video_length = 20
@@ -517,7 +518,7 @@ def split_txt_into_multi_lines(input_str, line_length): ##from https://stackover
 def create_video(
     user,
     filename,
-    num_image_audios,
+    num_videos,
     description,
     top_quote,
     top_quote_audio_filename,
@@ -657,14 +658,14 @@ def create_video(
         random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
 
         ##download from replicate
-        image_filename = filename.split('.')[0] + '_image_' + str(num_image_audios) + random_str + ".mp4"
+        image_filename = filename.split('.')[0] + '_image_' + str(num_videos) + random_str + ".mp4"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
 
         ##slow looped animation
         slow_multiple = 1.25
-        slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_image_audios) + random_str + ".mp4"
+        slowed_image_filename = filename.split('.')[0] + '_slowed_' + str(num_videos) + random_str + ".mp4"
         os.system("""ffmpeg -i """ + image_filename + """ -vf  "setpts=""" + str(slow_multiple) + """*PTS" """ + slowed_image_filename)
 
         ##get length and multipliers
@@ -675,11 +676,11 @@ def create_video(
         loop = math.ceil(multiplier)
 
         ##make looped animation
-        image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_image_audios) + random_str + ".mp4"
+        image_looped_filename = filename.split('.')[0] + '_looped_' + str(num_videos) + random_str + ".mp4"
         os.system("""ffmpeg -i """ + slowed_image_filename + """ -filter_complex "[0]reverse[r];[0][r]concat,loop=""" + str(loop) + """:""" + str(fps_full) + """  " """ + image_looped_filename)
 
         ###join looped animation with audio
-        image_audio_filename = filename.split('.')[0] + '_video_' + str(num_image_audios) + random_str + ".mp4"
+        image_audio_filename = filename.split('.')[0] + '_video_' + str(num_videos) + random_str + ".mp4"
         tmp_image_audio_filename = 'tmp_' + image_audio_filename
         os.system("""ffmpeg -i """ + image_looped_filename + """ -i """ + top_quote_audio_filename + """ -c:v copy -c:a aac """ + tmp_image_audio_filename)
         
@@ -819,8 +820,11 @@ def convert(
     editorial_style
     ):
 
+    num_audios = 0
+
     audio_filenames = []
-    audio_durations = [] 
+    audio_durations = []
+    audio_quotes = []
     facts = []
     quotes = []
 
@@ -903,71 +907,74 @@ def convert(
                         quotes.append(quote)
 
                         ## generate audiograms
-                        print('this is debug section')
-                        print("'" + quote + "'")
-                        # try:
+                        if num_audios < num_audios_to_produce:
+                            print('this is debug section')
+                            print("'" + quote + "'")
+                            # try:
 
-                        top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
-                        print('this is top_quote_split')
-                        print(top_quote_split)
+                            top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
+                            print('this is top_quote_split')
+                            print(top_quote_split)
 
-                        ## use a different start sentence if the first or last are too short
-                        off_index_start = 0
-                        for sentence in top_quote_split:
-                            if len(sentence) >= 10:
-                                break
-                            else:
-                                off_index_start += 1
-                                
-                        off_index_end = -1
-                        for sentence in reversed(top_quote_split):
-                            if len(sentence) >= 10:
-                                break
-                            else:
-                                off_index_end -= 1
+                            ## use a different start sentence if the first or last are too short
+                            off_index_start = 0
+                            for sentence in top_quote_split:
+                                if len(sentence) >= 10:
+                                    break
+                                else:
+                                    off_index_start += 1
+                                    
+                            off_index_end = -1
+                            for sentence in reversed(top_quote_split):
+                                if len(sentence) >= 10:
+                                    break
+                                else:
+                                    off_index_end -= 1
 
-                        print('this is start_times_unformatted')
-                        print(start_times_unformatted)
+                            print('this is start_times_unformatted')
+                            print(start_times_unformatted)
 
-                        print('this is sentences_unformatted')
-                        print(sentences_unformatted)
+                            print('this is sentences_unformatted')
+                            print(sentences_unformatted)
 
-                        ## find quote audio start time, end time, duration
-                        print('top quote split off')
-                        print(top_quote_split[off_index_start].casefold())
-                        find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
-                        print('this is find_top_quote_start_true_text')
-                        print(find_top_quote_start_true_text)
-                        tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
-                        print('this is tq_start_i')
-                        print(tq_start_i)
-                        tq_start = start_times_unformatted[tq_start_i - off_index_start]
-                        print(top_quote_split[off_index_end].casefold())
-                        find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
-                        print('this is find_top_quote_end_true_text')
-                        print(find_top_quote_end_true_text)
-                        tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
-                        print('this is tq_end_i')
-                        print(tq_end_i)
+                            ## find quote audio start time, end time, duration
+                            print('top quote split off')
+                            print(top_quote_split[off_index_start].casefold())
+                            find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
+                            print('this is find_top_quote_start_true_text')
+                            print(find_top_quote_start_true_text)
+                            tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
+                            print('this is tq_start_i')
+                            print(tq_start_i)
+                            tq_start = start_times_unformatted[tq_start_i - off_index_start]
+                            print(top_quote_split[off_index_end].casefold())
+                            find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
+                            print('this is find_top_quote_end_true_text')
+                            print(find_top_quote_end_true_text)
+                            tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
+                            print('this is tq_end_i')
+                            print(tq_end_i)
 
-                        if tq_end_i < len(sentences_diarized) - 1:
-                            tq_end = start_times_unformatted[tq_end_i - off_index_end]
-                        elif tq_end_i == len(sentences_diarized) - 1:
-                            tq_end = 100000000000
+                            if tq_end_i < len(sentences_diarized) - 1:
+                                tq_end = start_times_unformatted[tq_end_i - off_index_end]
+                            elif tq_end_i == len(sentences_diarized) - 1:
+                                tq_end = 100000000000
 
-                        tq_duration = (tq_end - tq_start) / 1000
+                            tq_duration = (tq_end - tq_start) / 1000
 
-                        ## generate audio segment of quote
-                        try:
-                            top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-                        except:
-                            top_quote_audio = AudioSegment.from_file(filename, start_second=tq_start / 1000, duration=tq_duration)
-                        top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                        print(top_quote_audio_filename)
-                        top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                        audio_filenames.append(top_quote_audio_filename)
-                        audio_durations.append(tq_duration)
-                        upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                            ## generate audio segment of quote
+                            try:
+                                top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                            except:
+                                top_quote_audio = AudioSegment.from_file(filename, start_second=tq_start / 1000, duration=tq_duration)
+                            top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                            print(top_quote_audio_filename)
+                            top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                            audio_filenames.append(top_quote_audio_filename)
+                            audio_durations.append(tq_duration)
+                            audio_quotes.append(quote)
+                            upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                            num_audios += 1
                     else:
                         print('quote classification == 2')
                         print(quote)
@@ -1061,7 +1068,7 @@ def convert(
     else:
         article = article_one
 
-    return article, quotes, audio_filenames, audio_durations, fact_text
+    return article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text
 
 
 def run_combined(
@@ -1139,7 +1146,7 @@ def run_combined(
                  )
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
 
-        article, quotes, audio_filenames, audio_durations, fact_text = convert(
+        article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text = convert(
             user,
             cleaned_paragraphs_no_ads,
             sentences_diarized,
@@ -1239,10 +1246,10 @@ def run_combined(
 
             image_audio_filenames = []
             meme_filenames = []
-            num_image_audios = 0
+            num_videos = 0
             num_memes = 0
 
-            image_prompts_l = [(a, b, c) for a, b, c in zip(quotes,audio_filenames,audio_durations)]
+            image_prompts_l = [(a, b, c) for a, b, c in zip(audio_quotes,audio_filenames,audio_durations)]
             sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
             print('this is sorted image prompts')
@@ -1254,14 +1261,14 @@ def run_combined(
             for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
                 print('make video filters:')
                 print(make_videos)
-                print(num_image_audios < num_image_audios_to_produce)
+                print(num_videos < num_videos_to_produce)
                 print(top_quote_audio_filename is not None)
 
-                if (make_videos) and (num_image_audios < num_image_audios_to_produce) and (top_quote_audio_filename is not None):
+                if (make_videos) and (num_videos < num_videos_to_produce) and (top_quote_audio_filename is not None):
                     image_audio_filename = create_video(
                         user,
                         filename,
-                        num_image_audios,
+                        num_videos,
                         description_options[0],
                         top_quote,
                         top_quote_audio_filename,
@@ -1271,7 +1278,7 @@ def run_combined(
                         fact_text
                     )
                     image_audio_filenames.append(image_audio_filename)
-                    num_image_audios += 1
+                    num_videos += 1
 
                 elif make_memes and (top_quote is not None):
                     meme_filename = create_meme(
