@@ -30,6 +30,11 @@
     text-decoration: none;
     font-size: 36px;
   }
+
+  #img-diagram {
+    width: 75%;
+    height: auto;
+  }
 }
 
 @media (max-width: 978px) {
@@ -82,6 +87,11 @@
     text-decoration: none;
     font-size: 26px;
     margin-top: 3px;
+  }
+
+  #img-diagram {
+    width: 100%;
+    height: auto;
   }
 
 }
@@ -266,4 +276,8 @@ input[type="file"] {
   padding: 10px;
   text-align: left;
   outline: none;  
+}
+
+#diagram {
+  text-align: center;
 }
