@@ -985,14 +985,22 @@ def convert(
                 print('quote is multiple paragraphs')
                 print(quote)
 
-    ## combine top facts    
+    ## combine top facts
+    num_facts = min(50, len(facts))
+    facts_sample = [
+        facts[i] for i in sorted(random.sample(range(len(facts)), num_facts))
+    ]
     fact_text = """"""
-    for i, r in enumerate(facts):
+    for i, r in enumerate(facts_sample):
         fact_text += str(i + 1) + ': ' + r + "\n"
 
-    ## combine top quotes 
+    ## combine top quotes
+    num_quotes = min(5, len(quotes))
+    quotes_sample = [
+        quotes[i] for i in sorted(random.sample(range(len(quotes)), num_quotes))
+    ]
     quote_text = """"""
-    for i, r in enumerate(quotes):
+    for i, r in enumerate(quotes_sample):
         quote_text += str(i + 1) + ': "' + r + '"\n'
 
     if editorial_style == 'insightful':
