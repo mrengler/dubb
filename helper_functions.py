@@ -882,12 +882,12 @@ def convert(
             )
         ## TODO abstract this for loop so that it takes however many outputs are given
         quote_options = [
-            quote_one = r_quote.choices[0].text
-            quote_two = r_quote.choices[1].text
-            quote_three = r_quote.choices[2].text
+            r_quote.choices[0].text,
+            r_quote.choices[1].text,
+            r_quote.choices[2].text
         ]
         quote_options = list(set(quote_options))
-        
+
         for quote in quote_options:
             ## fix common problems in the top quote
             quote = quote.replace("The full transcript:\n\n", '')
