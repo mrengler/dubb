@@ -120,6 +120,7 @@ input[type="file"] {
   text-align: left;
   outline: none;
   font-size: 20px;
+  cursor: pointer;
 }
 
 .collapsible:after {
