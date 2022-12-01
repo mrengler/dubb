@@ -881,10 +881,14 @@ def convert(
                 n=3,
             )
         ## TODO abstract this for loop so that it takes however many outputs are given
-        quote_one = r_quote.choices[0].text
-        quote_two = r_quote.choices[1].text
-        quote_three = r_quote.choices[2].text
-        for quote in [quote_one, quote_two, quote_three]:
+        quote_options = [
+            quote_one = r_quote.choices[0].text
+            quote_two = r_quote.choices[1].text
+            quote_three = r_quote.choices[2].text
+        ]
+        quote_options = list(set(quote_options))
+        
+        for quote in quote_options:
             ## fix common problems in the top quote
             quote = quote.replace("The full transcript:\n\n", '')
             quote = quote.replace("The full transcript: ", '')
