@@ -1110,7 +1110,7 @@ def run_combined(
                     post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                         auth=("api", MAILGUN_API_KEY),
                          data={
-                             "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                             "from": 'results@'+ str(MAILGUN_DOMAIN),
                              "to": str(MAIL_USERNAME), ## to be updated to email
                              "subject": "Dubb results",
                              "text": '<b>YOUTUBEDL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id,
@@ -1145,7 +1145,7 @@ def run_combined(
                 post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                     auth=("api", MAILGUN_API_KEY),
                      data={
-                         "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                         "from": 'results@'+ str(MAILGUN_DOMAIN),
                          "to": str(MAIL_USERNAME), ## to be updated to email
                          "subject": "Dubb results",
                          "text": '<b>TRANSCRIPTION ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id,
@@ -1352,7 +1352,7 @@ def run_combined(
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
                  data={
-                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "from": 'results@'+ str(MAILGUN_DOMAIN),
                      "to": str(MAIL_USERNAME), ## to be updated to email
                      "subject": "Dubb results",
                      "text": '<b>TO BE REMOVED: </b>' + user + '<b>TO BE REMOVED</b>' + combined_email,
@@ -1364,7 +1364,7 @@ def run_combined(
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
                  data={
-                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "from": 'results@'+ str(MAILGUN_DOMAIN),
                      "to": user, ## to be updated to email
                      "subject": "Dubb results",
                      "text": combined_email,
@@ -1380,7 +1380,7 @@ def run_combined(
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
                  data={
-                     "from": 'dubb@'+ str(MAILGUN_DOMAIN),
+                     "from": 'results@'+ str(MAILGUN_DOMAIN),
                      "to": str(MAIL_USERNAME), ## to be updated to email
                      "subject": "Dubb results",
                      "text": '<b>GENERAL ERROR: </b>' + user + ' Details: ' + filename + ' ' + transcript_id + ' ' + str(e),
