@@ -90,8 +90,8 @@ def get_template(result=None, refresh=False):
               <link rel="stylesheet" href="https://unpkg.com/style.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
-            <body><div style="font-size:30px;">Your results are ready! Check them out below. Your results will also be sent to your email within 24 hours.
-            Look in your inbox and spam folder for an email from dubb.results@gmail.com. Please check your results before posting them publicly.
+            <body><div style="font-size:30px;">Your results are ready! Check them out below. Your results will also be sent to your email.
+            Look in your inbox and spam folder for an email from results@dubb.media. Please check your results before posting them publicly.
             <br><br
             ''' + result + '''
             </div></body>
@@ -106,8 +106,8 @@ def get_template(result=None, refresh=False):
             </head>
             <body style="padding: 3% 10% 3% 10%">
             <body>
-                <div style="font-size:30px;">We're working on your results!<br><br>They will load on this page and be sent to your email within 24 hours after we check them for quality.
-                Look in your inbox and spam folder for an email from dubb.results@gmail.com</div>
+                <div style="font-size:30px;">We're working on your results!<br><br>They will load on this page and be sent to your email shortly.
+                Look in your inbox and spam folder for an email from results@dubb.media</div>
             </body>
             </html>'''
 
