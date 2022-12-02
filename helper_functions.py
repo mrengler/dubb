@@ -900,7 +900,7 @@ def convert(
             for speaker in speakers_input:
                 quote = quote.replace(speaker + ": ", '')
                 quote = quote.replace("Unknown: ", '')
-            if len(quote.split('\n\n')) == 1:
+            if (len(quote.split('\n\n')) == 1) and (quote != ""):
                 if quote in prompt_chunk:
                     quote_classification = content_filter(quote, user)
                     if quote_classification  != '2':
@@ -982,7 +982,7 @@ def convert(
                     print('quote is not verbatim from the text')
                     print(quote)
             else:
-                print('quote is multiple paragraphs')
+                print("quote is multiple paragraphs or quote == ''")
                 print(quote)
 
     ## combine top facts
