@@ -33,8 +33,6 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.ERROR)
 
-YOUR_DOMAIN = 'https://127.0.0.1:5000'
-
 openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
 stripe.api_key = os.environ["STRIPE_API_KEY"]
