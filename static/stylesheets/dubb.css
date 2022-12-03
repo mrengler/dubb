@@ -20,6 +20,7 @@
     padding: 3px 10px;
     border: 1px solid white;
     cursor: pointer;
+    line-height: 1.6;
   }
 
   .loader span:hover {
@@ -91,6 +92,7 @@
     border-radius: 10px;
     padding: 3px 10px;
     border: 1px solid white;
+    line-height: 1.6;
   }
 
 
@@ -215,6 +217,7 @@ input[type="file"] {
   border-radius: 10px; 
   font-size: 20px;
   font-family: Georgia, Times, "Times New Roman", serif;
+  line-height: 1.6;
 }
 
 #topnav-right {
