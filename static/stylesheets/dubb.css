@@ -213,7 +213,8 @@ input[type="file"] {
   padding-right: 3%; 
   padding-left: 3%; 
   border-radius: 10px; 
-  font-family: serif;
+  font-size: 20px;
+  font-family: Georgia, Times, "Times New Roman", serif;
 }
 
 #topnav-right {
