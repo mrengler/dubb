@@ -194,6 +194,13 @@ function signOut() {
     manage.style.display = 'none';
     var contact = document.getElementById("contact");
     contact.style.display = 'none';
+    
+    auth2.attachClickHandler(
+      floatingsignon, {}, 
+      onSignIn, 
+      function(error) {
+      console.log(JSON.stringify(error, undefined, 2));
+    });
   } catch (error) {
     console.error(error);
   }
