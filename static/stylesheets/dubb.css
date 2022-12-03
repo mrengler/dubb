@@ -1,7 +1,8 @@
 @media (min-width: 979px) {
   body {
-    background: white;
+    background: #2a2929ff;
     padding: 3% 15% 3% 15%;
+    color: white;
   }
 
   .loader span { 
@@ -13,10 +14,11 @@
     transform:translate(-50%, -50%);
     font-size: 24px;
     font-weight: bold;
-    background-color: #4a4cc7;
-    color: #ffc9f5;
+    background-color: #595959ff;
+    color: white;
     border-radius: 10px;
     padding: 3px 10px;
+    border: 1px solid white;
   }
 
   .instruct {
@@ -25,15 +27,10 @@
 
   .topnav a {
     float: left;
-    color: black;
+    color: white;
     text-align: center;
     text-decoration: none;
     font-size: 36px;
-  }
-
-  #img-diagram {
-    width: 75%;
-    height: auto;
   }
 }
 
@@ -44,8 +41,9 @@
   }
 
   body {
-    background: white;
+    background: #2a2929ff;
     padding:0% 3% 0% 3%;
+    color: white;
   }
 
   video {
@@ -69,10 +67,11 @@
     transform:translate(-50%, -50%);
     font-size: 24px;
     font-weight: bold;
-    background-color: #4a4cc7;
-    color: #ffc9f5;
+    background-color: #595959ff;
+    color: white;
     border-radius: 10px;
     padding: 3px 10px;
+    border: 1px solid white;
   }
 
   .instruct {
@@ -82,16 +81,11 @@
   /* Style the links inside the navigation bar */
   .topnav a {
     float: left;
-    color: black;
+    color: white;
     text-align: center;
     text-decoration: none;
     font-size: 26px;
     margin-top: 3px;
-  }
-
-  #img-diagram {
-    width: 100%;
-    height: auto;
   }
 
 }
@@ -112,8 +106,8 @@ input[type="file"] {
 }
 
 .collapsible {
-  background-color: white;
-  color: black;
+  background-color: #2a2929ff;
+  color: white;
   padding: 18px;
   width: 100%;
   border: none;
@@ -125,7 +119,7 @@ input[type="file"] {
 
 .collapsible:after {
   content: '\2304';
-  color: black;
+  color: white;
   font-weight: bold;
   float: right;
   margin-left: 5px;
@@ -175,7 +169,8 @@ input[type="file"] {
 }      
 .controls input[type="radio"]:checked+label {
   border-radius: 10px;
-  border: 3px solid #4a4cc7;
+/*  border: 3px solid #2a2929ff;*/
+  background-color: #2a2929ff;
 
 }
 
@@ -184,9 +179,10 @@ input[type="file"] {
   width: 30%;
   flex-direction: column;
   align-items: center;
-  border: 1px solid;
+/*  border: 1px solid;*/
   border-radius: 10px;
   margin-right: 10px;
+  background-color: #595959ff;
 }
 
 #topnav-right {
@@ -196,6 +192,7 @@ input[type="file"] {
 #logo {
   color: #4a4cc7;
 }
+
 #checkout {
   color: white;
   background: #4a4cc7;
@@ -212,22 +209,31 @@ input[type="file"] {
   width: 100%;
   height:  6%;
   border-radius: 10px;
-  border: 1px solid #4a4cc7;
+  border: 1px solid #2a2929ff;
   padding: 0px 18px;
   margin-bottom: 20px;
-  color: gray;
+  color: white;
+  background-color: #595959ff;
 }
 
 #upload-file {
-  display: inline-block;
+/*  display: inline-block;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height:  6%;
   border-radius: 10px;
-  border: 3px solid #4a4cc7;
+/*  border: 3px solid #2a2929ff;*/
   padding: 0px 18px;
   margin-bottom: 20px;
   text-align: center;
   cursor:pointer;
+  background-color: #595959ff;
+}
+
+#upload-file:hover {
+  background-color: #2a2929ff;
 }
 
 #speakers {
@@ -235,23 +241,32 @@ input[type="file"] {
   width: 100%;
   height:  6%;
   border-radius: 10px;
-  border: 1px solid #4a4cc7;
+  border: 1px solid #2a2929ff;
   padding: 0px 18px;
   margin-bottom: 20px;
-  color: gray;
+  color: white;
+  background-color: #595959ff;
 }
 
 #submit {
   font-size: 24px;
-  background-color: #ffc9f5;
-  border-radius: 10px;
-  border: 2px solid #4a4cc7;
+  color: white;
+  background-color: #595959ff;
+  border-radius: 10px;/*
+  border: 2px solid #4a4cc7;*/
+  cursor: pointer;
 }
+
+#submit:hover {
+  background-color: #2a2929ff;
+}
+
+
 
 #input-form {
   display: inline-block;
   width: 100%;
-  background-color: #ffc9f5;
+  background-color: #3a3a3aff;
   border-radius: 15px;
 }
 
@@ -281,4 +296,9 @@ input[type="file"] {
 
 #diagram {
   text-align: center;
+}
+
+::placeholder {
+  color: #cbcbcbff;
+  opacity: 1;
 }
