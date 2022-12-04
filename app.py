@@ -190,8 +190,7 @@ def process():
                 email,
                 speakers_input,
                 filename,
-                openai_model,
-                # db
+                openai_model
             ),
             kwargs={
                 'paragraphs': True,
@@ -201,12 +200,19 @@ def process():
             timeout=600
         )
 
+        ## log request
         db.collection("requests").document().set({
             'email': email,
             'content': content,
             'speakers': speakers,
             'time': datetime.now(),
         })
+
+        ## decrement credit counter
+        ## increase submissions counter
+        user_ref = db.collection('users_info').document(user)
+        user_ref.update({"free_credits": firestore.Increment(-1)})
+        user_ref.update({"submissions": firestore.Increment(1)})
 
 
 
@@ -288,8 +294,7 @@ def accelerated_process():
                 email,
                 speakers_input,
                 filename,
-                openai_model,
-                # db
+                openai_model
             ),
             kwargs={
                 'paragraphs': True,

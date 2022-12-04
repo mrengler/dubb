@@ -63,7 +63,6 @@ ENV_KEYS = {
     "client_x509_cert_url": os.environ["CLIENT_x509_CERT_URL"],
 }
 
-
 def millsecond_to_timestamp(ms):
     millis = int(ms)
     seconds=(millis/1000)%60
@@ -1387,12 +1386,6 @@ def run_combined(
                      "html": combined_email
                  }
              )
-
-        ##decrement credit counter
-        ## increase submissions counter
-        user_ref = db.collection('users_info').document(user)
-        user_ref.update({"free_credits": firestore.Increment(-1)})
-        user_ref.update({"submissions": firestore.Increment(1)})
         
         return combined_html, user, False
 
