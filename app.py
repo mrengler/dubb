@@ -182,9 +182,6 @@ def process():
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
 
-        print('this is db')
-        print(db)
-
         job = q.enqueue(
             run_combined,
             args=(
@@ -291,7 +288,8 @@ def accelerated_process():
                 email,
                 speakers_input,
                 filename,
-                openai_model
+                openai_model,
+                db
             ),
             kwargs={
                 'paragraphs': True,
