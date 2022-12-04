@@ -1101,7 +1101,7 @@ def run_combined(
     speakers_input, 
     filename,
     model,
-    db,
+    # db,
     bucket_name='writersvoice', 
     temperature=0.8, 
     presence_penalty=0.0, 
