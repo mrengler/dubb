@@ -191,7 +191,7 @@ def process():
                 speakers_input,
                 filename,
                 openai_model,
-                db
+                # db
             ),
             kwargs={
                 'paragraphs': True,
@@ -289,7 +289,7 @@ def accelerated_process():
                 speakers_input,
                 filename,
                 openai_model,
-                db
+                # db
             ),
             kwargs={
                 'paragraphs': True,
