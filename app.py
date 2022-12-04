@@ -182,6 +182,9 @@ def process():
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
 
+        print('this is db')
+        print(db)
+
         job = q.enqueue(
             run_combined,
             args=(
