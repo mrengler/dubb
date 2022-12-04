@@ -134,7 +134,7 @@ function onSignIn(googleUser) {
           console.log("No such document!");
           var d = new Date(Date.now());
           userstatus = 'trial';
-          userfreecredits = 5;
+          userfreecredits = 3;
           var usersubmissions = 0
           db.collection("users_info").doc(email).set({
               time: d,

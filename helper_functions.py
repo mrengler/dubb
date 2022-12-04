@@ -29,6 +29,8 @@ import shutil
 import random
 import string
 from fuzzywuzzy import process
+import firebase_admin
+from firebase_admin import credentials, auth, firestore
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -47,6 +49,19 @@ REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
 MAILGUN_API_KEY = os.environ["MAILGUN_API_KEY"]
 MAILGUN_DOMAIN = os.environ["MAILGUN_DOMAIN"]
 MAIL_USERNAME = os.environ["MAIL_USERNAME"]
+
+ENV_KEYS = {
+    "type": "service_account",
+    "project_id": os.environ["FIREBASE_PROJECT_ID"],
+    "private_key_id": os.environ["FIREBASE_PRIVATE_KEY_ID"],
+    "private_key": os.environ["FIREBASE_PRIVATE_KEY"].replace("\\n", "\n"),
+    "client_email": os.environ["FIREBASE_CLIENT_EMAIL"],
+    "client_id": os.environ["FIREBASE_CLIENT_ID"],
+    "auth_uri": os.environ["FIREBASE_AUTH_URI"],
+    "token_uri": os.environ["FIREBASE_TOKEN_URI"],
+    "auth_provider_x509_cert_url": os.environ["FIREBASE_AUTH_PROVIDER_x509_cert_url"],
+    "client_x509_cert_url": os.environ["CLIENT_x509_CERT_URL"],
+}
 
 
 def millsecond_to_timestamp(ms):
@@ -1371,6 +1386,12 @@ def run_combined(
                      "html": combined_email
                  }
              )
+
+        ##decrement credit counter
+        ## increase submissions counter
+        user_ref = db.collection('users_info').document(user)
+        user_ref.update({"free_credits": firestore.Increment(-1)})
+        user_ref.update({"submissions": firestore.Increment(1)})
         
         return combined_html, user, False
 

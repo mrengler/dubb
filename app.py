@@ -123,13 +123,6 @@ def result(id):
         return get_template(refresh=True)
     elif status == 'finished':
         combined, user, failed = job.result
-        if failed==False:
-            ##decrement credit counter
-            ## increase submissions counter
-            user_ref = db.collection('users_info').document(user)
-            user_ref.update({"free_credits": firestore.Increment(-1)})
-            user_ref.update({"submissions": firestore.Increment(1)})
-
         return get_template(combined)
 
 @app.route('/waitlist', methods=["GET", "POST"])
