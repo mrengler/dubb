@@ -210,7 +210,7 @@ def process():
 
         ## decrement credit counter
         ## increase submissions counter
-        user_ref = db.collection('users_info').document(user)
+        user_ref = db.collection('users_info').document(email)
         user_ref.update({"free_credits": firestore.Increment(-1)})
         user_ref.update({"submissions": firestore.Increment(1)})
 
