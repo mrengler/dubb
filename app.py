@@ -88,6 +88,7 @@ def get_template(result=None, refresh=False):
               <meta http-equiv="refresh" content="5">
               {% endif %}
               <link rel="stylesheet" href="https://unpkg.com/style.css">
+              <link rel="stylesheet" href="/static/stylesheets/dubb.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
             <body><div style="font-size:30px;">Your results are ready! Check them out below. Your results will also be sent to your email.
@@ -103,6 +104,7 @@ def get_template(result=None, refresh=False):
               <meta http-equiv="refresh" content="5">
               {% endif %}
               <link rel="stylesheet" href="https://unpkg.com/style.css">
+              <link rel="stylesheet" href="/static/stylesheets/dubb.css">
             </head>
             <body style="padding: 3% 10% 3% 10%">
             <body>
