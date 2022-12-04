@@ -190,7 +190,8 @@ def process():
                 email,
                 speakers_input,
                 filename,
-                openai_model
+                openai_model,
+                db
             ),
             kwargs={
                 'paragraphs': True,
