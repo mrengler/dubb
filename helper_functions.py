@@ -281,38 +281,38 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
             cleaned_paragraphs.append(current_speaker_sentences_joined)
 
-            ## filter ads
-            ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
-            print(ad_prompt)
-            is_ad_response = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=ad_prompt,
-                max_tokens=max_tokens_output_is_ad,
-                temperature=0.0,
-                user=user,
-            )
+            # ## filter ads
+            # ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
+            # print(ad_prompt)
+            # is_ad_response = openai.Completion.create(
+            #     model='text-davinci-003',
+            #     prompt=ad_prompt,
+            #     max_tokens=max_tokens_output_is_ad,
+            #     temperature=0.0,
+            #     user=user,
+            # )
 
-            is_ad_response = is_ad_response.choices[0].text
-            print(is_ad_response)
-            is_ad_response = is_ad_response.lower()
+            # is_ad_response = is_ad_response.choices[0].text
+            # print(is_ad_response)
+            # is_ad_response = is_ad_response.lower()
 
-            ## filter promos
-            promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
-            print(promo_prompt)
-            is_promo_response = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=promo_prompt,
-                max_tokens=max_tokens_output_is_ad,
-                temperature=0.0,
-                user=user,
-            )
+            # ## filter promos
+            # promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
+            # print(promo_prompt)
+            # is_promo_response = openai.Completion.create(
+            #     model='text-davinci-003',
+            #     prompt=promo_prompt,
+            #     max_tokens=max_tokens_output_is_ad,
+            #     temperature=0.0,
+            #     user=user,
+            # )
 
-            is_promo_response = is_promo_response.choices[0].text
-            print(is_promo_response)
-            is_promo_response = is_promo_response.lower()
+            # is_promo_response = is_promo_response.choices[0].text
+            # print(is_promo_response)
+            # is_promo_response = is_promo_response.lower()
 
-            if ('no' in is_ad_response) and ('no' in is_promo_response):
-                cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
+            # if ('no' in is_ad_response) and ('no' in is_promo_response):
+            cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
 
             ## determine the names of the speakers
             speaker_hash = {}
@@ -337,15 +337,26 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                 choose_text = choose_pre + find_speaker_input + choose_post
                 print('This is choose_text for Speaker ' + unique_speaker)
                 print(choose_text)
-                choose = openai.Completion.create(
-                            model='text-davinci-003',
-                            prompt=choose_text,
-                            max_tokens=20,
-                            temperature=0.9,
-                            presence_penalty=0.0,
-                            user=user,
-                            stop='"',
-                        )
+                tries = 3
+                try_i = 0
+                success = ''
+
+                while ((try_i < tries) and (success == '')):
+                    try:
+                        choose = openai.Completion.create(
+                                    model='text-davinci-003',
+                                    prompt=choose_text,
+                                    max_tokens=20,
+                                    temperature=0.9,
+                                    presence_penalty=0.0,
+                                    user=user,
+                                    stop='"',
+                                )
+                        success = 'success'
+                    except:
+                        try_i += 1
+                        time.sleep(10)
+
                 print('this is choose')
                 predicted_speaker = choose.choices[0].text
                 print('This is predicted speaker for Speaker ' + unique_speaker)
