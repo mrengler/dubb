@@ -561,15 +561,27 @@ def create_video(
 
     print(prompt_text_pre)
 
-    top_quote_image_description_response_pre = openai.Completion.create(
-        model='text-davinci-003',
-        prompt=prompt_text_pre,
-        max_tokens=max_tokens_output_image_description,
-        temperature=0.8,
-        presence_penalty=pres_penalty,
-        user=user,
-        n=3
-    )
+    tries = 3
+    try_i = 0
+    success = ''
+
+    while ((try_i < tries) and (success == '')):
+        try:
+
+            top_quote_image_description_response_pre = openai.Completion.create(
+                model='text-davinci-003',
+                prompt=prompt_text_pre,
+                max_tokens=max_tokens_output_image_description,
+                temperature=0.8,
+                presence_penalty=pres_penalty,
+                user=user,
+                n=3
+            )
+            success = 'success'
+        except:
+            try_i += 1
+            time.sleep(10)
+
 
     top_quote_image_description_pre_one = top_quote_image_description_response_pre.choices[0].text
     top_quote_image_description_pre_two = top_quote_image_description_response_pre.choices[1].text
@@ -586,14 +598,25 @@ def create_video(
 
         print(prompt_text)
 
-        top_quote_image_description_response = openai.Completion.create(
-            model='text-davinci-003',
-            prompt=prompt_text,
-            max_tokens=max_tokens_output_image_description,
-            temperature=1.0,
-            presence_penalty=pres_penalty,
-            user=user,
-        )
+        tries = 3
+        try_i = 0
+        success = ''
+
+        while ((try_i < tries) and (success == '')):
+            try:
+
+                top_quote_image_description_response = openai.Completion.create(
+                    model='text-davinci-003',
+                    prompt=prompt_text,
+                    max_tokens=max_tokens_output_image_description,
+                    temperature=1.0,
+                    presence_penalty=pres_penalty,
+                    user=user,
+                )
+                success = 'success'
+            except:
+                try_i += 1
+                time.sleep(10)
 
         top_quote_image_description = top_quote_image_description_response.choices[0].text
 
@@ -859,145 +882,158 @@ def convert(
     top_quotes_prompt_post = '\n\nThe most engaging section of the transcript, exactly how it is written: "'
 
     for prompt_chunk in prompt_chunks:
+        tries = 3
+        try_i = 0
+        success = ''
 
-        print('this is prompt_chunk')
-        print(prompt_chunk)
+        while ((try_i < tries) and (success == '')):
+            try:
+                print('this is prompt_chunk')
+                print(prompt_chunk)
 
-        fact_prompt_chunk = top_facts_prompt_pre + prompt_chunk + top_facts_prompt_post
-        quote_prompt_chunk = top_quotes_prompt_pre + prompt_chunk + top_quotes_prompt_post
+                fact_prompt_chunk = top_facts_prompt_pre + prompt_chunk + top_facts_prompt_post
+                quote_prompt_chunk = top_quotes_prompt_pre + prompt_chunk + top_quotes_prompt_post
 
-        print(fact_prompt_chunk)
+                print(fact_prompt_chunk)
 
-        print(quote_prompt_chunk)
+                print(quote_prompt_chunk)
 
-        ## get top facts
-        r_fact = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=fact_prompt_chunk,
-                max_tokens=max_tokens_facts_quotes,
-                temperature=0.0,
-                presence_penalty=pres_penalty,
-                user=user,
-            )
-        r_fact_text = r_fact.choices[0].text
-        r_fact_text_list = r_fact_text.split('\n\n')
-        new_facts = [r_fact_text_list[0][1:]] + [fact[3:] for fact in r_fact_text_list[1:]]
-        for fact in new_facts:
-            fact_classification = content_filter(fact, user)
-            if fact_classification  != '2':
-                facts.append(fact)
-        
-        ## get top quote
-        r_quote = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=quote_prompt_chunk,
-                max_tokens=max_tokens_facts_quotes,
-                temperature=0.8,
-                presence_penalty=pres_penalty,
-                user=user,
-                stop='"',
-                n=3,
-            )
-        ## TODO abstract this for loop so that it takes however many outputs are given
-        quote_options = [
-            r_quote.choices[0].text,
-            r_quote.choices[1].text,
-            r_quote.choices[2].text
-        ]
-        quote_options = list(set(quote_options))
+                ## get top facts
+                r_fact = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=fact_prompt_chunk,
+                        max_tokens=max_tokens_facts_quotes,
+                        temperature=0.0,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                    )
+                r_fact_text = r_fact.choices[0].text
+                r_fact_text_list = r_fact_text.split('\n\n')
+                new_facts = [r_fact_text_list[0][1:]] + [fact[3:] for fact in r_fact_text_list[1:]]
+                for fact in new_facts:
+                    fact_classification = content_filter(fact, user)
+                    if fact_classification  != '2':
+                        facts.append(fact)
+                
+                ## get top quote
+                r_quote = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=quote_prompt_chunk,
+                        max_tokens=max_tokens_facts_quotes,
+                        temperature=0.8,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                        stop='"',
+                        n=3,
+                    )
+                ## TODO abstract this for loop so that it takes however many outputs are given
+                quote_options = [
+                    r_quote.choices[0].text,
+                    r_quote.choices[1].text,
+                    r_quote.choices[2].text
+                ]
+                quote_options = list(set(quote_options))
 
-        for quote in quote_options:
-            ## fix common problems in the top quote
-            quote = quote.replace("The full transcript:\n\n", '')
-            quote = quote.replace("The full transcript: ", '')
-            quote = quote.replace("The full transcript:", '')
-            for speaker in speakers_input:
-                quote = quote.replace(speaker + ": ", '')
-                quote = quote.replace("Unknown: ", '')
-            if (len(quote.split('\n\n')) == 1) and (quote != ""):
-                if quote in prompt_chunk:
-                    quote_classification = content_filter(quote, user)
-                    if quote_classification  != '2':
-                        quotes.append(quote)
+                for quote in quote_options:
+                    ## fix common problems in the top quote
+                    quote = quote.replace("The full transcript:\n\n", '')
+                    quote = quote.replace("The full transcript: ", '')
+                    quote = quote.replace("The full transcript:", '')
+                    for speaker in speakers_input:
+                        quote = quote.replace(speaker + ": ", '')
+                        quote = quote.replace("Unknown: ", '')
+                    if (len(quote.split('\n\n')) == 1) and (quote != ""):
+                        if quote in prompt_chunk:
+                            quote_classification = content_filter(quote, user)
+                            if quote_classification  != '2':
+                                quotes.append(quote)
 
-                        ## generate audiograms
-                        if num_audios < num_audios_to_produce:
-                            print('this is debug section')
-                            print("'" + quote + "'")
-                            # try:
+                                ## generate audiograms
+                                if num_audios < num_audios_to_produce:
+                                    print('this is debug section')
+                                    print("'" + quote + "'")
+                                    # try:
 
-                            top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
-                            print('this is top_quote_split')
-                            print(top_quote_split)
+                                    top_quote_split = re.split('\n\n|(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', quote)
+                                    print('this is top_quote_split')
+                                    print(top_quote_split)
 
-                            ## use a different start sentence if the first or last are too short
-                            off_index_start = 0
-                            for sentence in top_quote_split:
-                                if len(sentence) >= 10:
-                                    break
-                                else:
-                                    off_index_start += 1
-                                    
-                            off_index_end = -1
-                            for sentence in reversed(top_quote_split):
-                                if len(sentence) >= 10:
-                                    break
-                                else:
-                                    off_index_end -= 1
+                                    ## use a different start sentence if the first or last are too short
+                                    off_index_start = 0
+                                    for sentence in top_quote_split:
+                                        if len(sentence) >= 10:
+                                            break
+                                        else:
+                                            off_index_start += 1
+                                            
+                                    off_index_end = -1
+                                    for sentence in reversed(top_quote_split):
+                                        if len(sentence) >= 10:
+                                            break
+                                        else:
+                                            off_index_end -= 1
 
-                            print('this is start_times_unformatted')
-                            print(start_times_unformatted)
+                                    print('this is start_times_unformatted')
+                                    print(start_times_unformatted)
 
-                            print('this is sentences_unformatted')
-                            print(sentences_unformatted)
+                                    print('this is sentences_unformatted')
+                                    print(sentences_unformatted)
 
-                            ## find quote audio start time, end time, duration
-                            print('top quote split off')
-                            print(top_quote_split[off_index_start].casefold())
-                            find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
-                            print('this is find_top_quote_start_true_text')
-                            print(find_top_quote_start_true_text)
-                            tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
-                            print('this is tq_start_i')
-                            print(tq_start_i)
-                            tq_start = start_times_unformatted[tq_start_i - off_index_start]
-                            print(top_quote_split[off_index_end].casefold())
-                            find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
-                            print('this is find_top_quote_end_true_text')
-                            print(find_top_quote_end_true_text)
-                            tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
-                            print('this is tq_end_i')
-                            print(tq_end_i)
+                                    ## find quote audio start time, end time, duration
+                                    print('top quote split off')
+                                    print(top_quote_split[off_index_start].casefold())
+                                    find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
+                                    print('this is find_top_quote_start_true_text')
+                                    print(find_top_quote_start_true_text)
+                                    tq_start_i = sentences_unformatted.index(find_top_quote_start_true_text)
+                                    print('this is tq_start_i')
+                                    print(tq_start_i)
+                                    tq_start = start_times_unformatted[tq_start_i - off_index_start]
+                                    print(top_quote_split[off_index_end].casefold())
+                                    find_top_quote_end_true_text = process.extract(top_quote_split[off_index_end], sentences_unformatted, limit=1)[0][0]
+                                    print('this is find_top_quote_end_true_text')
+                                    print(find_top_quote_end_true_text)
+                                    tq_end_i = sentences_unformatted.index(find_top_quote_end_true_text)
+                                    print('this is tq_end_i')
+                                    print(tq_end_i)
 
-                            if tq_end_i < len(sentences_diarized) - 1:
-                                tq_end = start_times_unformatted[tq_end_i - off_index_end]
-                            elif tq_end_i == len(sentences_diarized) - 1:
-                                tq_end = 100000000000
+                                    if tq_end_i < len(sentences_diarized) - 1:
+                                        tq_end = start_times_unformatted[tq_end_i - off_index_end]
+                                    elif tq_end_i == len(sentences_diarized) - 1:
+                                        tq_end = 100000000000
 
-                            tq_duration = (tq_end - tq_start) / 1000
+                                    tq_duration = (tq_end - tq_start) / 1000
 
-                            ## generate audio segment of quote
-                            try:
-                                top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
-                            except:
-                                top_quote_audio = AudioSegment.from_file(filename, start_second=tq_start / 1000, duration=tq_duration)
-                            top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
-                            print(top_quote_audio_filename)
-                            top_quote_audio.export(top_quote_audio_filename, format="mp3")
-                            audio_filenames.append(top_quote_audio_filename)
-                            audio_durations.append(tq_duration)
-                            audio_quotes.append(quote)
-                            upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
-                            num_audios += 1
+                                    ## generate audio segment of quote
+                                    try:
+                                        top_quote_audio = AudioSegment.from_file(filename, format='mp3', start_second=tq_start / 1000, duration=tq_duration)
+                                    except:
+                                        top_quote_audio = AudioSegment.from_file(filename, start_second=tq_start / 1000, duration=tq_duration)
+                                    top_quote_audio_filename = filename.split('.')[0] + str(tq_start) + "_" + str(tq_end) + ".mp3"
+                                    print(top_quote_audio_filename)
+                                    top_quote_audio.export(top_quote_audio_filename, format="mp3")
+                                    audio_filenames.append(top_quote_audio_filename)
+                                    audio_durations.append(tq_duration)
+                                    audio_quotes.append(quote)
+                                    upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
+                                    num_audios += 1
+                            else:
+                                print('quote classification == 2')
+                                print(quote)
+                        else:
+                            print('quote is not verbatim from the text')
+                            print(quote)
                     else:
-                        print('quote classification == 2')
+                        print("quote is multiple paragraphs or quote == ''")
                         print(quote)
-                else:
-                    print('quote is not verbatim from the text')
-                    print(quote)
-            else:
-                print("quote is multiple paragraphs or quote == ''")
-                print(quote)
+
+                success = 'success'
+
+            except:
+                try_i += 1
+                time.sleep(10)
+
+
 
     ## combine top facts
     num_facts = min(50, len(facts))
@@ -1032,16 +1068,27 @@ def convert(
     
     print(article_prompt)
     
-    ## generate article
-    r = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=article_prompt,
-                max_tokens=max_tokens_output,
-                temperature=temp,
-                presence_penalty=pres_penalty,
-                user=user,
-                n=5,
-            )
+    tries = 3
+    try_i = 0
+    success = ''
+
+    while ((try_i < tries) and (success == '')):
+        try:   
+            ## generate article
+            r = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=article_prompt,
+                        max_tokens=max_tokens_output,
+                        temperature=temp,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                        n=5,
+                    )
+            success = 'success'
+        except:
+            try_i += 1
+            time.sleep(10)
+
     ## TODO make this more abstract so that it isn't dependent on the number of generations
     article_one = r.choices[0].text
     article_two = r.choices[1].text
@@ -1066,14 +1113,27 @@ def convert(
     '\n\n\nVersion Three:' + article_three + '\n\n\nVersion Four:' + article_four +\
     '\n\n\nVersion Five:' + article_five + choose_post
     print(choose_text)
-    choose = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=choose_text,
-                max_tokens=20,
-                temperature=0.0,
-                presence_penalty=pres_penalty,
-                user=user,
-            )
+    
+    tries = 3
+    try_i = 0
+    success = ''
+
+    while ((try_i < tries) and (success == '')):
+        try:   
+
+            choose = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=choose_text,
+                        max_tokens=20,
+                        temperature=0.0,
+                        presence_penalty=pres_penalty,
+                        user=user,
+                    )
+            success = 'success'
+        except:
+            try_i += 1
+            time.sleep(10)
+
     choice = choose.choices[0].text
     print("\n\nChoice:\n\n")
     print(choice)
@@ -1201,16 +1261,27 @@ def run_combined(
         title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
         description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
         article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
+        
+        tries = 3
+        try_i = 0
+        success = ''
 
-        title_response = openai.Completion.create(
-            model='text-davinci-003',
-            prompt=title_prompt,
-            max_tokens=50,
-            temperature=0.9,
-            user=user,
-            stop='"',
-            n=3,
-        )
+        while ((try_i < tries) and (success == '')):
+            try:
+
+                title_response = openai.Completion.create(
+                    model='text-davinci-003',
+                    prompt=title_prompt,
+                    max_tokens=50,
+                    temperature=0.9,
+                    user=user,
+                    stop='"',
+                    n=3,
+                )
+                success = 'success'
+            except:
+                try_i += 1
+                time.sleep(10)            
 
         title_options = [
             title_response.choices[0].text,
@@ -1221,15 +1292,25 @@ def run_combined(
 
         title = '<br><br>'.join(title_options)
 
-        description_response = openai.Completion.create(
-            model='text-davinci-003',
-            prompt=description_prompt,
-            max_tokens=max_tokens_output,
-            temperature=0.9,
-            user=user,
-            stop='\n',
-            n=3,
-        )
+        tries = 3
+        try_i = 0
+        success = ''
+
+        while ((try_i < tries) and (success == '')):
+            try:
+                description_response = openai.Completion.create(
+                    model='text-davinci-003',
+                    prompt=description_prompt,
+                    max_tokens=max_tokens_output,
+                    temperature=0.9,
+                    user=user,
+                    stop='\n',
+                    n=3,
+                )
+                success = 'success'
+            except:
+                try_i += 1
+                time.sleep(10)   
 
         description_options = [
             description_response.choices[0].text,
@@ -1245,13 +1326,26 @@ def run_combined(
         if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
             print('article short enough for final draft')
             print(article_prompt)
-            article_response = openai.Completion.create(
-                model='text-davinci-003',
-                prompt=article_prompt,
-                max_tokens=max_tokens_output_article_final,
-                temperature=temperature,
-                user=user,
-            )
+
+            tries = 3
+            try_i = 0
+            success = ''
+
+            while ((try_i < tries) and (success == '')):
+                try:
+
+                    article_response = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=article_prompt,
+                        max_tokens=max_tokens_output_article_final,
+                        temperature=temperature,
+                        user=user,
+                    )
+                    success = 'success'
+                except:
+                    try_i += 1
+                    time.sleep(10)      
+
 
             article = article_response.choices[0].text
         else:
