@@ -22,9 +22,6 @@ import os
 from dotenv import load_dotenv
 
 import stripe
-# This is a public sample test API key.
-# Don’t submit any personally identifiable information in requests made with this key.
-# Sign in to see your own test API key embedded in code samples.
 
 load_dotenv()
 
@@ -53,6 +50,7 @@ ENV_KEYS = {
     "client_x509_cert_url": os.environ["CLIENT_x509_CERT_URL"],
 }
 
+# initialize database
 cred = credentials.Certificate(ENV_KEYS)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -67,18 +65,19 @@ os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
+# only set a new global user_email var if one does not exist
 var_exists = 'user_email' in locals() or 'user_email' in globals()
 if not var_exists:
     print('set user email')
     user_email = ''
 
 
-
+# check if allowed filename
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
+# handle waiting for results and results rendering
 def get_template(result=None, refresh=False):
     
     if refresh==False:
@@ -115,6 +114,10 @@ def get_template(result=None, refresh=False):
 
     return render_template_string(template_str, refresh=refresh)
 
+
+'''Flask app routes. Handles what renders when a user lands at each url'''
+
+# page user lands at after process
 @app.route('/result/<string:id>')
 def result(id):
     job = Job.fetch(id, connection=conn)
@@ -125,19 +128,7 @@ def result(id):
         combined, user, failed = job.result
         return get_template(combined)
 
-@app.route('/waitlist', methods=["GET", "POST"])
-def enqueue():
-    if request.method == 'POST':
-        email = request.form['email']
-
-        if email not in allow_list:
-            db.collection("waitlist").document().set({
-                'email': email,
-                'time': datetime.now(),
-            })
-
-    return render_template('index.html')
-
+# route triggered by form submission
 @app.route('/process', methods=["GET", "POST"])
 def process():
     if request.method == 'POST':
@@ -220,14 +211,17 @@ def process():
     else:
         return render_template('index.html')
 
+# home page
 @app.route('/')
 def index():
     return render_template('index.html', error=None)
 
+# for internal use, page that allows for debugging form submissions
 @app.route('/accelerated')
 def index_accelerated():
     return render_template('index_accelerated.html', error=None)
 
+# for internal use, triggered after form submission at /accelerated
 @app.route('/accelerated_process', methods=["GET", "POST"])
 def accelerated_process():
     if request.method == 'POST':
@@ -314,14 +308,17 @@ def accelerated_process():
     else:
         return render_template('index.html')
 
+# checkout page
 @app.route('/checkout', methods=['GET'])
 def checkout():
   return render_template('checkout.html')
 
+# privacy page
 @app.route('/privacy', methods=['GET', 'POST'])
 def privacy():
     return render_template('privacy.html')
 
+# catch user email for use in sending results and submission to openai
 @app.route('/log_email', methods=['POST'])
 def log_email():    
     global user_email
@@ -332,6 +329,7 @@ def log_email():
 
     return jsonify(status="success", data=data)
 
+# listen to stripe events
 @app.route('/webhook', methods=['POST'])
 def webhook_received():
     print('webhook')
@@ -391,6 +389,3 @@ def webhook_received():
 
 if __name__ == '__main__':
   app.run(ssl_context="adhoc")
-
-# if __name__ == '__main__':
-#     app.run(port=4242)

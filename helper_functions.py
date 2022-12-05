@@ -234,38 +234,38 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
 
-                        ## filter ads
-                        ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
-                        print(ad_prompt)
-                        is_ad_response = openai.Completion.create(
-                            model='text-davinci-003',
-                            prompt=ad_prompt,
-                            max_tokens=max_tokens_output_is_ad,
-                            temperature=0.0,
-                            user=user,
-                        )
+                        # ## filter ads
+                        # ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
+                        # print(ad_prompt)
+                        # is_ad_response = openai.Completion.create(
+                        #     model='text-davinci-003',
+                        #     prompt=ad_prompt,
+                        #     max_tokens=max_tokens_output_is_ad,
+                        #     temperature=0.0,
+                        #     user=user,
+                        # )
 
-                        is_ad_response = is_ad_response.choices[0].text
-                        print(is_ad_response)
-                        is_ad_response = is_ad_response.lower()
+                        # is_ad_response = is_ad_response.choices[0].text
+                        # print(is_ad_response)
+                        # is_ad_response = is_ad_response.lower()
 
-                        ## filter promos
-                        promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
-                        print(promo_prompt)
-                        is_promo_response = openai.Completion.create(
-                            model='text-davinci-003',
-                            prompt=promo_prompt,
-                            max_tokens=max_tokens_output_is_ad,
-                            temperature=0.0,
-                            user=user,
-                        )
+                        # ## filter promos
+                        # promo_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of a promotion for another podcast? Respond with either "yes" or "no".'
+                        # print(promo_prompt)
+                        # is_promo_response = openai.Completion.create(
+                        #     model='text-davinci-003',
+                        #     prompt=promo_prompt,
+                        #     max_tokens=max_tokens_output_is_ad,
+                        #     temperature=0.0,
+                        #     user=user,
+                        # )
 
-                        is_promo_response = is_promo_response.choices[0].text
-                        print(is_promo_response)
-                        is_promo_response = is_promo_response.lower()
+                        # is_promo_response = is_promo_response.choices[0].text
+                        # print(is_promo_response)
+                        # is_promo_response = is_promo_response.lower()
 
-                        if ('no' in is_ad_response) and ('no' in is_promo_response):
-                            cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
+                        # if ('no' in is_ad_response) and ('no' in is_promo_response):
+                        cleaned_paragraphs_no_ads.append(current_speaker_sentences_joined)
 
                     current_speaker = speaker
                     current_speaker_sentences = [sentence]
