@@ -29,8 +29,6 @@ import shutil
 import random
 import string
 from fuzzywuzzy import process
-import firebase_admin
-from firebase_admin import credentials, auth, firestore
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -50,19 +48,8 @@ MAILGUN_API_KEY = os.environ["MAILGUN_API_KEY"]
 MAILGUN_DOMAIN = os.environ["MAILGUN_DOMAIN"]
 MAIL_USERNAME = os.environ["MAIL_USERNAME"]
 
-ENV_KEYS = {
-    "type": "service_account",
-    "project_id": os.environ["FIREBASE_PROJECT_ID"],
-    "private_key_id": os.environ["FIREBASE_PRIVATE_KEY_ID"],
-    "private_key": os.environ["FIREBASE_PRIVATE_KEY"].replace("\\n", "\n"),
-    "client_email": os.environ["FIREBASE_CLIENT_EMAIL"],
-    "client_id": os.environ["FIREBASE_CLIENT_ID"],
-    "auth_uri": os.environ["FIREBASE_AUTH_URI"],
-    "token_uri": os.environ["FIREBASE_TOKEN_URI"],
-    "auth_provider_x509_cert_url": os.environ["FIREBASE_AUTH_PROVIDER_x509_cert_url"],
-    "client_x509_cert_url": os.environ["CLIENT_x509_CERT_URL"],
-}
 
+# formatting timestamps
 def millsecond_to_timestamp(ms):
     millis = int(ms)
     seconds=(millis/1000)%60
@@ -74,7 +61,7 @@ def millsecond_to_timestamp(ms):
 
     return "%d:%02d:%02d" % (hours, minutes, seconds)
 
-
+# download the audio of a url (google podcasts or youtube)
 def download_yt(url, filename):
     try:
         ydl_opts = {
@@ -102,7 +89,7 @@ def download_yt(url, filename):
     except:
         return 'failed'
 
-
+# upload a file to Google Cloud
 def upload_to_gs(bucket_name, source_file_name, destination_file_name):
     """Uploads a file to the bucket."""
     # The ID of your GCS bucket
@@ -124,6 +111,7 @@ def upload_to_gs(bucket_name, source_file_name, destination_file_name):
         )
     )
 
+# download a file from Google Cloud
 def download_from_gs(bucket_name, source_file_name, destination_file_name):
     """Downloads a blob from the bucket."""
     # The ID of your GCS bucket
@@ -146,7 +134,7 @@ def download_from_gs(bucket_name, source_file_name, destination_file_name):
     blob = bucket.blob(source_file_name)
     blob.download_to_filename(destination_file_name)
 
-
+# signed url for downloading
 def generate_download_signed_url_v4(bucket_name, blob_name):
     """Generates a v4 signed URL for downloading a blob.
 
@@ -169,7 +157,7 @@ def generate_download_signed_url_v4(bucket_name, blob_name):
 
     return url
 
-
+# call transcription api with audio file
 def assembly_start_transcribe(audio_file):
 
     endpoint = "https://api.assemblyai.com/v2/transcript"
@@ -192,7 +180,7 @@ def assembly_start_transcribe(audio_file):
     
     return transcript_id
 
-
+# retrieve transcription and format
 def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
     endpoint = "https://api.assemblyai.com/v2/transcript/" + transcript_id + '/sentences'
@@ -390,9 +378,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
     else:
         return 'error', None, None, None, None
 
-
+# get number of lines that can fit in context window 
 def get_max_lines(exchanges, n):
-    
     
     while n > 0:
         n_chars = []
@@ -410,7 +397,7 @@ def get_max_lines(exchanges, n):
     
     print("Could not get number of summary lines")
 
-
+# split transcript into context window chunks
 def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
         
     prompt_chunks = []
@@ -442,7 +429,7 @@ def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
 
     return prompt_chunks
 
-    
+# openai content filter    
 def content_filter(content_to_classify, user):
     response = openai.Completion.create(
       engine="content-filter-alpha",
@@ -496,22 +483,7 @@ def content_filter(content_to_classify, user):
 
     return output_label
 
-
-def clean_chunk(txt):
-    txt_split = re.split('\n\n', txt)
-    txt_groups = []
-    for s in txt_split:
-        s = s.lstrip()
-        if s[-1:] not in ['.', '!', '?']:
-            s_sub = re.split('(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', s)
-            s_keep = s_sub[:-1]
-            s = ' '.join(s_keep)
-        txt_groups.append(s)
-    
-    txt = '\n\n'.join(txt_groups)
-    return txt
-
-
+# get length of audio
 def get_length(filename):
     result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
                              "format=duration", "-of",
@@ -520,7 +492,7 @@ def get_length(filename):
         stderr=subprocess.STDOUT)
     return float(result.stdout)
 
-
+# split text for text overlays on memes
 def split_txt_into_multi_lines(input_str, line_length): ##from https://stackoverflow.com/questions/50628267/ffmpeg-creating-video-using-drawtext-along-with-word-wrap-and-padding
     words = input_str.split(" ")
     line_count = 0
@@ -539,7 +511,7 @@ def split_txt_into_multi_lines(input_str, line_length): ##from https://stackover
     
     return split_input
 
-
+# create animated video from the audio file
 def create_video(
     user,
     filename,
@@ -643,39 +615,9 @@ def create_video(
         print("top_quote_image_description")
         print(top_quote_image_description)
 
-        # top_quote_image_description_part_2 = top_quote_image_description_response.choices[1].text
-
-        # ## first log the classification
-        # top_quote_image_description_classification_part_2 = content_filter(top_quote_image_description_part_2, user)
-
-        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace(':', '')
-        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('"', '')
-        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('\n\n', '')
-        # top_quote_image_description_part_2 = top_quote_image_description_part_2.lstrip()
-
-        # print("this is top_quote_image_description_part_2")
-        # print(top_quote_image_description_part_2)
-
-        # print("this is third prompt:")
-     
-        # top_quote_image_description_part_3 = top_quote_image_description_response.choices[2].text
-
-        # ## first log the classification
-        # top_quote_image_description_classification_part_3 = content_filter(top_quote_image_description_part_3, user)
-
-        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace(':', '')
-        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('"', '')
-        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('\n\n', '')
-        # top_quote_image_description_part_3 = top_quote_image_description_part_3.lstrip()
-
-        # print(top_quote_image_description_part_3)
-
         ## make once sentence, all lowercase
         top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
         top_quote_image_descriptions.append(top_quote_image_description)
-        # top_quote_image_description_part_2 = top_quote_image_description_part_2.replace('.', ',').replace('!', ',').replace('?', ',').lower()
-        # top_quote_image_description_part_3 = top_quote_image_description_part_3.replace('.', ',').replace('!', ',').replace('?', ',').lower()    
-
 
     if '2' not in top_quote_image_description_classifications: ##unsafe
 
@@ -739,7 +681,7 @@ def create_video(
 
         return image_audio_filename
 
-
+# create meme of top quote
 def create_meme(
     user,
     filename,
@@ -853,7 +795,7 @@ def create_meme(
 
         return meme_filename
 
-
+# turn transcript into article, audio clips, top quotes
 def convert(
     user,
     cleaned_paragraphs,
@@ -1163,7 +1105,7 @@ def convert(
 
     return article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text
 
-
+# handle audio to all outputs
 def run_combined(
     content,
     content_type,
@@ -1509,11 +1451,11 @@ def run_combined(
              )
         return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
     
-
+# (not for use in production) make article more readable
 def present_article(article):
     print('\n\n'.join([x for x in article.split('\n') if x not in ['', ' ']])) 
     
-
+# (not for use in production) get transcript only, used for training data
 def get_transcript(
     url,
     speakers_input, 
