@@ -76,12 +76,6 @@ else:
     print('user email already set')
     print(user_email)
 
-def wait_until(predicate, timeout, period=0.25):
-  mustend = time.time() + timeout
-  while time.time() < mustend:
-    if predicate: return True
-    time.sleep(period)
-  return False
 
 # check if allowed filename
 def allowed_file(filename):
@@ -327,7 +321,7 @@ def accelerated_process():
 # checkout page
 @app.route('/checkout', methods=['GET'])
 def checkout():
-  return render_template('checkout.html')
+  return render_template('checkout.html', user=session['email'])
 
 # privacy page
 @app.route('/privacy', methods=['GET', 'POST'])
@@ -379,33 +373,29 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        if wait_until('email' in session, 10):
-            print('this is session email: ' + session['email'])
-            user_ref = db.collection('users_info').document(session['email'])
-            user_ref.update({'status': 'premium'})
-        else:
-            print('wait_until timed out')
+        print('this is client_reference_id: ' + request_data.client_reference_id)
+        user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
-        if wait_until('email' in session, 10):
-            print('this is session email: ' + session['email'])
-            user_ref = db.collection('users_info').document(session['email'])
-            user_ref.update({'status': 'premium'})
-        else:
-            print('wait_until timed out')
+        print('this is client_reference_id: ' + request_data.client_reference_id)
+        user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.payment_failed':
     # The payment failed or the customer does not have a valid payment method.
     # The subscription becomes past_due. Notify your customer and send them to the
     # customer portal to update their payment information.
-        user_ref = db.collection('users_info').document(user_email)
+        print('this is client_reference_id: ' + request_data.client_reference_id)
+        user_ref = db.collection('users_info').document(request_data.client_reference_id)
         user_ref.update({'status': 'past_due'})
 
     elif event_type == 'customer.subscription.deleted':
-        user_ref = db.collection('users_info').document(user_email)
+        print('this is client_reference_id: ' + request_data.client_reference_id)
+        user_ref = db.collection('users_info').document(request_data.client_reference_id)
         user_ref.update({'status': 'trial'})
 
     else:
