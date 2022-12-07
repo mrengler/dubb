@@ -321,7 +321,12 @@ def accelerated_process():
 # checkout page
 @app.route('/checkout', methods=['GET'])
 def checkout():
-  return render_template('checkout.html', user=session['email'])
+    email = session['email']
+    email_modified = email.replace('@', '_emailatemoEv_')
+    print('this is email and email_modified')
+    print(email)
+    print(email_modified)
+    return render_template('checkout.html', user=email, client_reference_id=email_modified)
 
 # privacy page
 @app.route('/privacy', methods=['GET', 'POST'])
@@ -373,17 +378,20 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        print('this is client_reference_id: ' + request_data.client_reference_id)
-        user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        client_reference_id = request_data['client_reference_id']
+        client_reference_id = client_reference_id.replace('_emailatemoEv_', '@')
+        print('this is client_reference_id: ' + client_reference_id)
+        user_ref = db.collection('users_info').document(client_reference_id)
         user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
-        print('this is client_reference_id: ' + request_data.client_reference_id)
-        user_ref = db.collection('users_info').document(request_data.client_reference_id)
-        user_ref.update({'status': 'premium'})
+        # print('this is client_reference_id: ' + request_data.client_reference_id)
+        # user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        # user_ref.update({'status': 'premium'})
+        print('hit invoice.paid')
 
     elif event_type == 'invoice.payment_failed':
     # The payment failed or the customer does not have a valid payment method.
