@@ -296,9 +296,16 @@ window.onload=function(){
     var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
     onSignIn(googleUser);
   } 
-  // else if (loggedin === false) {
+  else if (loggedin === false) {
   //   signOut();
-  // }
+    var floatingsignon = document.getElementById("floating-sign-in");
+    auth2.attachClickHandler(
+      floatingsignon, {}, 
+      onSignIn, 
+      function(error) {
+      console.log(JSON.stringify(error, undefined, 2));
+    });
+  }
   // // testingSignIn();
   // UNCOMMENT WHEN DONE WITH TESTING
 
