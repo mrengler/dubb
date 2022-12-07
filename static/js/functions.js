@@ -160,19 +160,21 @@ function onSignIn(googleUser) {
   signin.style.display = "none";
   upgrade.style.display = "block";
 
-  $.ajax({
-      type: "POST",
-      url: "/log_email",
-      contentType: "application/json",
-      data: JSON.stringify({user: email}),
-      dataType: "json",
-      success: function(response) {
-          console.log(response);
-      },
-      error: function(err) {
-          console.log(err);
-      }
-  });
+if (email) {
+    $.ajax({
+        type: "POST",
+        url: "/log_email",
+        contentType: "application/json",
+        data: JSON.stringify({user: email}),
+        dataType: "json",
+        success: function(response) {
+            console.log(response);
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+  }
 }
 
 function signOut() {
