@@ -299,6 +299,7 @@ window.onload=function(){
   else if (loggedin === false) {
   //   signOut();
     var floatingsignon = document.getElementById("floating-sign-in");
+    var auth2 = gapi.auth2.getAuthInstance();
     auth2.attachClickHandler(
       floatingsignon, {}, 
       onSignIn, 
