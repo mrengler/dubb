@@ -334,7 +334,10 @@ def log_email():
     user_email = data['user']
     print('logged user_email')
     print(user_email)
-    session['email'] = user_email
+    if user_email != '':
+        session['email'] = user_email
+    else
+        session.pop('email', None)
 
     return jsonify(status="success", data=data)
 
