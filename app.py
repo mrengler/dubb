@@ -371,17 +371,16 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        print('this is user_email: ' + user_email)
-        user_ref = db.collection('users_info').document(user_email)
+        print('this is session email: ' + session['email'])
+        user_ref = db.collection('users_info').document(session['email'])
         user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
-        print('this is user_email')
-        print(user_email)
-        user_ref = db.collection('users_info').document(user_email)
+        print('this is session email: ' + session['email'])
+        user_ref = db.collection('users_info').document(session['email'])
         user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.payment_failed':
