@@ -71,6 +71,11 @@ if not var_exists:
     print('set user email')
     user_email = ''
 
+if auth.UserInfo.email:
+    print('auth.UserInfo.email')
+    print(auth.UserInfo.email)
+else:
+    print('no current_user')
 
 # check if allowed filename
 def allowed_file(filename):
@@ -359,6 +364,7 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
+        print('this is user_email: ' + user_email)
         user_ref = db.collection('users_info').document(user_email)
         user_ref.update({'status': 'premium'})
 

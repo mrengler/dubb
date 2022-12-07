@@ -286,6 +286,8 @@ window.onload=function(){
   })
 
   // UNCOMMENT WHEN DONE WITH TESTING
+  console.log('google auth object');
+  console.log(gapi.auth2.getAuthInstance());
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   if (loggedin === true) {
     onSignIn();
