@@ -1,7 +1,7 @@
 import requests
 import smtplib
 from email.mime.text import MIMEText
-from flask import request, Flask, url_for, render_template, render_template_string, redirect, jsonify, json, current_app
+from flask import request, Flask, url_for, render_template, render_template_string, redirect, jsonify, session
 from flask_mail import Mail, Message
 from helper_functions import *
 from allow_list import allow_list
@@ -34,6 +34,7 @@ openai_model = os.environ["OPENAI_MODEL"]
 complete_end_string = os.environ["COMPLETE_END_STRING"]
 stripe.api_key = os.environ["STRIPE_API_KEY"]
 webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
+app.secret_key = os.environ["APP_SECRET_KEY"]
 
 q = Queue(connection=conn, default_timeout=3600)
 
@@ -216,6 +217,11 @@ def process():
 # home page
 @app.route('/')
 def index():
+    print('this is session')
+    if 'email' in session:
+        print(session['email'])
+    else:
+        print('no email recorded')
     return render_template('index.html', error=None)
 
 # for internal use, page that allows for debugging form submissions
@@ -328,6 +334,7 @@ def log_email():
     user_email = data['user']
     print('logged user_email')
     print(user_email)
+    session['email'] = user_email
 
     return jsonify(status="success", data=data)
 
