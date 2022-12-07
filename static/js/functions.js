@@ -293,9 +293,10 @@ window.onload=function(){
   if (loggedin === true) {
     var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
     onSignIn(googleUser);
-  } else if (loggedin === false) {
-    signOut();
-  }
+  } 
+  // else if (loggedin === false) {
+  //   signOut();
+  // }
   // testingSignIn();
   // UNCOMMENT WHEN DONE WITH TESTING
 
