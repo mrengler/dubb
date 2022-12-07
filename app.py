@@ -70,12 +70,9 @@ var_exists = 'user_email' in locals() or 'user_email' in globals()
 if not var_exists:
     print('set user email')
     user_email = ''
-
-if auth.UserInfo.email:
-    print('auth.UserInfo.email')
-    print(auth.UserInfo.email)
 else:
-    print('no current_user')
+    print('user email already set')
+    print(user_email)
 
 # check if allowed filename
 def allowed_file(filename):
