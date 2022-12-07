@@ -10,6 +10,7 @@ import re
 from rq import Queue
 from rq.job import Job
 from worker import conn
+import time
 from time import sleep
 from flask_mail import Mail
 import firebase_admin
@@ -74,6 +75,13 @@ if not var_exists:
 else:
     print('user email already set')
     print(user_email)
+
+def wait_until(predicate, timeout, period=0.25):
+  mustend = time.time() + timeout
+  while time.time() < mustend:
+    if predicate: return True
+    time.sleep(period)
+  return False
 
 # check if allowed filename
 def allowed_file(filename):
@@ -371,17 +379,23 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        print('this is session email: ' + session['email'])
-        user_ref = db.collection('users_info').document(session['email'])
-        user_ref.update({'status': 'premium'})
+        if wait_until('email' in session, 10):
+            print('this is session email: ' + session['email'])
+            user_ref = db.collection('users_info').document(session['email'])
+            user_ref.update({'status': 'premium'})
+        else:
+            print('wait_until timed out')
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
     # Store the status in your database and check when a user accesses your service.
     # This approach helps you avoid hitting rate limits.
-        print('this is session email: ' + session['email'])
-        user_ref = db.collection('users_info').document(session['email'])
-        user_ref.update({'status': 'premium'})
+        if wait_until('email' in session, 10):
+            print('this is session email: ' + session['email'])
+            user_ref = db.collection('users_info').document(session['email'])
+            user_ref.update({'status': 'premium'})
+        else:
+            print('wait_until timed out')
 
     elif event_type == 'invoice.payment_failed':
     # The payment failed or the customer does not have a valid payment method.
