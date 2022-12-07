@@ -291,7 +291,8 @@ window.onload=function(){
   console.log(gapi.auth2.getAuthInstance().currentUser.get());
   var loggedin = gapi.auth2.getAuthInstance().isSignedIn.get();
   if (loggedin === true) {
-    onSignIn();
+    var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
+    onSignIn(googleUser);
   } else if (loggedin === false) {
     signOut();
   }
