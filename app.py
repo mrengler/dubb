@@ -379,7 +379,9 @@ def webhook_received():
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
         if webhook_secret:
-            client_reference_id = event['client_reference_id']
+            stripe_session = event['data']['object']
+            # # Fetch all the required data from session
+            client_reference_id = stripe_session.get('client_reference_id')
             client_reference_id = client_reference_id.replace('_emailatemoEv_', '@').replace('_periodqzaRG_', '.')
             print('this is client_reference_id: ' + client_reference_id)
             user_ref = db.collection('users_info').document(client_reference_id)
@@ -398,14 +400,20 @@ def webhook_received():
     # The payment failed or the customer does not have a valid payment method.
     # The subscription becomes past_due. Notify your customer and send them to the
     # customer portal to update their payment information.
-        print('this is client_reference_id: ' + request_data.client_reference_id)
-        user_ref = db.collection('users_info').document(request_data.client_reference_id)
-        user_ref.update({'status': 'past_due'})
+
+        ## TO BE FIXED
+        # print('this is client_reference_id: ' + request_data.client_reference_id)
+        # user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        # user_ref.update({'status': 'past_due'})
+        print('hit invoice.payment_failed')
 
     elif event_type == 'customer.subscription.deleted':
-        print('this is client_reference_id: ' + request_data.client_reference_id)
-        user_ref = db.collection('users_info').document(request_data.client_reference_id)
-        user_ref.update({'status': 'trial'})
+
+        ## TO BE FIXED
+        # print('this is client_reference_id: ' + request_data.client_reference_id)
+        # user_ref = db.collection('users_info').document(request_data.client_reference_id)
+        # user_ref.update({'status': 'trial'})
+        print('hit customer.subscription.deleted')
 
     else:
       print('Unhandled event type {}'.format(event_type))
