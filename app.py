@@ -326,7 +326,7 @@ def checkout():
     print('this is email and email_modified')
     print(email)
     print(email_modified)
-    return render_template('checkout.html', user=email, client_reference_id=email_modified)
+    return render_template('checkout.html', client_reference_id=email_modified)
 
 # privacy page
 @app.route('/privacy', methods=['GET', 'POST'])
@@ -378,11 +378,12 @@ def webhook_received():
     if event_type == 'checkout.session.completed':
     # Payment is successful and the subscription is created.
     # You should provision the subscription and save the customer ID to your database.
-        client_reference_id = request_data['client_reference_id']
-        client_reference_id = client_reference_id.replace('_emailatemoEv_', '@').replace('_periodqzaRG_', '.')
-        print('this is client_reference_id: ' + client_reference_id)
-        user_ref = db.collection('users_info').document(client_reference_id)
-        user_ref.update({'status': 'premium'})
+        if webhook_secret:
+            client_reference_id = event['client_reference_id']
+            client_reference_id = client_reference_id.replace('_emailatemoEv_', '@').replace('_periodqzaRG_', '.')
+            print('this is client_reference_id: ' + client_reference_id)
+            user_ref = db.collection('users_info').document(client_reference_id)
+            user_ref.update({'status': 'premium'})
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
