@@ -296,10 +296,10 @@ window.onload=function(){
     var googleUser = gapi.auth2.getAuthInstance().currentUser.get();
     onSignIn(googleUser);
   } 
-  else if (loggedin === false) {
-    signOut();
-  }
-  // testingSignIn();
+  // else if (loggedin === false) {
+  //   signOut();
+  // }
+  // // testingSignIn();
   // UNCOMMENT WHEN DONE WITH TESTING
 
 }

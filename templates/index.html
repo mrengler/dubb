@@ -86,13 +86,13 @@
       <p class=error><strong>Error:</strong> {{ error }}
     {% endif %}
     <div style="position: relative;">
-      <div id="floating-sign-in" class="loader" hidden>
+      <div id="floating-sign-in" class="loader" style="display: block;" hidden>
         <span>Sign in with Google to try Dubb for free</span>
       </div>
       <div id="floating-upgrade" class="loader" hidden>
         <span><a href='/checkout' target="_blank" style="color: white; text-decoration:none;">Upgrade to Premium to continue using Dubb</a></span>
       </div>
-      <div id='input-div' class='unblur'>
+      <div id='input-div' class='blur'>
         <fieldset id="input-form" disabled=true style="display: block;">
         <!-- <fieldset id="input-form" style="display: block;"> -->
           <form action="/process" method="POST" id="url-form" enctype = "multipart/form-data">
