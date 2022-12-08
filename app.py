@@ -422,7 +422,7 @@ def webhook_received():
             print('this is stripe_session')
             print(stripe_session)
             # # Fetch all the required data from session
-            subscription_id = stripe_session.get('subscription')
+            subscription_id = stripe_session.get('id')
             print('this is subscription_id')
             print(subscription_id)
             subscription_ref = db.collection('subscriptions').document(subscription_id)
