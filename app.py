@@ -382,10 +382,19 @@ def webhook_received():
             stripe_session = event['data']['object']
             # # Fetch all the required data from session
             client_reference_id = stripe_session.get('client_reference_id')
-            client_reference_id = client_reference_id.replace('_emailatemoEv_', '@').replace('_periodqzaRG_', '.')
+            email = client_reference_id.replace('_emailatemoEv_', '@').replace('_periodqzaRG_', '.')
             print('this is client_reference_id: ' + client_reference_id)
-            user_ref = db.collection('users_info').document(client_reference_id)
-            user_ref.update({'status': 'premium'})
+            subscription_id = stripe_session.get('subscription')
+            user_ref = db.collection('users_info').document(email)
+            user_ref.update({
+                'status': 'premium',
+                'subscription_id': subscription_id
+            })
+
+            db.collection("subscriptions").doc(subscription_id).set({
+                'active': True,
+                'user': email
+            })
 
     elif event_type == 'invoice.paid':
     # Continue to provision the subscription as payments continue to be made.
@@ -408,6 +417,20 @@ def webhook_received():
         print('hit invoice.payment_failed')
 
     elif event_type == 'customer.subscription.deleted':
+        if webhook_secret:
+            stripe_session = event['data']['object']
+            # # Fetch all the required data from session
+            subscription_id = stripe_session.get('subscription')
+            subscription_ref = db.collection('subscriptions').document(subscription_id)
+            subscription_ref.update({
+                'active': False
+            })
+            subscription_dict = subscription_ref.get().to_dict()
+            email = subscription_dict['user']
+            user_ref = db.collection('users_info').document(email)
+            user_ref.update({
+                'status': 'trial'
+            })
 
         ## TO BE FIXED
         # print('this is client_reference_id: ' + request_data.client_reference_id)
