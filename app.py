@@ -419,8 +419,12 @@ def webhook_received():
     elif event_type == 'customer.subscription.deleted':
         if webhook_secret:
             stripe_session = event['data']['object']
+            print('this is stripe_session')
+            print(stripe_session)
             # # Fetch all the required data from session
             subscription_id = stripe_session.get('subscription')
+            print('this is subscription_id')
+            print(subscription_id)
             subscription_ref = db.collection('subscriptions').document(subscription_id)
             subscription_ref.update({
                 'active': False
