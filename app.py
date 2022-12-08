@@ -391,7 +391,7 @@ def webhook_received():
                 'subscription_id': subscription_id
             })
 
-            db.collection("subscriptions").doc(subscription_id).set({
+            db.collection("subscriptions").document(subscription_id).set({
                 'active': True,
                 'user': email
             })
