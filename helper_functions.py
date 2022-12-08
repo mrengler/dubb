@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+# token values for gpt3 context window
 max_token_input = 3000
 max_tokens_output = 1000
 max_tokens_facts_quotes = 500
@@ -7,9 +8,15 @@ max_tokens_output_base_model = 4097
 max_tokens_output_is_ad = 10
 max_tokens_output_image_description = 120
 max_tokens_output_article_final = 2000
+
+# rough approximation of string characters per token 
 chars_per_token = 3.55
+
+# max audio and video clips to produce
 num_audios_to_produce = 5
 num_videos_to_produce = 3
+
+# constants for video creation
 double = 2
 frame_rate = 10
 min_video_length = 20
@@ -44,6 +51,8 @@ load_dotenv()
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
 REPLICATE_API_TOKEN = os.environ.get('REPLICATE_API_TOKEN')
+REPLICATE_ANIMATION_MODEL = os.environ.get('REPLICATE_ANIMATION_MODEL')
+REPLICATE_MEME_MODEL = os.environ.get('REPLICATE_MEME_MODEL')
 MAILGUN_API_KEY = os.environ["MAILGUN_API_KEY"]
 MAILGUN_DOMAIN = os.environ["MAILGUN_DOMAIN"]
 MAIL_USERNAME = os.environ["MAIL_USERNAME"]
@@ -189,6 +198,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
         "authorization": ASSEMBLY_API_KEY,
     }
 
+    # get the response from assemblyAI
     response = requests.get(endpoint, headers=headers)
     response_json = response.json()
 
@@ -196,9 +206,9 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
     print(response)
     print(response_json)
 
+    # check if the transcript is done
     if 'sentences' in response_json:
     
-    # try:
         sentences = response.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
         speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
@@ -221,6 +231,12 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                     if current_speaker != '':
                         current_speaker_sentences_joined = current_speaker + ": " + " ".join(current_speaker_sentences)
                         cleaned_paragraphs.append(current_speaker_sentences_joined)
+
+                        '''
+                        The following code filters ads, but I commented it out because it was causing 
+                        too many calls to openai api and delaying results. It would be valuable to have
+                        back though because sometimes ads contaminate results.  
+                        '''
 
                         # ## filter ads
                         # ad_prompt = 'The transcript:\n\n' + '[' + str(start_time) + '] ' + current_speaker_sentences_joined + '\n\nIs this the transcript of an ad? Respond with either "yes" or "no".'
@@ -360,42 +376,15 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
             return cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized
 
-        ##TODO this should be cleaned up since we're never using paragraphs==False
-        elif paragraphs==False:
-
-            cleaned_sentences = [speaker_hash[speaker] + ": " +  sentence for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-            start_times = [start_time for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-            start_times_unformatted = [start_time_unformatted for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
-
-            return cleaned_sentences, start_times, cleaned_sentences, start_times_unformatted, sentences_diarized
-
     elif 'error' in response_json:
-        ## processing
+        ## transcript is still processing
         if response_json['error'] == "This transcript has a status of 'processing'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'waiting', None, None, None, None
+        # error
         elif response_json['error'] == "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'error', None, None, None, None   
     else:
         return 'error', None, None, None, None
-
-# get number of lines that can fit in context window 
-def get_max_lines(exchanges, n):
-    
-    while n > 0:
-        n_chars = []
-
-        for i in range(0, len(exchanges), n):
-            exchanges_chunk = exchanges[i:i + n]
-            exchanges_chunk_joined = ' '.join(exchanges_chunk)
-            n_char = len([char for char in exchanges_chunk_joined])
-            n_chars.append(1.0 * n_char / chars_per_token < max_token_input)
-
-        if False not in n_chars:
-            return n
-        else:
-            n += -1
-    
-    print("Could not get number of summary lines")
 
 # split transcript into context window chunks
 def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
@@ -408,11 +397,11 @@ def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
     
     for sentence in cleaned_paragraphs:
         sentence_chars = len([char for char in sentence])
-        
+        # keep adding text chunks while still under the context window length
         if used_chars + sentence_chars <= num_chars:
             chunk.append(sentence)
             used_chars += sentence_chars
-            
+        #start a new batch    
         else:
             if for_transcript==True:
                 prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
@@ -493,7 +482,8 @@ def get_length(filename):
     return float(result.stdout)
 
 # split text for text overlays on memes
-def split_txt_into_multi_lines(input_str, line_length): ##from https://stackoverflow.com/questions/50628267/ffmpeg-creating-video-using-drawtext-along-with-word-wrap-and-padding
+# from https://stackoverflow.com/questions/50628267/ffmpeg-creating-video-using-drawtext-along-with-word-wrap-and-padding
+def split_txt_into_multi_lines(input_str, line_length):
     words = input_str.split(" ")
     line_count = 0
     split_input = ""
@@ -525,8 +515,9 @@ def create_video(
     fact_text
     ):
 
-    replicate_model = replicate.models.get("deforum/deforum_stable_diffusion")
+    replicate_model = replicate.models.get(REPLICATE_ANIMATION_MODEL)
 
+    # set prompt text for the style that the user chose
     if visual_style == 'low_poly':
         object_text = 'Concept art of '
         style_text = 'low poly'
@@ -550,7 +541,7 @@ def create_video(
 
     while ((try_i < tries) and (success == '')):
         try:
-
+            # generate descriptions of the animation
             top_quote_image_description_response_pre = openai.Completion.create(
                 model='text-davinci-003',
                 prompt=prompt_text_pre,
@@ -565,7 +556,7 @@ def create_video(
             try_i += 1
             time.sleep(10)
 
-
+    # get the three different image descriptions
     top_quote_image_description_pre_one = top_quote_image_description_response_pre.choices[0].text
     top_quote_image_description_pre_two = top_quote_image_description_response_pre.choices[1].text
     top_quote_image_description_pre_three = top_quote_image_description_response_pre.choices[2].text
@@ -574,6 +565,7 @@ def create_video(
     top_quote_image_descriptions = []
     for top_quote_image_description_pre in [top_quote_image_description_pre_one, top_quote_image_description_pre_two, top_quote_image_description_pre_three]:
 
+        # formatting for each description
         top_quote_image_description_pre = top_quote_image_description_pre.replace(':', '')
         top_quote_image_description_pre = top_quote_image_description_pre.lstrip()
 
@@ -585,6 +577,7 @@ def create_video(
         try_i = 0
         success = ''
 
+        # edit each description to remove things that aren't physical details 
         while ((try_i < tries) and (success == '')):
             try:
 
@@ -603,7 +596,7 @@ def create_video(
 
         top_quote_image_description = top_quote_image_description_response.choices[0].text
 
-        ## first log the classification
+        ## get the content classification
         top_quote_image_description_classification = content_filter(top_quote_image_description, user)
         top_quote_image_description_classifications.append(top_quote_image_description_classification)
 
@@ -619,8 +612,9 @@ def create_video(
         top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
         top_quote_image_descriptions.append(top_quote_image_description)
 
-    if '2' not in top_quote_image_description_classifications: ##unsafe
+    if '2' not in top_quote_image_description_classifications: ##2 is unsafe
 
+        # get the animation from replicate
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
@@ -645,13 +639,13 @@ def create_video(
                 src = image.output
             i += 1
 
+        # generate a random string to assign the clip in the data
         random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
 
         ##download from replicate
         image_filename = filename.split('.')[0] + '_image_' + str(num_videos) + random_str + ".mp4"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
-
 
         ##slow looped animation
         slow_multiple = 1.25
@@ -677,6 +671,7 @@ def create_video(
         ##trim end of video
         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
+        ## save video to google cloud
         upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
 
         return image_audio_filename
@@ -694,8 +689,9 @@ def create_meme(
     fact_text
     ):
 
-    replicate_model = replicate.models.get("stability-ai/stable-diffusion")
+    replicate_model = replicate.models.get(REPLICATE_MEME_MODEL)
 
+    # set prompt text for the style that the user chose
     if visual_style == 'low_poly':
         object_text = 'Concept art of '
         style_text = 'low poly'
@@ -711,6 +707,7 @@ def create_meme(
 
     print(prompt_text)
 
+    # generate descriptions of the image
     top_quote_image_description_response = openai.Completion.create(
         model='text-davinci-003',
         prompt=prompt_text,
@@ -722,20 +719,21 @@ def create_meme(
 
     top_quote_image_description = top_quote_image_description_response.choices[0].text
 
-    ## first log the classification
+    # get the classification
     top_quote_image_description_classification = content_filter(top_quote_image_description, user)
 
+    # format the description
     top_quote_image_description = top_quote_image_description.replace(':', '')
     top_quote_image_description = top_quote_image_description.lstrip()
 
-    ## make once sentence, all lowercase
+    # make once sentence, all lowercase
     top_quote_image_description = top_quote_image_description.replace('.', ',').replace('!', ',').replace('?', ',').lower()
 
     print("top_quote_image_description")
     print(top_quote_image_description)
 
     if (top_quote_image_description_classification != '2'):
-
+        # get the image from replicate 
         image = replicate.predictions.create(
             version=replicate_model.versions.list()[0],
             input={
@@ -757,13 +755,13 @@ def create_meme(
                 src = image.output[0]
             i += 1
 
-        ##download from replicate
+        # download from replicate
         random_str = ''.join(random.choices(string.ascii_lowercase, k=5))
         image_filename = filename.split('.')[0] + '_imagenomovie_' + str(num_memes) + random_str + ".png"
         response = requests.get(src)
         open(image_filename, "wb").write(response.content)
 
-        ##add text on top
+        # add text on top
         meme_filename = filename.split('.')[0] + '_meme_' + str(num_memes) + random_str + ".png"
         fontsize = 36
         line_length = 20
@@ -776,14 +774,6 @@ def create_meme(
         n_lines = math.ceil(l_top_quote / line_length)
         h_px = n_lines * fontsize * 1.33
         h_padding = (512 - h_px) / 2
-        print('this is fontsize')
-        print(fontsize)
-        print('this is line length')
-        print(line_length)
-        print('this is length of top quote')
-        print(len(top_quote))
-        print('this is top quote')
-        print(top_quote)
         top_quote = top_quote.replace(',', '\\,')
         top_quote = top_quote.replace(':', '')
         top_quote = re.escape(top_quote)
@@ -791,6 +781,7 @@ def create_meme(
         print("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=3:fontcolor=white:fontsize=""" + str(fontsize) + """:x=""" + str(w_padding) + """:y=""" + str(h_padding) + """:" """ + meme_filename)
         os.system("""ffmpeg -i """ + image_filename + """ -vf "drawtext=text='""" + split_txt_into_multi_lines(top_quote, line_length) + """':bordercolor=black:borderw=3:fontcolor=white:fontsize=""" + str(fontsize) + """:x=""" + str(w_padding) + """:y=""" + str(h_padding) + """:" """ + meme_filename)
 
+        # save to google cloud
         upload_to_gs(bucket_name, meme_filename, meme_filename)
 
         return meme_filename
@@ -818,8 +809,10 @@ def convert(
     facts = []
     quotes = []
 
+    # arrays from the transcript
     start_times_unformatted = [timestamp for (_, _, _, timestamp) in sentences_diarized]
     sentences_unformatted = [sentence for (_,sentence,_,_) in sentences_diarized]
+    # split the transcript into chunks that fit in the gpt3 context window
     prompt_chunks = split_transcript(cleaned_paragraphs, for_transcript=False, prompt_end_string=prompt_end_string)
 
     print(sentences_diarized)
@@ -851,7 +844,7 @@ def convert(
 
                 print(quote_prompt_chunk)
 
-                ## get top facts
+                ## get top facts from that chunk
                 r_fact = openai.Completion.create(
                         model='text-davinci-003',
                         prompt=fact_prompt_chunk,
@@ -868,7 +861,7 @@ def convert(
                     if fact_classification  != '2':
                         facts.append(fact)
                 
-                ## get top quote
+                ## get top quotes from that chunk
                 r_quote = openai.Completion.create(
                         model='text-davinci-003',
                         prompt=quote_prompt_chunk,
@@ -879,7 +872,7 @@ def convert(
                         stop='"',
                         n=3,
                     )
-                ## TODO abstract this for loop so that it takes however many outputs are given
+                # TODO abstract this for loop so that it takes however many outputs are given
                 quote_options = [
                     r_quote.choices[0].text,
                     r_quote.choices[1].text,
@@ -888,20 +881,23 @@ def convert(
                 quote_options = list(set(quote_options))
 
                 for quote in quote_options:
-                    ## fix common problems in the top quote
+                    # fix common problems in the top quote
                     quote = quote.replace("The full transcript:\n\n", '')
                     quote = quote.replace("The full transcript: ", '')
                     quote = quote.replace("The full transcript:", '')
-                    for speaker in speakers_input:
+                    # remove speakers from top quotes
+                    for speaker in speakers_input + ['Unknown']:
                         quote = quote.replace(speaker + ": ", '')
-                        quote = quote.replace("Unknown: ", '')
+                    # check if quote is 1 paragraph and not empty
                     if (len(quote.split('\n\n')) == 1) and (quote != ""):
+                        # check that it's a verbatim quote
                         if quote in prompt_chunk:
                             quote_classification = content_filter(quote, user)
+                            # check that it's not unsafe
                             if quote_classification  != '2':
                                 quotes.append(quote)
 
-                                ## generate audiograms
+                                # generate audiograms
                                 if num_audios < num_audios_to_produce:
                                     print('this is debug section')
                                     print("'" + quote + "'")
@@ -911,14 +907,15 @@ def convert(
                                     print('this is top_quote_split')
                                     print(top_quote_split)
 
-                                    ## use a different start sentence if the first or last are too short
+                                    # use a different start sentence if the first or last are too short
                                     off_index_start = 0
                                     for sentence in top_quote_split:
                                         if len(sentence) >= 10:
                                             break
                                         else:
                                             off_index_start += 1
-                                            
+
+                                    # use a different end sentence if the first or last are too short        
                                     off_index_end = -1
                                     for sentence in reversed(top_quote_split):
                                         if len(sentence) >= 10:
@@ -932,7 +929,7 @@ def convert(
                                     print('this is sentences_unformatted')
                                     print(sentences_unformatted)
 
-                                    ## find quote audio start time, end time, duration
+                                    # find quote audio start time, end time, duration
                                     print('top quote split off')
                                     print(top_quote_split[off_index_start].casefold())
                                     find_top_quote_start_true_text = process.extract(top_quote_split[off_index_start], sentences_unformatted, limit=1)[0][0]
@@ -968,6 +965,7 @@ def convert(
                                     audio_filenames.append(top_quote_audio_filename)
                                     audio_durations.append(tq_duration)
                                     audio_quotes.append(quote)
+                                    # save to google cloud
                                     upload_to_gs(bucket_name, top_quote_audio_filename, top_quote_audio_filename)
                                     num_audios += 1
                             else:
@@ -988,7 +986,7 @@ def convert(
 
 
 
-    ## combine top facts
+    # combine top facts
     num_facts = min(50, len(facts))
     facts_sample = [
         facts[i] for i in sorted(random.sample(range(len(facts)), num_facts))
@@ -997,7 +995,7 @@ def convert(
     for i, r in enumerate(facts_sample):
         fact_text += str(i + 1) + ': ' + r + "\n"
 
-    ## combine top quotes
+    # combine top quotes
     num_quotes = min(5, len(quotes))
     quotes_sample = [
         quotes[i] for i in sorted(random.sample(range(len(quotes)), num_quotes))
@@ -1006,6 +1004,7 @@ def convert(
     for i, r in enumerate(quotes_sample):
         quote_text += str(i + 1) + ': "' + r + '"\n'
 
+    # set prompt text for the style that the user chose
     if editorial_style == 'insightful':
         style_text = "is serious and insightful in tone"
     elif editorial_style == 'funny':
@@ -1027,7 +1026,7 @@ def convert(
 
     while ((try_i < tries) and (success == '')):
         try:   
-            ## generate article
+            ## generate blog post
             r = openai.Completion.create(
                         model='text-davinci-003',
                         prompt=article_prompt,
@@ -1073,7 +1072,7 @@ def convert(
 
     while ((try_i < tries) and (success == '')):
         try:   
-
+            # choose the version of the article that is best
             choose = openai.Completion.create(
                         model='text-davinci-003',
                         prompt=choose_text,
@@ -1121,7 +1120,7 @@ def run_combined(
     skip_upload=False,
     skip_transcribe=False,
     transcript_id='',
-    paragraphs=False,
+    paragraphs=True,
     make_videos=True,
     make_memes=False,
     visual_style='painting',
@@ -1131,7 +1130,9 @@ def run_combined(
     try:
         if skip_upload==False:
             if content_type=='url':
+                # if url submission, download the audio
                 status = download_yt(content, filename)
+                # if audio download fails, send an error email
                 if status == 'failed':
                     print('return failed')
                     response = requests.\
@@ -1147,15 +1148,20 @@ def run_combined(
                      )
                     return ">There was an error. Sorry about that. We will fix it as soon as possible!", user, True
                 elif status == 'passed':
+                    # save to google cloud
                     upload_to_gs(bucket_name, filename, filename)
+            # if user input is a file, it was already uploaded in app.py, download it here
             elif content_type=='file':
                 download_from_gs(bucket_name, filename, filename)
 
+        # make a signed url for sending to assemblyAI for transcription
         audio_file = generate_download_signed_url_v4(bucket_name, filename)
         
         if skip_transcribe==False:
+            # send for transcription
             transcript_id = assembly_start_transcribe(audio_file)
         
+        # wait for transcription to complete
         cleaned_paragraphs = 'waiting'
         while cleaned_paragraphs == 'waiting':
             print('wait cleaned sentences')
@@ -1182,6 +1188,7 @@ def run_combined(
                  )
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
 
+        # send transcript for processing into blog post, top quotes, audiograms
         article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text = convert(
             user,
             cleaned_paragraphs_no_ads,
@@ -1196,6 +1203,7 @@ def run_combined(
             editorial_style=editorial_style
         )
 
+        # format the outputs for html readability 
         present_sentences_timestamps = ['[' + str(start_time) + '] ' + sentence for sentence, start_time in zip(cleaned_paragraphs, start_times)]
         present_sentences_present = '<br><br>'.join(present_sentences_timestamps)
 
@@ -1214,7 +1222,8 @@ def run_combined(
         title_prompt = "Here are some facts that were discussed in a podcast conversation:\n\n" + fact_text + '\n\nWrite the title of the podcast: "'
         description_prompt = prompt_base + '\n\nWrite one enticing paragraph describing the podcast:\n\nIn this podcast,'
         article_prompt = 'The first draft:\n\n' + prompt_base + '\n\nThe final draft:'
-        
+
+        # generate titles        
         tries = 3
         try_i = 0
         success = ''
@@ -1245,6 +1254,7 @@ def run_combined(
 
         title = '<br><br>'.join(title_options)
 
+        # generate descriptions
         tries = 3
         try_i = 0
         success = ''
@@ -1276,6 +1286,7 @@ def run_combined(
 
         description = '<br><br>'.join(description_options)
 
+        # do editing on the article if it's short enough
         if int(len(article_prompt) / chars_per_token) + max_tokens_output_article_final < max_tokens_output_base_model:
             print('article short enough for final draft')
             print(article_prompt)
@@ -1312,6 +1323,7 @@ def run_combined(
         print('this is article:')
         print('"' + article + '"')
 
+        # make videos and/or memes
         if make_memes or make_videos:
 
             image_audio_filenames = []
@@ -1319,6 +1331,7 @@ def run_combined(
             num_videos = 0
             num_memes = 0
 
+            # rearrange quotes, audio files, and durations for use in making videos and memes
             image_prompts_l = [(a, b, c) for a, b, c in zip(audio_quotes,audio_filenames,audio_durations)]
             sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
 
@@ -1335,6 +1348,7 @@ def run_combined(
                 print(top_quote_audio_filename is not None)
 
                 if (make_videos) and (num_videos < num_videos_to_produce) and (top_quote_audio_filename is not None):
+                    # generate video
                     image_audio_filename = create_video(
                         user,
                         filename,
@@ -1350,6 +1364,7 @@ def run_combined(
                     image_audio_filenames.append(image_audio_filename)
                     num_videos += 1
 
+                # if maximum number of videos have been made, make memes instead
                 elif make_memes and (top_quote is not None):
                     meme_filename = create_meme(
                         user,
@@ -1365,6 +1380,7 @@ def run_combined(
                     meme_filenames.append(meme_filename)
                     num_memes += 1            
 
+        # format video and meme output
         present_image_audio_clips=''
         email_present_image_audio_clips=''
         video_clips_html = ''
@@ -1384,6 +1400,7 @@ def run_combined(
             email_present_memes = """<br><br><b><a id="images">Images</a></b><br><br>""" + '<br><br>'.join(tmp_email_memes)
             memes_html = """<br><a href="#images">Quote Memes</a>"""
 
+        # format web and email response
         combined_base = """<br><br>File: """ + content\
         + """<br><br><b>Result Sections</b>""" \
         + """<br><a href="#title_suggestions">Title Suggestions</a>""" \
@@ -1410,6 +1427,7 @@ def run_combined(
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
         print('email to dubb results')
+        # email dubb.results@gmail.com with the output
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
@@ -1422,6 +1440,7 @@ def run_combined(
                  }
              )
         print('email to user')
+        # email user with their results 
         response = requests.\
             post("https://api.mailgun.net/v3/%s/messages" % MAILGUN_DOMAIN,
                 auth=("api", MAILGUN_API_KEY),
@@ -1436,6 +1455,7 @@ def run_combined(
         
         return combined_html, user, False
 
+    # email about error
     except Exception as e:
         print(e)
         response = requests.\

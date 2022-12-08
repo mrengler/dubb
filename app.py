@@ -67,15 +67,6 @@ os.makedirs(media_dir, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {'wav', 'mp3'}
 
-# only set a new global user_email var if one does not exist
-var_exists = 'user_email' in locals() or 'user_email' in globals()
-if not var_exists:
-    print('set user email')
-    user_email = ''
-else:
-    print('user email already set')
-    print(user_email)
-
 
 # check if allowed filename
 def allowed_file(filename):
@@ -336,7 +327,6 @@ def privacy():
 # catch user email for use in sending results and submission to openai
 @app.route('/log_email', methods=['POST'])
 def log_email():    
-    global user_email
     data = request.get_json()
     user_email = data['user']
     print('logged user_email')
