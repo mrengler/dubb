@@ -276,6 +276,7 @@ def accelerated_process():
                 content_type = 'url'
                 filename = content.split('/')[-1]
                 filename = re.sub(r'\W+', '', filename) + '.mp3'
+                
 
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
