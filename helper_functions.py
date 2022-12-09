@@ -1448,8 +1448,8 @@ def run_combined(
                      "from": 'results@'+ str(MAILGUN_DOMAIN),
                      "to": user, ## to be updated to email
                      "subject": "Dubb results",
-                     "text": combined_email,
-                     "html": combined_email
+                     "text": 'Here are the results for your podcast from <a href="https://www.dubb.media/">Dubb</a>' + combined_email,
+                     "html": 'Here are the results for your podcast from <a href="https://www.dubb.media/">Dubb</a>' + combined_email
                  }
              )
         
