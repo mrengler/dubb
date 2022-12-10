@@ -1426,6 +1426,9 @@ def run_combined(
         + present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
+        user_combined_html = 'Here are the results for your podcast from <a href="https://www.dubb.media/">Dubb</a>. If you like them, consider upgrading to Premium for unlimited podcast submissions!' \
+        + combined_email
+
         print('email to dubb results')
         # email dubb.results@gmail.com with the output
         response = requests.\
@@ -1448,8 +1451,8 @@ def run_combined(
                      "from": 'results@'+ str(MAILGUN_DOMAIN),
                      "to": user, ## to be updated to email
                      "subject": "Dubb results",
-                     "text": 'Here are the results for your podcast from <a href="https://www.dubb.media/">Dubb</a>' + combined_email,
-                     "html": 'Here are the results for your podcast from <a href="https://www.dubb.media/">Dubb</a>' + combined_email
+                     "text": user_combined_html,
+                     "html": user_combined_html
                  }
              )
         
