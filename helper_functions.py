@@ -192,24 +192,25 @@ def assembly_start_transcribe(audio_file):
 # retrieve transcription and format
 def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 
-    endpoint = "https://api.assemblyai.com/v2/transcript/" + transcript_id + '/sentences'
+    endpoint_transcript = "https://api.assemblyai.com/v2/transcript/" + transcript_id + '/sentences'
+    endpoint_srt = "https://api.assemblyai.com/v2/transcript/" + transcript_id + '/srt'
 
     headers = {
         "authorization": ASSEMBLY_API_KEY,
     }
 
-    # get the response from assemblyAI
-    response = requests.get(endpoint, headers=headers)
-    response_json = response.json()
+    # get the transcript response from assemblyAI
+    response_transcript = requests.get(endpoint_transcript, headers=headers)
+    response_transcript_json = response_transcript.json()
 
     print('this is response')
-    print(response)
-    print(response_json)
+    print(response_transcript)
+    print(response_transcript_json)
 
     # check if the transcript is done
-    if 'sentences' in response_json:
+    if 'sentences' in response_transcript_json:
     
-        sentences = response.json()['sentences']
+        sentences = response_transcript.json()['sentences']
         sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
         speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
@@ -372,16 +373,22 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
             cleaned_paragraphs_no_ads = [speaker_hash[line.split(':')[0]] + ':' + ':'.join(line.split(':')[1:]) for line in cleaned_paragraphs_no_ads]
 
             print(cleaned_paragraphs)
-            print(cleaned_paragraphs_no_ads)    
+            print(cleaned_paragraphs_no_ads)
+
+            # get SRT file
+            response_srt = requests.get(endpoint_srt, headers=headers)
+            f = open(transcript_id + ".srt", "w")
+            f.write(response_srt.content.decode("utf-8"))
+            f.close()    
 
             return cleaned_paragraphs, start_times, cleaned_paragraphs_no_ads, start_times_unformatted, sentences_diarized
 
-    elif 'error' in response_json:
+    elif 'error' in response_transcript_json:
         ## transcript is still processing
-        if response_json['error'] == "This transcript has a status of 'processing'. Transcripts must have a status of 'completed' before requesting captions.":
+        if response_transcript_json['error'] == "This transcript has a status of 'processing'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'waiting', None, None, None, None
         # error
-        elif response_json['error'] == "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
+        elif response_transcript_json['error'] == "This transcript has a status of 'error'. Transcripts must have a status of 'completed' before requesting captions.":
             return 'error', None, None, None, None   
     else:
         return 'error', None, None, None, None
@@ -505,10 +512,12 @@ def split_txt_into_multi_lines(input_str, line_length):
 def create_video(
     user,
     filename,
+    transcript_id,
     num_videos,
     description,
     top_quote,
     top_quote_audio_filename,
+    audio_start_time,
     pres_penalty,
     bucket_name,
     visual_style,
@@ -671,10 +680,19 @@ def create_video(
         ##trim end of video
         os.system("""ffmpeg -i """ + tmp_image_audio_filename + """ -ss 00:00:00 -t """ + millsecond_to_timestamp(math.ceil(desired_length) * 1000) + """ """ + image_audio_filename)
 
-        ## save video to google cloud
-        upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+        # make srt file that starts at beginning of video
+        shifted_srt_filename = transcript_id + "_" + random_str + ".srt"
+        os.system("""ffmpeg -itsoffset -""" + str(audio_start_time / 1000) + """ -i """ + transcript_id + """.srt -c copy """ + shifted_srt_filename)
 
-        return image_audio_filename
+        # get video with subtitles
+        image_audio_subtitles_filename = filename.split('.')[0] + '_video_' + str(num_videos) + random_str + "_subtitles.mp4"
+        os.system("""ffmpeg -i """ + image_audio_filename + """ -vf "subtitles=""" + shifted_srt_filename + """:force_style='Fontname=Roboto,OutlineColour=&H40000000,BorderStyle=3'" """ + image_audio_subtitles_filename)
+
+        ## save videos to google cloud
+        upload_to_gs(bucket_name, image_audio_filename, image_audio_filename)
+        upload_to_gs(bucket_name, image_audio_subtitles_filename, image_audio_subtitles_filename)
+
+        return image_audio_filename, image_audio_subtitles_filename
 
 # create meme of top quote
 def create_meme(
@@ -804,6 +822,7 @@ def convert(
     num_audios = 0
 
     audio_filenames = []
+    audio_start_times = []
     audio_durations = []
     audio_quotes = []
     facts = []
@@ -963,6 +982,7 @@ def convert(
                                     print(top_quote_audio_filename)
                                     top_quote_audio.export(top_quote_audio_filename, format="mp3")
                                     audio_filenames.append(top_quote_audio_filename)
+                                    audio_start_times.append(tq_start)
                                     audio_durations.append(tq_duration)
                                     audio_quotes.append(quote)
                                     # save to google cloud
@@ -1102,7 +1122,7 @@ def convert(
     else:
         article = article_one
 
-    return article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text
+    return article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text
 
 # handle audio to all outputs
 def run_combined(
@@ -1189,7 +1209,7 @@ def run_combined(
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
 
         # send transcript for processing into blog post, top quotes, audiograms
-        article, quotes, audio_filenames, audio_durations, audio_quotes, fact_text = convert(
+        article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text = convert(
             user,
             cleaned_paragraphs_no_ads,
             sentences_diarized,
@@ -1327,13 +1347,14 @@ def run_combined(
         if make_memes or make_videos:
 
             image_audio_filenames = []
+            image_audio_subtitles_filenames = []
             meme_filenames = []
             num_videos = 0
             num_memes = 0
 
             # rearrange quotes, audio files, and durations for use in making videos and memes
-            image_prompts_l = [(a, b, c) for a, b, c in zip(audio_quotes,audio_filenames,audio_durations)]
-            sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[2], reverse=True)
+            image_prompts_l = [(a, b, c, d) for a, b, c,d in zip(audio_quotes,audio_filenames,audio_start_times,audio_durations)]
+            sorted_image_prompts_l = sorted(image_prompts_l, key=lambda x: x[3], reverse=True)
 
             print('this is sorted image prompts')
             print(sorted_image_prompts_l)
@@ -1341,7 +1362,7 @@ def run_combined(
             print('this is make_videos')
             print(make_videos)
 
-            for top_quote, top_quote_audio_filename, audio_duration in sorted_image_prompts_l:
+            for top_quote, top_quote_audio_filename, audio_start_time, audio_duration in sorted_image_prompts_l:
                 print('make video filters:')
                 print(make_videos)
                 print(num_videos < num_videos_to_produce)
@@ -1349,19 +1370,22 @@ def run_combined(
 
                 if (make_videos) and (num_videos < num_videos_to_produce) and (top_quote_audio_filename is not None):
                     # generate video
-                    image_audio_filename = create_video(
+                    image_audio_filename, image_audio_subtitles_filename = create_video(
                         user,
                         filename,
+                        transcript_id,
                         num_videos,
                         description_options[0],
                         top_quote,
                         top_quote_audio_filename,
+                        audio_start_time,
                         presence_penalty,
                         bucket_name,
                         visual_style,
                         fact_text
                     )
                     image_audio_filenames.append(image_audio_filename)
+                    image_audio_subtitles_filenames.append(image_audio_subtitles_filename)
                     num_videos += 1
 
                 # if maximum number of videos have been made, make memes instead
@@ -1384,12 +1408,19 @@ def run_combined(
         present_image_audio_clips=''
         email_present_image_audio_clips=''
         video_clips_html = ''
+        video_subtitles_clips_html = ''
         if make_videos:
             image_audio_filenames = [image_audio_filename for image_audio_filename in image_audio_filenames if image_audio_filename is not None]
             present_image_audio_clips = """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_filenames) + """' type='video/mp4'></video>"""
             tmp_email_image_audio_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_filenames]    
             email_present_image_audio_clips = """<br><br><b><a id="video">Video Clips</a></b><br><br>""" + '<br><br>'.join(tmp_email_image_audio_clips)
             video_clips_html = """<br><a href="#video">Video Clips</a>"""
+            
+            image_audio_subtitles_filenames = [image_audio_subtitles for image_audio_subtitles in image_audio_subtitles_filenames if image_audio_subtitles_filename is not None]
+            present_image_audio_subtitles_clips = """<br><br><b><a id="video_subtitles">Video Clips with subtitles</a></b><br><br>""" + """<video controls><source src='https://storage.googleapis.com/writersvoice/""" + """' type='video/mp4'></video><br><br><video controls><source src='https://storage.googleapis.com/writersvoice/""".join(image_audio_subtitles_filenames) + """' type='video/mp4'></video>"""
+            tmp_email_image_audio_subtitles_clips = ['<a href="https://storage.googleapis.com/writersvoice/' + clip + '">' + clip + '</a>' for clip in image_audio_subtitles_filenames]    
+            email_present_image_audio_subtitles_clips = """<br><br><b><a id="video_subtitles">Video Clips with subtitles</a></b><br><br>""" + '<br><br>'.join(tmp_email_image_audio_subtitles_clips)
+            video_subtitles_clips_html = """<br><a href="#video">Video Clips with subtitles</a>"""
 
         present_memes = ''
         email_present_memes = ''
@@ -1409,6 +1440,7 @@ def run_combined(
         + """<br><a href="#top_quotes">Top Quotes</a>""" \
         + """<br><a href="#audio">Audio Clips</a>""" \
         + video_clips_html \
+        + video_subtitles_clips_html \
         + memes_html \
         + """<br><a href="#transcript">Transcript</a>""" \
         + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
@@ -1418,11 +1450,13 @@ def run_combined(
 
         combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
         + email_present_image_audio_clips \
+        + email_present_image_audio_subtitles_clips \
         + email_present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
         
         combined_html = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + present_audio_clips \
         + present_image_audio_clips \
+        + present_image_audio_subtitles_clips \
         + present_memes \
         + """<br><br><b><a id="transcript">Transcript</a></b><br><br>""" + present_sentences_present
 
