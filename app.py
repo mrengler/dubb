@@ -36,7 +36,11 @@ stripe.api_key = os.environ["STRIPE_API_KEY"]
 webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
 app.secret_key = os.environ["APP_SECRET_KEY"]
 
+print('before queue')
+
 q = Queue(connection=conn, default_timeout=3600)
+
+print('after queue')
 
 ENV_KEYS = {
     "type": "service_account",
