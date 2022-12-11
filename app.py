@@ -18,7 +18,6 @@ from firebase_admin import credentials, auth, firestore
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import replicate
-
 import os
 from dotenv import load_dotenv
 
@@ -276,7 +275,7 @@ def accelerated_process():
                 content_type = 'url'
                 filename = content.split('/')[-1]
                 filename = re.sub(r'\W+', '', filename) + '.mp3'
-                
+
 
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
