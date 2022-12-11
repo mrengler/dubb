@@ -172,6 +172,8 @@ def process():
         speakers = request.form['speakers']
         speakers_input = [name.strip() for name in speakers.split(',')]
 
+        print('before enqueue job')
+
         job = q.enqueue(
             run_combined,
             args=(
@@ -189,6 +191,11 @@ def process():
             },
             timeout=600
         )
+
+        print('Job id: %s' % job.id)
+        print('Status: %s' % job.get_status())
+
+        print('after enqueue job')
 
         ## log request
         db.collection("requests").document().set({
