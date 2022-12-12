@@ -684,6 +684,7 @@ def create_video(
         shifted_srt_filename = transcript_id + "_" + random_str + ".srt"
         print('this is shifted_srt_filename')
         print(shifted_srt_filename)
+        print("""ffmpeg -itsoffset -""" + str(audio_start_time / 1000) + """ -i """ + transcript_id + """.srt -c copy """ + shifted_srt_filename)
         os.system("""ffmpeg -itsoffset -""" + str(audio_start_time / 1000) + """ -i """ + transcript_id + """.srt -c copy """ + shifted_srt_filename)
         upload_to_gs(bucket_name, shifted_srt_filename, shifted_srt_filename)
 
