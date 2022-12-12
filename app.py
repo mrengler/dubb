@@ -38,7 +38,7 @@ app.secret_key = os.environ["APP_SECRET_KEY"]
 
 print('before queue')
 
-q = Queue(connection=conn, default_timeout=3600)
+q = Queue('default', connection=conn, default_timeout=3600)
 
 print('after queue')
 
@@ -196,6 +196,13 @@ def process():
         print('Status: %s' % job.get_status())
 
         print('after enqueue job')
+        registry = StartedJobRegistry('default', connection=conn)
+        running_job_ids = registry.get_job_ids()  # Jobs which are exactly running. 
+        expired_job_ids = registry.get_expired_job_ids()
+        print('this is running_job_ids')
+        print(running_job_ids)
+        print('this is expired_job_ids')
+        print(expired_job_ids)
 
         ## log request
         db.collection("requests").document().set({
