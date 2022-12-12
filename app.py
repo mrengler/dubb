@@ -9,6 +9,7 @@ import logging
 import re
 from rq import Queue
 from rq.job import Job
+from rq.registry import StartedJobRegistry
 from worker import conn
 import time
 from time import sleep
