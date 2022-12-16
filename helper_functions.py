@@ -36,6 +36,7 @@ import shutil
 import random
 import string
 from fuzzywuzzy import process
+from collections import defaultdict
 import sys
 sys.path.append('/Users/samplank/anaconda/envs/py3/lib/python3.9/site-packages')
 
@@ -805,7 +806,7 @@ def create_meme(
 
         return meme_filename
 
-# turn transcript into article, audio clips, top quotes
+# turn transcript into article, audio clips, top quotes, keywords
 def convert(
     user,
     cleaned_paragraphs,
@@ -847,6 +848,10 @@ def convert(
     top_quotes_prompt_pre = """The full transcript:\n\n"""
     top_quotes_prompt_post = '\n\nThe most engaging section of the transcript, exactly how it is written: "'
 
+    # keyword prompt suffix
+    keyword_prompt_post = """The most relevant keywords for a social media post:\n\n"""
+    keyword_dict = defaultdict(int)
+
     for prompt_chunk in prompt_chunks:
         tries = 3
         try_i = 0
@@ -859,10 +864,13 @@ def convert(
 
                 fact_prompt_chunk = top_facts_prompt_pre + prompt_chunk + top_facts_prompt_post
                 quote_prompt_chunk = top_quotes_prompt_pre + prompt_chunk + top_quotes_prompt_post
+                keyword_prompt_chunk = top_facts_prompt_pre + prompt_chunk + keyword_prompt_post
 
                 print(fact_prompt_chunk)
 
                 print(quote_prompt_chunk)
+
+                print(keyword_prompt_chunk)
 
                 ## get top facts from that chunk
                 r_fact = openai.Completion.create(
@@ -880,6 +888,16 @@ def convert(
                     fact_classification = content_filter(fact, user)
                     if fact_classification  != '2':
                         facts.append(fact)
+
+                r_keywords = openai.Completion.create(
+                        model='text-davinci-003',
+                        prompt=keyword_prompt_chunk,
+                        temperature=0.0,
+                        presence_penalty=pres_penalty,
+                        user=user, 
+                )
+                for kw in r_keywords:
+                    keyword_dict[kw] += 1
                 
                 ## get top quotes from that chunk
                 r_quote = openai.Completion.create(
@@ -1038,6 +1056,8 @@ def convert(
     """\n\nHere are some facts that were discussed in the same conversation:\n\n""" +\
     fact_text + \
     """\n\nUse these quotes and facts to write a coherent article that """ + style_text + """:"""
+
+    keywords = ", ".sorted(keyword_dict, key=keyword_dict.get)[-10:]
     
     print(article_prompt)
     
@@ -1123,7 +1143,7 @@ def convert(
     else:
         article = article_one
 
-    return article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text
+    return article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text, keyword
 
 # handle audio to all outputs
 def run_combined(
@@ -1210,7 +1230,7 @@ def run_combined(
             return '>There was an error. Sorry about that. We will fix it as soon as possible!', user, True
 
         # send transcript for processing into blog post, top quotes, audiograms
-        article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text = convert(
+        article, quotes, audio_filenames, audio_start_times, audio_durations, audio_quotes, fact_text, keywords = convert(
             user,
             cleaned_paragraphs_no_ads,
             sentences_diarized,
@@ -1447,7 +1467,8 @@ def run_combined(
         + """<br><br><b><a id="title_suggestions">Title Suggestions</a></b><br><br>""" + title \
         + """<br><br><b><a id="description_suggestions">Description Suggestions</a></b><br><br>""" + description \
         + """<br><br><b><a id="blog_post">Blog Post</a></b>""" + article \
-        + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes
+        + """<br><br><b><a id="top_quotes">Top Quotes</a></b><br><br>""" + present_top_quotes \
+        + """<br><br><b><a id="keyword_suggestions">Keyword Suggestions</a></b><br><br>""" + keywords
 
         combined_email = combined_base + """<br><br><b><a id="audio">Audio Clips</a></b><br><br>""" + email_present_audio_clips \
         + email_present_image_audio_clips \
