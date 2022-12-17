@@ -10,21 +10,10 @@ import openai
 
 import os
 from dotenv import load_dotenv
+from config import *
+import utils
 
 load_dotenv()
-
-
-# token values for gpt3 context window
-max_token_input = 3000
-max_tokens_output = 1000
-max_tokens_facts_quotes = 500
-max_tokens_output_base_model = 4097
-max_tokens_output_is_ad = 10
-max_tokens_output_image_description = 120
-max_tokens_output_article_final = 2000
-
-# rough approximation of string characters per token 
-chars_per_token = 3.55
 
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 ASSEMBLY_API_KEY = os.environ.get('ASSEMBLY_API_KEY')
@@ -80,8 +69,8 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
     if 'sentences' in response_transcript_json:
     
         sentences = response_transcript.json()['sentences']
-        sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
-        speakers_duplicate = [speaker for speaker, sentence, start_time, start_time_unformatted in sentences_diarized]
+        sentences_diarized = [(sentence['words'][0]['speaker'], sentence['text'], utils.millsecond_to_timestamp(sentence['start']), sentence['start']) for sentence in sentences]
+        speakers_duplicate = [speaker for speaker, _, _, _ in sentences_diarized]
         unique_speakers = list(dict.fromkeys(speakers_duplicate))
 
         current_speaker_sentences_joined = ''
@@ -204,7 +193,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
                 find_speaker_input = '\n\n'.join(window)
                 ## reduce to fit into model window
                 buffer = 250
-                find_speaker_input = find_speaker_input[:int((max_tokens_output_base_model - buffer) * chars_per_token)]
+                find_speaker_input = find_speaker_input[:int((MAX_TOKENS_OUTPUT_BASE_MODEL - buffer) * CHARS_PER_TOKEN)]
 
                 choose_pre = """The transcript:\n\n"""
                 choose_post = """\n\n\nWhat is Speaker """ + unique_speaker + """'s name?:\n\nSpeaker """ + unique_speaker + ' is "'
@@ -266,7 +255,7 @@ def assembly_finish_transcribe(transcript_id, speakers_input, paragraphs, user):
 def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
         
     prompt_chunks = []
-    num_chars = max_token_input * chars_per_token
+    num_chars = MAX_TOKENS_INPUT * CHARS_PER_TOKEN
     used_chars = 0
     chunk = []
     chunk_i = 0
@@ -291,5 +280,52 @@ def split_transcript(cleaned_paragraphs, for_transcript, prompt_end_string=''):
         prompt_chunks.append("Chunk " + str(chunk_i) + ":\n\n"  + "\n".join(chunk) + "\n\n\n")
     elif for_transcript==False:
         prompt_chunks.append(' ' + "\n\n".join(chunk) + prompt_end_string)
+
+    return prompt_chunks
+
+# (not for use in production) get transcript only, used for training data
+def get_transcript(
+    url,
+    speakers_input, 
+    filename,
+    user,
+    bucket_name='writersvoice', 
+    skip_upload=False,
+    skip_transcribe=False,
+    transcript_id='',
+    write=False,
+    write_title='',
+    paragraphs=False,
+    for_transcript=True):   
+    
+    if skip_upload==False:
+        utils.download_yt(url, filename)
+        utils.upload_to_gs(bucket_name, filename, filename)
+    
+    if skip_transcribe==False:
+        audio_file = utils.generate_download_signed_url_v4(bucket_name, filename)
+        transcript_id = utils.transcription.assembly_start_transcribe(audio_file)
+    
+    cleaned_paragraphs = 'waiting'
+    while cleaned_paragraphs == 'waiting':
+        print('wait cleaned sentences')
+        cleaned_paragraphs, _, _, _, _ = assembly_finish_transcribe(
+            transcript_id, 
+            speakers_input, 
+            paragraphs,
+            user
+        )
+        time.sleep(10)
+        
+    prompt_chunks = split_transcript(cleaned_paragraphs, for_transcript=for_transcript)
+
+    for prompt in prompt_chunks:
+        print(prompt)
+    
+    if write == True:
+        ## TODO: the below should be updated
+        file1 = open('transcript_2022_02_07/' + write_title + ".txt","w")
+        file1.writelines(prompt_chunks)
+        file1.close()
 
     return prompt_chunks

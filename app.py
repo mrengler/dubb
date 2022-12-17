@@ -12,8 +12,9 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from dotenv import load_dotenv
-
 import stripe
+
+import result_generation
 
 load_dotenv()
 
@@ -167,7 +168,7 @@ def process():
         print('before enqueue job')
 
         job = q.enqueue(
-            run_combined,
+            result_generation.run_combined,
             args=(
                 content,
                 content_type,
@@ -291,7 +292,7 @@ def accelerated_process():
         speakers_input = [name.strip() for name in speakers.split(',')]
 
         job = q.enqueue(
-            run_combined,
+            result_generation.run_combined,
             args=(
                 content,
                 content_type,
