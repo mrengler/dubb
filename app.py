@@ -1,28 +1,20 @@
-import requests
-import smtplib
-from email.mime.text import MIMEText
 from flask import request, Flask, url_for, render_template, render_template_string, redirect, jsonify, session
-from flask_mail import Mail, Message
-from helper_functions import *
-from allow_list import allow_list
+from utils import *
 import logging
 import re
 from rq import Queue
 from rq.job import Job
 from rq.registry import StartedJobRegistry
 from worker import conn
-import time
-from time import sleep
-from flask_mail import Mail
 import firebase_admin
-from firebase_admin import credentials, auth, firestore
+from firebase_admin import credentials, firestore
 from datetime import datetime
 from werkzeug.utils import secure_filename
-import replicate
 import os
 from dotenv import load_dotenv
-
 import stripe
+
+import result_generation
 
 load_dotenv()
 
@@ -176,7 +168,7 @@ def process():
         print('before enqueue job')
 
         job = q.enqueue(
-            run_combined,
+            result_generation.run_combined,
             args=(
                 content,
                 content_type,
@@ -300,7 +292,7 @@ def accelerated_process():
         speakers_input = [name.strip() for name in speakers.split(',')]
 
         job = q.enqueue(
-            run_combined,
+            result_generation.run_combined,
             args=(
                 content,
                 content_type,
